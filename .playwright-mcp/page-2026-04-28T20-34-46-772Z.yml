@@ -1,0 +1,68 @@
+- generic [ref=e180]:
+  - banner [ref=e181]:
+    - generic [ref=e182]:
+      - generic [ref=e183]:
+        - generic [ref=e184]:
+          - heading "SaasGym" [level=1] [ref=e185]
+          - generic [ref=e186]: Caja
+        - navigation [ref=e187]:
+          - link "Inicio" [ref=e188] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e189] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e190] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e191]:
+        - generic [ref=e192]: Admin Gym ·admin
+        - button "Salir" [ref=e193]
+  - main [ref=e194]:
+    - generic [ref=e196]:
+      - generic [ref=e197]:
+        - generic [ref=e198]:
+          - heading "Ventas" [level=2] [ref=e199]
+          - paragraph [ref=e200]: Registra ventas de productos y asigna membresías a socios.
+        - generic [ref=e201]:
+          - button "Vender producto" [ref=e202]
+          - button "Vender membresía" [ref=e203]
+      - table [ref=e206]:
+        - rowgroup [ref=e207]:
+          - row "Tipo Detalle Cliente Cant. Monto Fecha Estado Acciones" [ref=e208]:
+            - columnheader "Tipo" [ref=e209]
+            - columnheader "Detalle" [ref=e210]
+            - columnheader "Cliente" [ref=e211]
+            - columnheader "Cant." [ref=e212]
+            - columnheader "Monto" [ref=e213]
+            - columnheader "Fecha" [ref=e214]
+            - columnheader "Estado" [ref=e215]
+            - columnheader "Acciones" [ref=e216]
+        - rowgroup [ref=e217]:
+          - row "Producto Proteína Whey — 3 Bs450.00 28/04/2026 02:26 Activa Cancelar" [ref=e218]:
+            - cell "Producto" [ref=e219]
+            - cell "Proteína Whey" [ref=e220]
+            - cell "—" [ref=e221]
+            - cell "3" [ref=e222]
+            - cell "Bs450.00" [ref=e223]
+            - cell "28/04/2026 02:26" [ref=e224]
+            - cell "Activa" [ref=e225]
+            - cell "Cancelar" [ref=e226]:
+              - button "Cancelar" [ref=e227]
+          - row "Producto Proteína Whey 12345678 · Pedro Test 3 Bs450.00 28/04/2026 02:25 Activa Cancelar" [ref=e228]:
+            - cell "Producto" [ref=e229]
+            - cell "Proteína Whey" [ref=e230]
+            - cell "12345678 · Pedro Test" [ref=e231]
+            - cell "3" [ref=e232]
+            - cell "Bs450.00" [ref=e233]
+            - cell "28/04/2026 02:25" [ref=e234]
+            - cell "Activa" [ref=e235]
+            - cell "Cancelar" [ref=e236]:
+              - button "Cancelar" [ref=e237]
+          - row "Membresía 12 sesiones 12345678 · Pedro Test 1 Bs200.00 28/04/2026 02:16 Activa Cancelar" [ref=e238]:
+            - cell "Membresía" [ref=e239]
+            - cell "12 sesiones" [ref=e240]
+            - cell "12345678 · Pedro Test" [ref=e241]
+            - cell "1" [ref=e242]
+            - cell "Bs200.00" [ref=e243]
+            - cell "28/04/2026 02:16" [ref=e244]
+            - cell "Activa" [ref=e245]
+            - cell "Cancelar" [ref=e246]:
+              - button "Cancelar" [ref=e247]

@@ -1,27 +1,35 @@
 <div class="max-w-7xl mx-auto px-6 py-10 space-y-6">
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-2xl font-bold text-slate-900">Planes de membresía</h2>
-      <p class="text-slate-600 text-sm">Catálogo de planes que puedes asignar a los socios.</p>
+      <h2 class="text-2xl font-bold text-foreground tracking-tight">Planes de membresía</h2>
+      <p class="text-foreground-muted text-sm">Catálogo de planes que puedes asignar a los socios.</p>
     </div>
-    <button (click)="toggleForm()"
-            class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition">
-      @if (showForm()) {
+    @if (showForm()) {
+      <button (click)="closeForm()"
+              class="px-4 py-2 text-sm font-semibold bg-muted hover:bg-input text-foreground border border-border-subtle rounded-lg transition">
         Cerrar formulario
-      } @else {
+      </button>
+    } @else {
+      <button (click)="openCreate()"
+              class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
         Nuevo plan
-      }
-    </button>
+      </button>
+    }
   </div>
 
   @if (showForm()) {
     <app-admin-membership-plans-form
+      [value]="editing()"
       [services]="services()"
       [submitting]="submitting()"
       [errorMessage]="formError()"
       (submitForm)="handleSubmit($event)"
-      (cancel)="toggleForm()" />
+      (cancel)="closeForm()" />
   }
 
-  <app-admin-membership-plans-list [plans]="plans()" [loading]="loading()" />
+  <app-admin-membership-plans-list
+    [plans]="plans()"
+    [loading]="loading()"
+    (edit)="openEdit($event)"
+    (remove)="handleDelete($event)" />
 </div>

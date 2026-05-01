@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { errorMessage } from '../../../../utilities/error-message';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +32,7 @@ export class LoginComponent {
       await this.auth.login(email, password);
       await this.navigateByRole();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      const msg = errorMessage(err, 'Error al iniciar sesión');
       this.error.set(this.translateError(msg));
     } finally {
       this.loading.set(false);
@@ -46,7 +47,7 @@ export class LoginComponent {
       await this.auth.loginWithGoogle();
       // El navegador redirige a Google; control no vuelve aquí salvo error.
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error con Google';
+      const msg = errorMessage(err, 'Error con Google');
       this.error.set(msg);
       this.loading.set(false);
     }

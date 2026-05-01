@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Client } from '../../../../../../models/client.model';
 
@@ -12,4 +12,6 @@ import { Client } from '../../../../../../models/client.model';
 export class ClientsListComponent {
   readonly clients = input.required<Client[]>();
   readonly loading = input<boolean>(false);
+  readonly edit = output<Client>();
+  readonly remove = output<Client>();
 }

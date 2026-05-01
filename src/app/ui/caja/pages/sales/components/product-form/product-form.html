@@ -1,21 +1,21 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()"
-      class="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+      class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-5 shadow-sm">
   <div>
-    <h3 class="font-semibold text-slate-900">Vender producto</h3>
-    <p class="text-sm text-slate-500">Solo aparecen los productos con stock disponible.</p>
+    <h3 class="font-semibold text-foreground">Vender producto</h3>
+    <p class="text-sm text-foreground-subtle">Solo aparecen los productos con stock disponible.</p>
   </div>
 
   @if (availableProducts().length === 0) {
-    <div class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-3 py-2">
       No hay productos con stock. Agrega o repón inventario en Productos.
     </div>
   }
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="md:col-span-2">
-      <label for="product_id" class="block text-sm font-medium text-slate-700 mb-1">Producto</label>
+      <label for="product_id" class="block text-sm font-medium text-foreground-muted mb-1">Producto</label>
       <select id="product_id" formControlName="product_id"
-              class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white">
+              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
         <option value="" disabled>Selecciona un producto…</option>
         @for (product of availableProducts(); track product.id) {
           <option [value]="product.id">
@@ -26,21 +26,21 @@
     </div>
 
     <div>
-      <label for="quantity" class="block text-sm font-medium text-slate-700 mb-1">Cantidad</label>
+      <label for="quantity" class="block text-sm font-medium text-foreground-muted mb-1">Cantidad</label>
       <input id="quantity" type="number" min="1" step="1" formControlName="quantity"
              [max]="selectedProduct()?.stock ?? null"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
       @if (selectedProduct(); as p) {
-        <p class="text-xs text-slate-500 mt-1">Stock actual: {{ p.stock }}.</p>
+        <p class="text-xs text-foreground-subtle mt-1">Stock actual: {{ p.stock }}.</p>
       }
     </div>
 
     <div>
-      <label for="client_id" class="block text-sm font-medium text-slate-700 mb-1">
-        Cliente <span class="text-slate-400">(opcional)</span>
+      <label for="client_id" class="block text-sm font-medium text-foreground-muted mb-1">
+        Cliente <span class="text-foreground-faint">(opcional)</span>
       </label>
       <select id="client_id" formControlName="client_id"
-              class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white">
+              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
         <option value="">— Venta sin cliente —</option>
         @for (client of clients(); track client.id) {
           <option [value]="client.id">{{ client.ci }} · {{ client.name }}</option>
@@ -50,24 +50,24 @@
   </div>
 
   @if (selectedProduct()) {
-    <div class="flex justify-end text-sm text-slate-700">
-      <span>Total estimado: <strong class="font-mono">{{ estimatedTotal() | number: '1.2-2' }}</strong></span>
+    <div class="flex justify-end text-sm text-foreground-muted">
+      <span>Total estimado: <strong class="font-mono text-foreground">{{ estimatedTotal() | number: '1.2-2' }}</strong></span>
     </div>
   }
 
   @if (errorMessage(); as msg) {
-    <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
     </div>
   }
 
-  <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
     <button type="button" (click)="cancel.emit()"
-            class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition">
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || submitting()"
-            class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg transition">
+            class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
         Registrando…
       } @else {

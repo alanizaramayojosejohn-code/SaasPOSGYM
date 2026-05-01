@@ -4,6 +4,7 @@ import { Client } from '../../../../../models/client.model';
 import { AttendanceService } from '../../../../../services/attendance/attendance.service';
 import { AttendanceQueryService } from '../../../../../services/attendance/query.service';
 import { ClientQueryService } from '../../../../../services/client/query.service';
+import { errorMessage } from '../../../../../utilities/error-message';
 import { AttendanceFormComponent } from '../components/form/form';
 import { AttendanceListComponent } from '../components/list/list';
 
@@ -55,7 +56,7 @@ export class CajaAttendanceContainerComponent {
       this.successMessage.set(client ? `Asistencia registrada para ${client.name}.` : 'Asistencia registrada.');
       await this.refresh();
     } catch (err: unknown) {
-      this.formError.set(err instanceof Error ? err.message : 'Error al registrar asistencia');
+      this.formError.set(errorMessage(err, 'Error al registrar asistencia'));
     } finally {
       this.submitting.set(false);
     }

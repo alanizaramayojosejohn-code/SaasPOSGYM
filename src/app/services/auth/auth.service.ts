@@ -3,18 +3,24 @@ import type { Session } from '@supabase/supabase-js';
 import { BusinessType } from '../../models/business.model';
 import { Profile, UserRole } from '../../models/profile.model';
 import { SupabaseService } from '../supabase/supabase.service';
+import { BusinessTheme, DEFAULT_THEME } from '../theme/theme.presets';
+import { ThemeService } from '../theme/theme.service';
 
 interface ProfileWithBusiness extends Profile {
-  businesses: { type: BusinessType } | null;
+  businesses: { type: BusinessType; theme: BusinessTheme | null } | null;
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly client = inject(SupabaseService).client;
+  private readonly theme = inject(ThemeService);
 
   readonly session = signal<Session | null>(null);
   readonly profile = signal<Profile | null>(null);
   readonly businessType = signal<BusinessType | null>(null);
+  // Tema actual del negocio. Lo expone aqui (en lugar de meterlo en theme.service)
+  // porque el theme se deriva del profile y se actualiza con el mismo loadProfile().
+  readonly businessTheme = signal<BusinessTheme | null>(null);
   // Set cuando una sesión válida no tiene profile asignado.
   // Lo lee el login para mostrar "Tu cuenta no está autorizada".
   readonly unauthorizedEmail = signal<string | null>(null);
@@ -37,6 +43,8 @@ export class AuthService {
       else {
         this.profile.set(null);
         this.businessType.set(null);
+        this.businessTheme.set(null);
+        this.theme.reset();
       }
     });
   }
@@ -71,13 +79,15 @@ export class AuthService {
     this.session.set(null);
     this.profile.set(null);
     this.businessType.set(null);
+    this.businessTheme.set(null);
     this.unauthorizedEmail.set(null);
+    this.theme.reset();
   }
 
   private async loadProfile(userId: string): Promise<void> {
     const { data, error } = await this.client
       .from('profiles')
-      .select('*, businesses(type)')
+      .select('*, businesses(type, theme)')
       .eq('id', userId)
       .maybeSingle();
 
@@ -85,6 +95,8 @@ export class AuthService {
       console.error('Error cargando profile', error);
       this.profile.set(null);
       this.businessType.set(null);
+      this.businessTheme.set(null);
+      this.theme.reset();
       return;
     }
 
@@ -98,11 +110,19 @@ export class AuthService {
       this.session.set(null);
       this.profile.set(null);
       this.businessType.set(null);
+      this.businessTheme.set(null);
+      this.theme.reset();
       return;
     }
 
     const { businesses, ...profile } = data as ProfileWithBusiness;
     this.profile.set(profile);
     this.businessType.set(businesses?.type ?? null);
+
+    // Aplica el tema apenas tenemos profile cargado. super_admin no tiene
+    // business asignado (businesses === null) → default monochrome.
+    const businessTheme = businesses?.theme ?? DEFAULT_THEME;
+    this.businessTheme.set(businessTheme);
+    this.theme.apply(businessTheme);
   }
 }

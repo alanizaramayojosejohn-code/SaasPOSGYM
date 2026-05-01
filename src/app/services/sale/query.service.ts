@@ -13,6 +13,8 @@ interface SaleRow {
   client_membership_id: string | null;
   created_by: string | null;
   created_at: string;
+  cancelled_at: string | null;
+  cancelled_by: string | null;
   products: { name: string } | null;
   clients: { ci: string; name: string } | null;
   client_memberships: { membership_plans: { name: string } | null } | null;

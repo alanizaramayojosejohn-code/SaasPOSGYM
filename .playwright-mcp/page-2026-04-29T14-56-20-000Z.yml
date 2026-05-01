@@ -1,0 +1,22 @@
+- generic [ref=e87]:
+  - banner [ref=e88]:
+    - generic [ref=e89]:
+      - generic [ref=e90]:
+        - generic [ref=e91]:
+          - heading "SaasGym" [level=1] [ref=e92]
+          - generic [ref=e93]: Caja
+        - navigation [ref=e94]:
+          - link "Inicio" [ref=e95] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e96] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e97] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e98]:
+        - generic [ref=e99]: Caja Test ·caja
+        - button "Salir" [ref=e100]
+  - main [ref=e101]:
+    - generic [ref=e103]:
+      - heading "Panel de caja" [level=2] [ref=e104]
+      - paragraph [ref=e105]: Aquí tomarás asistencia y registrarás ventas.
+      - paragraph [ref=e106]: "Pendiente: tomar asistencia, vender productos, vender membresías."

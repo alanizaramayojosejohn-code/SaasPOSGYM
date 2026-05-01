@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Business } from '../../../../../models/business.model';
-import { BusinessService, CreateBusinessWithAdminInput } from '../../../../../services/business/business.service';
+import { BusinessService } from '../../../../../services/business/business.service';
 import { BusinessQueryService } from '../../../../../services/business/query.service';
-import { BusinessesFormComponent } from '../components/form/form';
+import { errorMessage } from '../../../../../utilities/error-message';
+import { BusinessesFormComponent, BusinessFormValue } from '../components/form/form';
 import { BusinessesListComponent } from '../components/list/list';
 
 @Component({
@@ -17,7 +18,14 @@ export class SaasBusinessesContainerComponent {
 
   readonly businesses = signal<Business[]>([]);
   readonly loading = signal(false);
-  readonly showForm = signal(false);
+
+  readonly formState = signal<null | 'create' | Business>(null);
+  readonly editing = computed<Business | null>(() => {
+    const s = this.formState();
+    return s && s !== 'create' ? s : null;
+  });
+  readonly showForm = computed(() => this.formState() !== null);
+
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
 
@@ -36,22 +44,68 @@ export class SaasBusinessesContainerComponent {
     }
   }
 
-  toggleForm(): void {
-    this.showForm.update((v) => !v);
+  openCreate(): void {
+    this.formState.set('create');
     this.formError.set(null);
   }
 
-  async handleSubmit(input: CreateBusinessWithAdminInput): Promise<void> {
+  openEdit(business: Business): void {
+    this.formState.set(business);
+    this.formError.set(null);
+  }
+
+  closeForm(): void {
+    this.formState.set(null);
+    this.formError.set(null);
+  }
+
+  async handleSubmit(input: BusinessFormValue): Promise<void> {
     this.submitting.set(true);
     this.formError.set(null);
+    const editing = this.editing();
     try {
-      await this.businessService.createBusinessWithAdmin(input);
-      this.showForm.set(false);
+      if (editing) {
+        await this.businessService.updateBusiness(editing.id, {
+          name: input.businessName,
+          type: input.businessType,
+          theme: input.theme,
+        });
+      } else {
+        await this.businessService.createBusinessWithAdmin({
+          businessName: input.businessName,
+          businessType: input.businessType,
+          adminUserId: input.adminUserId,
+          adminName: input.adminName,
+          adminCi: input.adminCi,
+          services: input.services,
+          theme: input.theme,
+        });
+      }
+      this.formState.set(null);
       await this.refresh();
     } catch (err: unknown) {
-      this.formError.set(err instanceof Error ? err.message : 'Error al crear negocio');
+      this.formError.set(
+        errorMessage(err, editing ? 'Error al guardar negocio' : 'Error al crear negocio'),
+      );
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  async handleDelete(business: Business): Promise<void> {
+    const ok = window.confirm(
+      `⚠️ BORRAR NEGOCIO "${business.name}"\n\n` +
+      `Esto borra TODO en cascada: usuarios, clientes, productos, planes, ventas, ` +
+      `membresías y asistencias. NO se puede deshacer.\n\n` +
+      `¿Continuar?`,
+    );
+    if (!ok) return;
+    try {
+      await this.businessService.deleteBusiness(business.id);
+      if (this.editing()?.id === business.id) this.formState.set(null);
+      await this.refresh();
+    } catch (err: unknown) {
+      window.alert(errorMessage(err, 'Error al borrar negocio'));
     }
   }
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Profile } from '../../../../../../models/profile.model';
 
@@ -12,4 +12,6 @@ import { Profile } from '../../../../../../models/profile.model';
 export class UsersListComponent {
   readonly users = input.required<Profile[]>();
   readonly loading = input<boolean>(false);
+  readonly edit = output<Profile>();
+  readonly remove = output<Profile>();
 }

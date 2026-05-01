@@ -9,4 +9,5 @@ export interface Product {
   stock: number;
   provider: string | null;
   created_at: string;
+  deleted_at: string | null;
 }

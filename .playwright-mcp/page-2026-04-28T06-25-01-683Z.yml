@@ -1,0 +1,50 @@
+- generic [ref=e88]:
+  - banner [ref=e89]:
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - heading "SaasGym" [level=1] [ref=e93]
+          - generic [ref=e94]: Caja
+        - navigation [ref=e95]:
+          - link "Inicio" [ref=e96] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e97] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e98] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e99]:
+        - generic [ref=e100]: Admin Gym ·admin
+        - button "Salir" [ref=e101]
+  - main [ref=e102]:
+    - generic [ref=e104]:
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - heading "Ventas" [level=2] [ref=e107]
+          - paragraph [ref=e108]: Registra ventas de productos y asigna membresías a socios.
+        - generic [ref=e109]:
+          - button "Vender producto" [ref=e110]
+          - button "Vender membresía" [ref=e111]
+      - table [ref=e149]:
+        - rowgroup [ref=e150]:
+          - row "Tipo Detalle Cliente Cant. Monto Fecha" [ref=e151]:
+            - columnheader "Tipo" [ref=e152]
+            - columnheader "Detalle" [ref=e153]
+            - columnheader "Cliente" [ref=e154]
+            - columnheader "Cant." [ref=e155]
+            - columnheader "Monto" [ref=e156]
+            - columnheader "Fecha" [ref=e157]
+        - rowgroup [ref=e158]:
+          - row "Producto Proteína Whey 12345678 · Pedro Test 3 Bs450.00 28/04/2026 02:25" [ref=e159]:
+            - cell "Producto" [ref=e160]
+            - cell "Proteína Whey" [ref=e161]
+            - cell "12345678 · Pedro Test" [ref=e162]
+            - cell "3" [ref=e163]
+            - cell "Bs450.00" [ref=e164]
+            - cell "28/04/2026 02:25" [ref=e165]
+          - row "Membresía 12 sesiones 12345678 · Pedro Test 1 Bs200.00 28/04/2026 02:16" [ref=e166]:
+            - cell "Membresía" [ref=e167]
+            - cell "12 sesiones" [ref=e168]
+            - cell "12345678 · Pedro Test" [ref=e169]
+            - cell "1" [ref=e170]
+            - cell "Bs200.00" [ref=e171]
+            - cell "28/04/2026 02:16" [ref=e172]

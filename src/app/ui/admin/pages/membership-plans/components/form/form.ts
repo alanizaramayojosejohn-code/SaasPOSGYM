@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MembershipPlanWithServices } from '../../../../../../models/membership-plan.model';
 import { Service } from '../../../../../../models/service.model';
 import { CreateMembershipPlanInput } from '../../../../../../services/membership-plan/membership-plan.service';
 
@@ -13,14 +14,16 @@ import { CreateMembershipPlanInput } from '../../../../../../services/membership
 export class MembershipPlansFormComponent {
   private readonly fb = inject(FormBuilder);
 
+  readonly value = input<MembershipPlanWithServices | null>(null);
   readonly services = input.required<Service[]>();
   readonly submitting = input<boolean>(false);
   readonly errorMessage = input<string | null>(null);
   readonly submitForm = output<CreateMembershipPlanInput>();
   readonly cancel = output<void>();
 
-  // Set de service_ids tildados. Mutable signal porque los checkboxes
-  // viven fuera del FormGroup (más simple que un FormArray dinámico).
+  readonly isEdit = computed(() => this.value() !== null);
+
+  // Set de service_ids tildados. Vive fuera del FormGroup (más simple que un FormArray dinámico).
   readonly selectedServices = signal<Set<string>>(new Set());
 
   readonly form = this.fb.nonNullable.group({
@@ -30,6 +33,28 @@ export class MembershipPlansFormComponent {
     sessions_number: [null as number | null],
     price: [0, [Validators.required, Validators.min(0)]],
   });
+
+  constructor() {
+    effect(() => {
+      const v = this.value();
+      if (v) {
+        this.form.reset({
+          name: v.name,
+          type: v.type,
+          duration_days: v.duration_days,
+          sessions_number: v.sessions_number,
+          price: v.price,
+        });
+        this.selectedServices.set(new Set(v.service_ids));
+      } else {
+        this.form.reset({
+          name: '', type: 'normal', duration_days: 30,
+          sessions_number: null, price: 0,
+        });
+        this.selectedServices.set(new Set());
+      }
+    });
+  }
 
   toggleService(serviceId: string): void {
     this.selectedServices.update((set) => {

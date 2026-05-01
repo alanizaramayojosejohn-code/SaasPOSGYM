@@ -1,0 +1,64 @@
+- generic [ref=e88]:
+  - banner [ref=e89]:
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - generic [ref=e92]:
+          - heading "SaasGym" [level=1] [ref=e93]
+          - generic [ref=e94]: Caja
+        - navigation [ref=e95]:
+          - link "Inicio" [ref=e96] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e97] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e98] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e99]:
+        - generic [ref=e100]: Admin Gym ·admin
+        - button "Salir" [ref=e101]
+  - main [ref=e102]:
+    - generic [ref=e104]:
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - heading "Ventas" [level=2] [ref=e107]
+          - paragraph [ref=e108]: Registra ventas de productos y asigna membresías a socios.
+        - generic [ref=e109]:
+          - button "Vender producto" [ref=e110]
+          - button "Vender membresía" [ref=e111]
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - heading "Vender producto" [level=3] [ref=e134]
+          - paragraph [ref=e135]: Solo aparecen los productos con stock disponible.
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - generic [ref=e138]: Producto
+            - combobox "Producto" [ref=e139]:
+              - option "Selecciona un producto…" [disabled]
+              - option "Proteína Whey — 150 (10 en stock)" [selected]
+          - generic [ref=e140]:
+            - generic [ref=e141]: Cantidad
+            - spinbutton "Cantidad" [active] [ref=e142]: "3"
+          - generic [ref=e143]:
+            - generic [ref=e144]: Cliente (opcional)
+            - combobox "Cliente (opcional)" [ref=e145]:
+              - option "— Venta sin cliente —"
+              - option "12345678 · Pedro Test" [selected]
+        - generic [ref=e146]:
+          - button "Cancelar" [ref=e147]
+          - button "Registrar venta" [ref=e148]
+      - table [ref=e114]:
+        - rowgroup [ref=e115]:
+          - row "Tipo Detalle Cliente Cant. Monto Fecha" [ref=e116]:
+            - columnheader "Tipo" [ref=e117]
+            - columnheader "Detalle" [ref=e118]
+            - columnheader "Cliente" [ref=e119]
+            - columnheader "Cant." [ref=e120]
+            - columnheader "Monto" [ref=e121]
+            - columnheader "Fecha" [ref=e122]
+        - rowgroup [ref=e123]:
+          - row "Membresía 12 sesiones 12345678 · Pedro Test 1 Bs200.00 28/04/2026 02:16" [ref=e124]:
+            - cell "Membresía" [ref=e125]
+            - cell "12 sesiones" [ref=e126]
+            - cell "12345678 · Pedro Test" [ref=e127]
+            - cell "1" [ref=e128]
+            - cell "Bs200.00" [ref=e129]
+            - cell "28/04/2026 02:16" [ref=e130]

@@ -1,0 +1,37 @@
+- generic [ref=e141]:
+  - banner [ref=e142]:
+    - generic [ref=e143]:
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - heading "SaasGym" [level=1] [ref=e146]
+          - generic [ref=e147]: Caja
+        - navigation [ref=e148]:
+          - link "Inicio" [ref=e149] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e150] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [active] [ref=e151] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e152]:
+        - generic [ref=e153]: Admin Gym ·admin
+        - button "Salir" [ref=e154]
+  - main [ref=e155]:
+    - generic [ref=e207]:
+      - generic [ref=e208]:
+        - heading "Asistencia" [level=2] [ref=e209]
+        - paragraph [ref=e210]: Registra el ingreso del socio. Si su plan tiene sesiones, se descuenta una.
+      - generic [ref=e212]:
+        - generic [ref=e213]:
+          - generic [ref=e214]:
+            - generic [ref=e215]: Buscar por CI o nombre
+            - textbox "Buscar por CI o nombre" [ref=e216]:
+              - /placeholder: Escribe para filtrar…
+          - generic [ref=e217]:
+            - generic [ref=e218]: Socio
+            - combobox "Socio" [ref=e219]:
+              - option "Selecciona un socio…" [disabled] [selected]
+              - option "12345678 · Pedro Test"
+        - button "Registrar asistencia" [disabled] [ref=e221]
+      - generic [ref=e224]:
+        - paragraph [ref=e225]: Aún no hay asistencias registradas.
+        - paragraph [ref=e226]: Registra la primera con el formulario de arriba.

@@ -1,9 +1,9 @@
-<h2 class="text-xl font-semibold text-slate-900 mb-1">Iniciar sesión</h2>
-<p class="text-sm text-slate-500 mb-6">Ingresa con tu cuenta para continuar.</p>
+<h2 class="text-xl font-semibold text-foreground mb-1">Iniciar sesión</h2>
+<p class="text-sm text-foreground-subtle mb-6">Ingresa con tu cuenta para continuar.</p>
 
 @if (auth.unauthorizedEmail(); as email) {
-  <div class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-    La cuenta <strong>{{ email }}</strong> no está autorizada en SaasGym.
+  <div class="text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-3 py-2 mb-4">
+    La cuenta <strong class="text-foreground">{{ email }}</strong> no está autorizada en SaasGym.
     Contacta al administrador.
   </div>
 }
@@ -12,7 +12,7 @@
   type="button"
   (click)="loginWithGoogle()"
   [disabled]="loading()"
-  class="w-full flex items-center justify-center gap-3 border border-slate-300 bg-white text-slate-700 font-medium py-2.5 rounded-lg transition hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+  class="w-full flex items-center justify-center gap-3 border border-border-subtle bg-elevated text-foreground-muted font-medium py-2.5 rounded-lg transition hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
 >
   <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
     <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
@@ -23,37 +23,37 @@
   Continuar con Google
 </button>
 
-<div class="flex items-center gap-3 my-5 text-xs text-slate-400">
-  <div class="flex-1 h-px bg-slate-200"></div>
+<div class="flex items-center gap-3 my-5 text-xs text-foreground-faint">
+  <div class="flex-1 h-px bg-border-subtle"></div>
   <span>o continúa con email</span>
-  <div class="flex-1 h-px bg-slate-200"></div>
+  <div class="flex-1 h-px bg-border-subtle"></div>
 </div>
 
 <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4">
   <div>
-    <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+    <label for="email" class="block text-sm font-medium text-foreground-muted mb-1">Email</label>
     <input
       id="email"
       type="email"
       formControlName="email"
       autocomplete="email"
-      class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none transition focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint"
     />
   </div>
 
   <div>
-    <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+    <label for="password" class="block text-sm font-medium text-foreground-muted mb-1">Contraseña</label>
     <input
       id="password"
       type="password"
       formControlName="password"
       autocomplete="current-password"
-      class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none transition focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint"
     />
   </div>
 
   @if (error(); as msg) {
-    <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
     </div>
   }
@@ -61,7 +61,7 @@
   <button
     type="submit"
     [disabled]="form.invalid || loading()"
-    class="mt-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition"
+    class="mt-2 bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-semibold py-2.5 rounded-lg transition shadow-lg shadow-primary/20"
   >
     @if (loading()) {
       Entrando…

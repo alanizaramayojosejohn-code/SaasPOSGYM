@@ -11,7 +11,8 @@ export interface MembershipPlan {
   created_at: string;
 }
 
-// Plan + nombres de los servicios incluidos (denormalizado para listar).
+// Plan + nombres + ids de los servicios incluidos (denormalizado para listar/editar).
 export interface MembershipPlanWithServices extends MembershipPlan {
   service_names: string[];
+  service_ids: string[];
 }

@@ -1,74 +1,187 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()"
-      class="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+      class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-6 shadow-sm">
   <div>
-    <h3 class="font-semibold text-slate-900">Nuevo negocio</h3>
-    <p class="text-sm text-slate-500">Crea un negocio (POS o gimnasio) y asigna su primer admin.</p>
+    <h3 class="font-semibold text-foreground">
+      @if (isEdit()) { Editar negocio } @else { Nuevo negocio }
+    </h3>
+    <p class="text-sm text-foreground-subtle">
+      @if (isEdit()) {
+        Modifica el nombre, tipo o paleta de colores. Para cambiar admin/servicios usa los CRUDs específicos.
+      } @else {
+        Crea un negocio (POS o gimnasio), asigna su primer admin y elige la apariencia que verán al entrar.
+      }
+    </p>
   </div>
 
+  <!-- ======================== Datos del negocio ======================== -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
-      <label for="businessName" class="block text-sm font-medium text-slate-700 mb-1">Nombre del negocio</label>
+      <label for="businessName" class="block text-sm font-medium text-foreground-muted mb-1">Nombre del negocio</label>
       <input id="businessName" type="text" formControlName="businessName"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
     </div>
 
     <div>
-      <label for="businessType" class="block text-sm font-medium text-slate-700 mb-1">Tipo de negocio</label>
+      <label for="businessType" class="block text-sm font-medium text-foreground-muted mb-1">Tipo de negocio</label>
       <select id="businessType" formControlName="businessType"
-              class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white">
+              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
         <option value="pos">POS — productos + ventas</option>
         <option value="gym">Gimnasio — POS + membresías + asistencia</option>
       </select>
     </div>
 
-    <div>
-      <label for="adminUserId" class="block text-sm font-medium text-slate-700 mb-1">UUID del admin (auth.users)</label>
-      <input id="adminUserId" type="text" formControlName="adminUserId"
-             placeholder="00000000-0000-0000-0000-000000000000"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-xs" />
-      <p class="text-xs text-slate-500 mt-1">Pega el id del usuario creado en Authentication → Users.</p>
-    </div>
+    @if (!isEdit()) {
+      <div>
+        <label for="adminUserId" class="block text-sm font-medium text-foreground-muted mb-1">UUID del admin (auth.users)</label>
+        <input id="adminUserId" type="text" formControlName="adminUserId"
+               placeholder="00000000-0000-0000-0000-000000000000"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-xs placeholder:text-foreground-faint" />
+        <p class="text-xs text-foreground-subtle mt-1">Pega el id del usuario creado en Authentication → Users.</p>
+      </div>
 
-    <div>
-      <label for="adminName" class="block text-sm font-medium text-slate-700 mb-1">Nombre del admin</label>
-      <input id="adminName" type="text" formControlName="adminName"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
-    </div>
+      <div>
+        <label for="adminName" class="block text-sm font-medium text-foreground-muted mb-1">Nombre del admin</label>
+        <input id="adminName" type="text" formControlName="adminName"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+      </div>
 
-    <div>
-      <label for="adminCi" class="block text-sm font-medium text-slate-700 mb-1">CI del admin</label>
-      <input id="adminCi" type="text" formControlName="adminCi"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
-    </div>
+      <div>
+        <label for="adminCi" class="block text-sm font-medium text-foreground-muted mb-1">CI del admin</label>
+        <input id="adminCi" type="text" formControlName="adminCi"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+      </div>
+    }
   </div>
 
-  @if (isGym()) {
+  @if (!isEdit() && isGym()) {
     <div>
-      <label for="services" class="block text-sm font-medium text-slate-700 mb-1">Servicios disponibles</label>
+      <label for="services" class="block text-sm font-medium text-foreground-muted mb-1">Servicios disponibles</label>
       <input id="services" type="text" formControlName="services"
              placeholder="máquinas, zumba, entrenador personal, nutricionista"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
-      <p class="text-xs text-slate-500 mt-1">Sepáralos por comas. Puedes agregar más después.</p>
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+      <p class="text-xs text-foreground-subtle mt-1">Sepáralos por comas. Puedes agregar más después.</p>
     </div>
   }
 
+  <!-- ======================== Apariencia ========================
+       Picker de paleta visual + toggle modo. Los previews usan los hex
+       reales de cada preset (no las CSS vars del tema activo) — asi se
+       ve como queda independiente de lo que el super_admin tiene puesto.
+  -->
+  <div class="space-y-4 pt-5 border-t border-border-subtle">
+    <div>
+      <h4 class="font-semibold text-foreground text-sm">Apariencia del negocio</h4>
+      <p class="text-xs text-foreground-subtle mt-0.5">
+        Es lo que verán los usuarios del negocio (admin y caja) al entrar.
+        El default <strong class="text-foreground-muted">Monocromo · Sistema</strong> imita el SO del usuario.
+      </p>
+    </div>
+
+    <!-- Grid de presets. 6 cards, 3 cols en desktop / 2 en tablet / 1 en mobile.
+         Cada card es un button (form picker semantico). El @if del check usa
+         selectedPreset() para reaccionar al cambio. -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      @for (preset of presets; track preset.key) {
+        <button type="button"
+                (click)="selectPreset(preset.key)"
+                [class.border-primary]="selectedPreset() === preset.key"
+                [class.ring-2]="selectedPreset() === preset.key"
+                [class.ring-primary/30]="selectedPreset() === preset.key"
+                [class.border-border-subtle]="selectedPreset() !== preset.key"
+                class="text-left rounded-2xl border p-3 transition hover:border-foreground-muted bg-elevated">
+          <!-- Mini preview del preset usando sus hex reales -->
+          <div class="rounded-xl p-3 mb-3 border"
+               [style.background]="preset.light.base"
+               [style.borderColor]="preset.light.borderSubtle">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-6 h-6 rounded-full shadow-sm"
+                   [style.background]="preset.light.primary"></div>
+              <div class="w-6 h-6 rounded-full shadow-sm"
+                   [style.background]="preset.light.accent"
+                   [style.border]="'1px solid ' + preset.light.borderSubtle"></div>
+              <div class="flex-1 h-1.5 rounded-full"
+                   [style.background]="preset.light.foreground"
+                   style="opacity: 0.15"></div>
+            </div>
+            <div class="space-y-1">
+              <div class="h-1.5 rounded-full w-3/4"
+                   [style.background]="preset.light.foreground"
+                   style="opacity: 0.5"></div>
+              <div class="h-1.5 rounded-full w-1/2"
+                   [style.background]="preset.light.foreground"
+                   style="opacity: 0.25"></div>
+            </div>
+          </div>
+
+          <!-- Label + selected indicator -->
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0 flex-1">
+              <p class="font-semibold text-foreground text-sm truncate">{{ preset.label }}</p>
+              <p class="text-xs text-foreground-subtle mt-0.5 leading-tight">{{ preset.description }}</p>
+            </div>
+            @if (selectedPreset() === preset.key) {
+              <div class="w-5 h-5 rounded-full bg-primary text-primary-fg flex items-center justify-center text-[10px] font-bold flex-shrink-0">
+                ✓
+              </div>
+            }
+          </div>
+        </button>
+      }
+    </div>
+
+    <!-- Toggle modo. Tres opciones; "Sistema" deja al SO decidir.
+         La clase activa pone bg-primary y la inactiva queda en bg-elevated. -->
+    <div>
+      <label class="block text-sm font-medium text-foreground-muted mb-2">Modo de visualización</label>
+      <div class="inline-flex rounded-xl border border-border-subtle bg-elevated p-1 gap-1">
+        <button type="button"
+                (click)="selectMode('system')"
+                [class.bg-primary]="selectedMode() === 'system'"
+                [class.text-primary-fg]="selectedMode() === 'system'"
+                [class.shadow-sm]="selectedMode() === 'system'"
+                [class.text-foreground-muted]="selectedMode() !== 'system'"
+                class="px-4 py-1.5 text-sm font-medium rounded-lg transition">
+          Sistema
+        </button>
+        <button type="button"
+                (click)="selectMode('light')"
+                [class.bg-primary]="selectedMode() === 'light'"
+                [class.text-primary-fg]="selectedMode() === 'light'"
+                [class.shadow-sm]="selectedMode() === 'light'"
+                [class.text-foreground-muted]="selectedMode() !== 'light'"
+                class="px-4 py-1.5 text-sm font-medium rounded-lg transition">
+          Claro
+        </button>
+        <button type="button"
+                (click)="selectMode('dark')"
+                [class.bg-primary]="selectedMode() === 'dark'"
+                [class.text-primary-fg]="selectedMode() === 'dark'"
+                [class.shadow-sm]="selectedMode() === 'dark'"
+                [class.text-foreground-muted]="selectedMode() !== 'dark'"
+                class="px-4 py-1.5 text-sm font-medium rounded-lg transition">
+          Oscuro
+        </button>
+      </div>
+    </div>
+  </div>
+
   @if (errorMessage(); as msg) {
-    <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
     </div>
   }
 
-  <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
     <button type="button" (click)="cancel.emit()"
-            class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition">
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || submitting()"
-            class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg transition">
+            class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
-        Creando…
+        @if (isEdit()) { Guardando… } @else { Creando… }
       } @else {
-        Crear negocio
+        @if (isEdit()) { Guardar cambios } @else { Crear negocio }
       }
     </button>
   </div>

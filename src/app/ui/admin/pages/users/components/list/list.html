@@ -1,38 +1,51 @@
-<div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
   @if (loading()) {
-    <div class="px-6 py-8 text-center text-sm text-slate-500">Cargando…</div>
+    <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
   } @else if (users().length === 0) {
     <div class="px-6 py-12 text-center">
-      <p class="text-slate-500">Aún no hay usuarios registrados.</p>
-      <p class="text-sm text-slate-400 mt-1">Crea el primero con el botón "Nuevo usuario".</p>
+      <p class="text-foreground-muted">Aún no hay colaboradores registrados.</p>
+      <p class="text-sm text-foreground-faint mt-1">Crea el primero con el botón "Nuevo colaborador".</p>
     </div>
   } @else {
     <table class="w-full text-sm">
-      <thead class="bg-slate-50 border-b border-slate-200">
+      <thead class="bg-muted border-b border-border-subtle">
         <tr>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Nombre</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">CI</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Rol</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Alta</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Nombre</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">CI</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Rol</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Alta</th>
+          <th class="text-right px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Acciones</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody class="divide-y divide-border-subtle">
         @for (user of users(); track user.id) {
-          <tr class="hover:bg-slate-50">
-            <td class="px-6 py-3 font-medium text-slate-900">{{ user.name }}</td>
-            <td class="px-6 py-3 font-mono text-slate-700">{{ user.ci }}</td>
+          <tr class="hover:bg-muted/50 transition">
+            <td class="px-6 py-3 font-medium text-foreground">{{ user.name }}</td>
+            <td class="px-6 py-3 font-mono text-foreground-muted">{{ user.ci }}</td>
             <td class="px-6 py-3">
-              <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full"
-                    [class.bg-emerald-100]="user.role === 'admin'"
-                    [class.text-emerald-800]="user.role === 'admin'"
-                    [class.bg-sky-100]="user.role === 'caja'"
-                    [class.text-sky-800]="user.role === 'caja'"
-                    [class.bg-slate-100]="user.role === 'super_admin'"
-                    [class.text-slate-700]="user.role === 'super_admin'">
+              <span class="text-xs font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full border"
+                    [class.bg-primary]="user.role === 'admin'"
+                    [class.text-primary-fg]="user.role === 'admin'"
+                    [class.border-primary]="user.role === 'admin'"
+                    [class.bg-muted]="user.role === 'caja'"
+                    [class.text-foreground-muted]="user.role === 'caja'"
+                    [class.border-border-subtle]="user.role === 'caja' || user.role === 'super_admin'"
+                    [class.bg-accent/10]="user.role === 'super_admin'"
+                    [class.text-foreground]="user.role === 'super_admin'">
                 {{ user.role }}
               </span>
             </td>
-            <td class="px-6 py-3 text-slate-500">{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3 text-foreground-subtle">{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3 text-right space-x-3">
+              @if (user.role !== 'super_admin') {
+                <button type="button" (click)="edit.emit(user)"
+                        class="text-foreground-muted hover:text-foreground hover:underline text-sm font-medium transition">Editar</button>
+                <button type="button" (click)="remove.emit(user)"
+                        class="text-danger hover:underline text-sm font-medium transition">Borrar</button>
+              } @else {
+                <span class="text-foreground-faint text-sm">—</span>
+              }
+            </td>
           </tr>
         }
       </tbody>

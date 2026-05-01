@@ -7,4 +7,5 @@ export interface ClientMembership {
   end_date: string;
   sessions_left: number | null;
   created_at: string;
+  cancelled_at: string | null;
 }

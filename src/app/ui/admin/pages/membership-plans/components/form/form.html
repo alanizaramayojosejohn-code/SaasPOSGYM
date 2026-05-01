@@ -1,66 +1,68 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()"
-      class="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+      class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-5 shadow-sm">
   <div>
-    <h3 class="font-semibold text-slate-900">Nuevo plan</h3>
-    <p class="text-sm text-slate-500">Define duración, precio y los servicios incluidos.</p>
+    <h3 class="font-semibold text-foreground">
+      @if (isEdit()) { Editar plan } @else { Nuevo plan }
+    </h3>
+    <p class="text-sm text-foreground-subtle">Define duración, precio y los servicios incluidos.</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="md:col-span-2">
-      <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nombre</label>
+      <label for="name" class="block text-sm font-medium text-foreground-muted mb-1">Nombre</label>
       <input id="name" type="text" formControlName="name"
              placeholder="Mensual, Trimestral, 12 sesiones…"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
     </div>
 
     <div>
-      <label for="type" class="block text-sm font-medium text-slate-700 mb-1">Tipo</label>
+      <label for="type" class="block text-sm font-medium text-foreground-muted mb-1">Tipo</label>
       <select id="type" formControlName="type"
-              class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white">
+              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
         <option value="normal">Normal</option>
         <option value="promo">Promoción</option>
       </select>
     </div>
 
     <div>
-      <label for="price" class="block text-sm font-medium text-slate-700 mb-1">Precio</label>
+      <label for="price" class="block text-sm font-medium text-foreground-muted mb-1">Precio</label>
       <input id="price" type="number" min="0" step="0.01" formControlName="price"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
     </div>
 
     <div>
-      <label for="duration_days" class="block text-sm font-medium text-slate-700 mb-1">Duración (días)</label>
+      <label for="duration_days" class="block text-sm font-medium text-foreground-muted mb-1">Duración (días)</label>
       <input id="duration_days" type="number" min="1" step="1" formControlName="duration_days"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
     </div>
 
     <div>
-      <label for="sessions_number" class="block text-sm font-medium text-slate-700 mb-1">
-        Sesiones <span class="text-slate-400">(opcional)</span>
+      <label for="sessions_number" class="block text-sm font-medium text-foreground-muted mb-1">
+        Sesiones <span class="text-foreground-faint">(opcional)</span>
       </label>
       <input id="sessions_number" type="number" min="1" step="1" formControlName="sessions_number"
              placeholder="Vacío = ilimitadas"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm" />
-      <p class="text-xs text-slate-500 mt-1">Déjalo vacío si el plan no se descuenta por sesión.</p>
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
+      <p class="text-xs text-foreground-subtle mt-1">Déjalo vacío si el plan no se descuenta por sesión.</p>
     </div>
   </div>
 
   <div>
-    <label class="block text-sm font-medium text-slate-700 mb-2">Servicios incluidos</label>
+    <label class="block text-sm font-medium text-foreground-muted mb-2">Servicios incluidos</label>
     @if (services().length === 0) {
-      <p class="text-sm text-slate-500 italic">Este negocio aún no tiene servicios cargados. Pídele al super_admin que los configure.</p>
+      <p class="text-sm text-foreground-subtle italic">Este negocio aún no tiene servicios cargados. Pídele al super_admin que los configure.</p>
     } @else {
       <div class="flex flex-wrap gap-2">
         @for (service of services(); track service.id) {
           <button type="button"
                   (click)="toggleService(service.id)"
-                  [class.bg-emerald-600]="isSelected(service.id)"
-                  [class.text-white]="isSelected(service.id)"
-                  [class.border-emerald-600]="isSelected(service.id)"
-                  [class.bg-white]="!isSelected(service.id)"
-                  [class.text-slate-700]="!isSelected(service.id)"
-                  [class.border-slate-300]="!isSelected(service.id)"
-                  class="px-3 py-1.5 text-sm border rounded-full transition hover:border-emerald-500">
+                  [class.bg-primary]="isSelected(service.id)"
+                  [class.text-primary-fg]="isSelected(service.id)"
+                  [class.border-primary]="isSelected(service.id)"
+                  [class.bg-input]="!isSelected(service.id)"
+                  [class.text-foreground-muted]="!isSelected(service.id)"
+                  [class.border-border-subtle]="!isSelected(service.id)"
+                  class="px-3 py-1.5 text-sm border rounded-full transition hover:border-primary">
             {{ service.name }}
           </button>
         }
@@ -69,22 +71,22 @@
   </div>
 
   @if (errorMessage(); as msg) {
-    <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
     </div>
   }
 
-  <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
     <button type="button" (click)="cancel.emit()"
-            class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition">
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || submitting()"
-            class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg transition">
+            class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
-        Creando…
+        @if (isEdit()) { Guardando… } @else { Creando… }
       } @else {
-        Crear plan
+        @if (isEdit()) { Guardar cambios } @else { Crear plan }
       }
     </button>
   </div>

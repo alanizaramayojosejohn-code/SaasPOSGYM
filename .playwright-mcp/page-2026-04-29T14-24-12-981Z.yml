@@ -1,0 +1,77 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - heading "SaasGym" [level=1] [ref=e9]
+          - generic [ref=e10]: Admin
+        - navigation [ref=e11]:
+          - link "Inicio" [ref=e12] [cursor=pointer]:
+            - /url: /admin/home
+          - link "Clientes" [ref=e13] [cursor=pointer]:
+            - /url: /admin/clients
+          - link "Productos" [ref=e14] [cursor=pointer]:
+            - /url: /admin/products
+          - link "Planes" [ref=e15] [cursor=pointer]:
+            - /url: /admin/membership-plans
+          - link "Usuarios" [ref=e16] [cursor=pointer]:
+            - /url: /admin/users
+          - link "Ventas" [ref=e17] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e18] [cursor=pointer]:
+            - /url: /caja/attendance
+          - link "Reports" [ref=e19] [cursor=pointer]:
+            - /url: /admin/reports
+      - generic [ref=e20]:
+        - generic [ref=e21]: Admin Gym ·admin
+        - button "Salir" [ref=e22]
+  - main [ref=e23]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - heading "Usuarios del negocio" [level=2] [ref=e28]
+          - paragraph [ref=e29]: Cajas y administradores con acceso al panel.
+        - button "Cerrar formulario" [ref=e50]
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - heading "Nuevo usuario" [level=3] [ref=e54]
+          - paragraph [ref=e55]: Define el email y la password con la que el usuario va a entrar al sistema. Compártelas con él por un canal seguro.
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Email
+            - textbox "Email" [ref=e59]:
+              - /placeholder: usuario@ejemplo.com
+          - generic [ref=e60]:
+            - generic [ref=e61]: Password (mínimo 6)
+            - textbox "Password (mínimo 6)" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64]: Nombre completo
+            - textbox "Nombre completo" [ref=e65]
+          - generic [ref=e66]:
+            - generic [ref=e67]: CI
+            - textbox "CI" [ref=e68]
+          - generic [ref=e69]:
+            - generic [ref=e70]: Rol
+            - combobox "Rol" [ref=e71]:
+              - option "Caja — opera ventas y asistencia" [selected]
+              - option "Admin — gestiona todo el negocio"
+        - generic [ref=e72]:
+          - button "Cancelar" [ref=e73]
+          - button "Crear usuario" [disabled] [ref=e74]
+      - table [ref=e33]:
+        - rowgroup [ref=e34]:
+          - row "Nombre CI Rol Alta Acciones" [ref=e35]:
+            - columnheader "Nombre" [ref=e36]
+            - columnheader "CI" [ref=e37]
+            - columnheader "Rol" [ref=e38]
+            - columnheader "Alta" [ref=e39]
+            - columnheader "Acciones" [ref=e40]
+        - rowgroup [ref=e41]:
+          - row "Admin Gym 11111111 admin 28/04/2026 Editar Borrar" [ref=e42]:
+            - cell "Admin Gym" [ref=e43]
+            - cell "11111111" [ref=e44]
+            - cell "admin" [ref=e45]
+            - cell "28/04/2026" [ref=e46]
+            - cell "Editar Borrar" [ref=e47]:
+              - button "Editar" [ref=e48]
+              - button "Borrar" [ref=e49]

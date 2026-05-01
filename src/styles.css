@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+/* =====================================================================
+   Tema dinamico por negocio.
+
+   Arquitectura:
+   - Las variables --c-* viven aca con valores por defecto (monochrome light).
+   - El ThemeService las sobrescribe en runtime via element.style.setProperty()
+     segun el tema del negocio actual (data-preset / data-mode en <html>).
+   - El bloque @theme las re-expone como tokens semanticos de Tailwind v4,
+     asi clases como bg-base, text-foreground, border-border-subtle funcionan
+     y reaccionan al cambio de tema sin reload.
+
+   Para agregar un nuevo token:
+   1. Agregar a ThemeTokens en theme.presets.ts
+   2. Sumarlo a writeTokensToRoot() en theme.service.ts
+   3. Declarar default aca y reexportar en @theme
+   ===================================================================== */
+
+:root {
+  /* Defaults: monochrome light. Coinciden con THEME_PRESETS.monochrome.light
+     en theme.presets.ts. Si los tocas aca, sincronizalos alla. */
+  --c-base: #FAFAFA;
+  --c-surface: rgba(255, 255, 255, 0.8);
+  --c-elevated: rgba(255, 255, 255, 0.92);
+  --c-input: rgba(10, 10, 10, 0.04);
+  --c-muted: rgba(10, 10, 10, 0.06);
+
+  --c-foreground: #0A0A0A;
+  --c-foreground-muted: rgba(10, 10, 10, 0.7);
+  --c-foreground-subtle: rgba(10, 10, 10, 0.5);
+  --c-foreground-faint: rgba(10, 10, 10, 0.4);
+
+  --c-border: rgba(0, 0, 0, 0.12);
+  --c-border-subtle: rgba(0, 0, 0, 0.08);
+
+  --c-primary: #0A0A0A;
+  --c-primary-fg: #FFFFFF;
+  --c-accent: #FFFFFF;
+  --c-accent-fg: #0A0A0A;
+
+  --c-success: #059669;
+  --c-danger: #DC2626;
+  --c-warning: #D97706;
+
+  /* Sombra glass — independiente del tema, ajusta blur por mode si hace falta. */
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* =====================================================================
+   Tokens semanticos en Tailwind v4.
+
+   Genera utilities: bg-base, bg-surface, bg-primary, text-foreground,
+   text-foreground-muted, border-border, border-border-subtle, etc.
+   ===================================================================== */
+@theme {
+  --color-base: var(--c-base);
+  --color-surface: var(--c-surface);
+  --color-elevated: var(--c-elevated);
+  --color-input: var(--c-input);
+  --color-muted: var(--c-muted);
+
+  --color-foreground: var(--c-foreground);
+  --color-foreground-muted: var(--c-foreground-muted);
+  --color-foreground-subtle: var(--c-foreground-subtle);
+  --color-foreground-faint: var(--c-foreground-faint);
+
+  --color-border: var(--c-border);
+  --color-border-subtle: var(--c-border-subtle);
+
+  --color-primary: var(--c-primary);
+  --color-primary-fg: var(--c-primary-fg);
+  --color-accent: var(--c-accent);
+  --color-accent-fg: var(--c-accent-fg);
+
+  --color-success: var(--c-success);
+  --color-danger: var(--c-danger);
+  --color-warning: var(--c-warning);
+}
+
+/* =====================================================================
+   Page background. Aplicar el color base al body para que el tema
+   cubra toda la viewport (no solo donde haya cards).
+   ===================================================================== */
+html, body {
+  background: var(--c-base);
+  color: var(--c-foreground);
+  min-height: 100vh;
+}

@@ -1,10 +1,29 @@
-<div class="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-  <div class="w-full max-w-md">
+<!--
+  Wrapper de pantallas publicas (login). El bg-base ya viene del body
+  via styles.css; aca solo posicionamos el card centrado con el efecto
+  glass del pencil.
+-->
+<div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+  <!-- Orbes decorativos para que el backdrop-blur del card tenga algo que difuminar.
+       En el preset monochrome son apenas perceptibles; en presets coloridos
+       (ocean/forest/etc.) le dan un toque ambient sin saturar. -->
+  <div aria-hidden="true"
+       class="absolute -top-40 -left-40 w-[40rem] h-[40rem] rounded-full bg-primary/10 blur-3xl"></div>
+  <div aria-hidden="true"
+       class="absolute -bottom-40 -right-40 w-[44rem] h-[44rem] rounded-full bg-accent/10 blur-3xl"></div>
+
+  <div class="w-full max-w-md relative">
     <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold text-slate-900">SaasGym</h1>
-      <p class="text-sm text-slate-500 mt-1">Gestión de negocios</p>
+      <div class="inline-flex items-center gap-2.5 mb-3">
+        <div class="w-10 h-10 rounded-xl bg-primary text-primary-fg flex items-center justify-center font-bold">
+          S
+        </div>
+        <h1 class="text-2xl font-bold text-foreground tracking-tight">SaasGym</h1>
+      </div>
+      <p class="text-sm text-foreground-subtle">Gestión de negocios POS y GYM</p>
     </div>
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+
+    <div class="bg-surface backdrop-blur-xl rounded-2xl border border-border-subtle shadow-2xl shadow-black/10 p-8">
       <router-outlet />
     </div>
   </div>

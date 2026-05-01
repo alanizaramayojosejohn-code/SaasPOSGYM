@@ -1,0 +1,23 @@
+[    2015ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[   21800ms] [ERROR] Access to fetch at 'https://jwoqcvynwkfdnomwzrhf.supabase.co/functions/v1/create-business-user' from origin 'http://localhost:4200' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ http://localhost:4200/admin/users:0
+[   21801ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/functions/v1/create-business-user:0
+[ 1412104ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 6121677ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/auth/v1/token?grant_type=refresh_token:0
+[ 6121677ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12532:23
+    at _handleRequest2 (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12822:20)
+    at _request (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12812:22)
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18436:22
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12598:32
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12610:7
+    at new Promise (<anonymous>)
+    at retryable (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12593:19)
+    at SupabaseAuthClient._refreshAccessToken (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18431:20)
+    at SupabaseAuthClient._callRefreshToken (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18559:42) @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12823
+[32307874ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12532:23
+    at _handleRequest2 (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12822:20)
+    at _request (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12812:22)
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18436:22
+    at async http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12598:26 @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12823
+[32311337ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069

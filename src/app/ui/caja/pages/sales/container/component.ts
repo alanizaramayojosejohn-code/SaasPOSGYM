@@ -9,6 +9,7 @@ import { MembershipPlanQueryService } from '../../../../../services/membership-p
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { RegisterSaleMembershipInput, RegisterSaleProductInput, SaleService } from '../../../../../services/sale/sale.service';
 import { SaleQueryService } from '../../../../../services/sale/query.service';
+import { errorMessage } from '../../../../../utilities/error-message';
 import { SalesMembershipFormComponent } from '../components/membership-form/membership-form';
 import { SalesProductFormComponent } from '../components/product-form/product-form';
 import { SalesListComponent } from '../components/list/list';
@@ -81,7 +82,7 @@ export class CajaSalesContainerComponent {
       this.activeForm.set(null);
       await this.refresh();
     } catch (err: unknown) {
-      this.formError.set(err instanceof Error ? err.message : 'Error al registrar venta');
+      this.formError.set(errorMessage(err, 'Error al registrar venta'));
     } finally {
       this.submitting.set(false);
     }
@@ -95,9 +96,25 @@ export class CajaSalesContainerComponent {
       this.activeForm.set(null);
       await this.refresh();
     } catch (err: unknown) {
-      this.formError.set(err instanceof Error ? err.message : 'Error al registrar membresía');
+      this.formError.set(errorMessage(err, 'Error al registrar membresía'));
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  async handleCancel(sale: SaleWithDetails): Promise<void> {
+    const detail = sale.type === 'product'
+      ? `Se devolverá ${sale.quantity} al stock de "${sale.product_name ?? '—'}".`
+      : `La membresía "${sale.plan_name ?? '—'}" del socio quedará desactivada.`;
+    const ok = window.confirm(
+      `¿Cancelar esta venta?\n\n${detail}\n\nNo se puede deshacer.`,
+    );
+    if (!ok) return;
+    try {
+      await this.saleService.cancelSale(sale.id);
+      await this.refresh();
+    } catch (err: unknown) {
+      window.alert(errorMessage(err, 'Error al cancelar venta'));
     }
   }
 }

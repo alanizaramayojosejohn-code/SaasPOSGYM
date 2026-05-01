@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { MembershipPlanWithServices } from '../../../../../../models/membership-plan.model';
 
@@ -12,4 +12,6 @@ import { MembershipPlanWithServices } from '../../../../../../models/membership-
 export class MembershipPlansListComponent {
   readonly plans = input.required<MembershipPlanWithServices[]>();
   readonly loading = input<boolean>(false);
+  readonly edit = output<MembershipPlanWithServices>();
+  readonly remove = output<MembershipPlanWithServices>();
 }

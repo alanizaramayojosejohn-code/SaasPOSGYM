@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Profile } from '../../../../../models/profile.model';
-import { CreateUserForBusinessInput, ProfileService } from '../../../../../services/profile/profile.service';
+import { ProfileService } from '../../../../../services/profile/profile.service';
 import { ProfileQueryService } from '../../../../../services/profile/query.service';
-import { UsersFormComponent } from '../components/form/form';
+import { errorMessage } from '../../../../../utilities/error-message';
+import { UserFormValue, UsersFormComponent } from '../components/form/form';
 import { UsersListComponent } from '../components/list/list';
 
 @Component({
@@ -17,7 +18,14 @@ export class AdminUsersContainerComponent {
 
   readonly users = signal<Profile[]>([]);
   readonly loading = signal(false);
-  readonly showForm = signal(false);
+
+  readonly formState = signal<null | 'create' | Profile>(null);
+  readonly editing = computed<Profile | null>(() => {
+    const s = this.formState();
+    return s && s !== 'create' ? s : null;
+  });
+  readonly showForm = computed(() => this.formState() !== null);
+
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
 
@@ -36,22 +44,66 @@ export class AdminUsersContainerComponent {
     }
   }
 
-  toggleForm(): void {
-    this.showForm.update((v) => !v);
+  openCreate(): void {
+    this.formState.set('create');
     this.formError.set(null);
   }
 
-  async handleSubmit(input: CreateUserForBusinessInput): Promise<void> {
+  openEdit(user: Profile): void {
+    this.formState.set(user);
+    this.formError.set(null);
+  }
+
+  closeForm(): void {
+    this.formState.set(null);
+    this.formError.set(null);
+  }
+
+  async handleSubmit(input: UserFormValue): Promise<void> {
     this.submitting.set(true);
     this.formError.set(null);
+    const editing = this.editing();
     try {
-      await this.profileService.createUserForBusiness(input);
-      this.showForm.set(false);
+      if (editing) {
+        await this.profileService.updateProfile(editing.id, {
+          name: input.name,
+          ci: input.ci,
+          role: input.role,
+        });
+      } else {
+        await this.profileService.createUserForBusiness({
+          email: input.email,
+          password: input.password,
+          name: input.name,
+          ci: input.ci,
+          role: input.role,
+        });
+      }
+      this.formState.set(null);
       await this.refresh();
     } catch (err: unknown) {
-      this.formError.set(err instanceof Error ? err.message : 'Error al crear usuario');
+      this.formError.set(
+        errorMessage(err, editing ? 'Error al guardar usuario' : 'Error al crear usuario'),
+      );
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  async handleDelete(user: Profile): Promise<void> {
+    const ok = window.confirm(
+      `¿Borrar al usuario "${user.name}" (${user.role})?\n\n` +
+      `Esto solo elimina el profile en SaasGym; la cuenta de auth.user en Supabase ` +
+      `queda existente pero ya no podrá entrar (invite-only). ` +
+      `Para eliminarla por completo hay que borrarla en Supabase Dashboard → Authentication → Users.`,
+    );
+    if (!ok) return;
+    try {
+      await this.profileService.deleteProfile(user.id);
+      if (this.editing()?.id === user.id) this.formState.set(null);
+      await this.refresh();
+    } catch (err: unknown) {
+      window.alert(errorMessage(err, 'Error al borrar usuario'));
     }
   }
 }

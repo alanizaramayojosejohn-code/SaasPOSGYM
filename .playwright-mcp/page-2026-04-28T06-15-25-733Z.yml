@@ -1,0 +1,56 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - heading "SaasGym" [level=1] [ref=e9]
+          - generic [ref=e10]: Admin
+        - navigation [ref=e11]:
+          - link "Inicio" [ref=e12] [cursor=pointer]:
+            - /url: /admin/home
+          - link "Clientes" [ref=e13] [cursor=pointer]:
+            - /url: /admin/clients
+          - link "Productos" [ref=e14] [cursor=pointer]:
+            - /url: /admin/products
+          - link "Planes" [ref=e15] [cursor=pointer]:
+            - /url: /admin/membership-plans
+          - link "Usuarios" [ref=e16] [cursor=pointer]:
+            - /url: /admin/users
+          - link "Ventas" [ref=e17] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e18] [cursor=pointer]:
+            - /url: /caja/attendance
+          - link "Reports" [ref=e19] [cursor=pointer]:
+            - /url: /admin/reports
+      - generic [ref=e20]:
+        - generic [ref=e21]: Admin Gym ·admin
+        - button "Salir" [ref=e22]
+  - main [ref=e23]:
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - heading "Planes de membresía" [level=2] [ref=e33]
+          - paragraph [ref=e34]: Catálogo de planes que puedes asignar a los socios.
+        - button "Nuevo plan" [ref=e72]
+      - table [ref=e73]:
+        - rowgroup [ref=e74]:
+          - row "Nombre Tipo Precio Días Sesiones Servicios Alta" [ref=e75]:
+            - columnheader "Nombre" [ref=e76]
+            - columnheader "Tipo" [ref=e77]
+            - columnheader "Precio" [ref=e78]
+            - columnheader "Días" [ref=e79]
+            - columnheader "Sesiones" [ref=e80]
+            - columnheader "Servicios" [ref=e81]
+            - columnheader "Alta" [ref=e82]
+        - rowgroup [ref=e83]:
+          - row "12 sesiones Normal Bs200.00 30 12 máquinas zumba 28/04/2026" [ref=e84]:
+            - cell "12 sesiones" [ref=e85]
+            - cell "Normal" [ref=e86]
+            - cell "Bs200.00" [ref=e87]
+            - cell "30" [ref=e88]
+            - cell "12" [ref=e89]
+            - cell "máquinas zumba" [ref=e90]:
+              - generic [ref=e91]:
+                - generic [ref=e92]: máquinas
+                - generic [ref=e93]: zumba
+            - cell "28/04/2026" [ref=e94]

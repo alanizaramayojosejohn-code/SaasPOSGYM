@@ -41,4 +41,11 @@ export class SaleService {
     if (error) throw error;
     return data as string;
   }
+
+  // RPC cancel_sale: marca la venta como cancelada y aplica el efecto
+  // colateral según type (revierte stock o desactiva la membresía asociada).
+  async cancelSale(saleId: string): Promise<void> {
+    const { error } = await this.client.rpc('cancel_sale', { p_sale_id: saleId });
+    if (error) throw error;
+  }
 }

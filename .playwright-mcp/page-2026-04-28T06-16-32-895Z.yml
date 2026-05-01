@@ -1,0 +1,51 @@
+- generic [ref=e141]:
+  - banner [ref=e142]:
+    - generic [ref=e143]:
+      - generic [ref=e144]:
+        - generic [ref=e145]:
+          - heading "SaasGym" [level=1] [ref=e146]
+          - generic [ref=e147]: Caja
+        - navigation [ref=e148]:
+          - link "Inicio" [ref=e149] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e150] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e151] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e152]:
+        - generic [ref=e153]: Admin Gym ·admin
+        - button "Salir" [ref=e154]
+  - main [ref=e155]:
+    - generic [ref=e157]:
+      - generic [ref=e158]:
+        - generic [ref=e159]:
+          - heading "Ventas" [level=2] [ref=e160]
+          - paragraph [ref=e161]: Registra ventas de productos y asigna membresías a socios.
+        - generic [ref=e162]:
+          - button "Vender producto" [ref=e163]
+          - button "Vender membresía" [active] [ref=e164]
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - heading "Vender membresía" [level=3] [ref=e173]
+          - paragraph [ref=e174]: Asigna un plan a un socio existente. La fecha de fin se calcula automáticamente.
+        - generic [ref=e175]:
+          - generic [ref=e176]:
+            - generic [ref=e177]: Cliente
+            - combobox "Cliente" [ref=e178]:
+              - option "Selecciona un socio…" [disabled]
+              - option "12345678 · Pedro Test" [selected]
+          - generic [ref=e179]:
+            - generic [ref=e180]: Plan
+            - combobox "Plan" [ref=e181]:
+              - option "Selecciona un plan…" [disabled]
+              - option "12 sesiones — 200 · 30d · 12 ses." [selected]
+          - generic [ref=e182]:
+            - generic [ref=e183]: Inicio
+            - textbox "Inicio" [ref=e184]: 2026-04-28
+            - paragraph [ref=e185]: Por defecto, hoy.
+        - generic [ref=e186]:
+          - button "Cancelar" [ref=e187]
+          - button "Asignar membresía" [ref=e188]
+      - generic [ref=e167]:
+        - paragraph [ref=e168]: Aún no hay ventas registradas.
+        - paragraph [ref=e169]: Registra la primera con los botones de arriba.

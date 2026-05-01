@@ -1,0 +1,57 @@
+- generic [ref=e53]:
+  - banner [ref=e54]:
+    - generic [ref=e55]:
+      - generic [ref=e56]:
+        - generic [ref=e57]:
+          - heading "SaasGym" [level=1] [ref=e58]
+          - generic [ref=e59]: Caja
+        - navigation [ref=e60]:
+          - link "Inicio" [ref=e61] [cursor=pointer]:
+            - /url: /caja/home
+          - link "Ventas" [ref=e62] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e63] [cursor=pointer]:
+            - /url: /caja/attendance
+      - generic [ref=e64]:
+        - generic [ref=e65]: Admin Gym ·admin
+        - button "Salir" [ref=e66]
+  - main [ref=e67]:
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - heading "Ventas" [level=2] [ref=e72]
+          - paragraph [ref=e73]: Registra ventas de productos y asigna membresías a socios.
+        - generic [ref=e74]:
+          - button "Vender producto" [ref=e75]
+          - button "Vender membresía" [ref=e76]
+      - table [ref=e122]:
+        - rowgroup [ref=e123]:
+          - row "Tipo Detalle Cliente Cant. Monto Fecha" [ref=e124]:
+            - columnheader "Tipo" [ref=e125]
+            - columnheader "Detalle" [ref=e126]
+            - columnheader "Cliente" [ref=e127]
+            - columnheader "Cant." [ref=e128]
+            - columnheader "Monto" [ref=e129]
+            - columnheader "Fecha" [ref=e130]
+        - rowgroup [ref=e131]:
+          - row "Producto Proteína Whey — 3 Bs450.00 28/04/2026 02:26" [ref=e132]:
+            - cell "Producto" [ref=e133]
+            - cell "Proteína Whey" [ref=e134]
+            - cell "—" [ref=e135]
+            - cell "3" [ref=e136]
+            - cell "Bs450.00" [ref=e137]
+            - cell "28/04/2026 02:26" [ref=e138]
+          - row "Producto Proteína Whey 12345678 · Pedro Test 3 Bs450.00 28/04/2026 02:25" [ref=e139]:
+            - cell "Producto" [ref=e140]
+            - cell "Proteína Whey" [ref=e141]
+            - cell "12345678 · Pedro Test" [ref=e142]
+            - cell "3" [ref=e143]
+            - cell "Bs450.00" [ref=e144]
+            - cell "28/04/2026 02:25" [ref=e145]
+          - row "Membresía 12 sesiones 12345678 · Pedro Test 1 Bs200.00 28/04/2026 02:16" [ref=e146]:
+            - cell "Membresía" [ref=e147]
+            - cell "12 sesiones" [ref=e148]
+            - cell "12345678 · Pedro Test" [ref=e149]
+            - cell "1" [ref=e150]
+            - cell "Bs200.00" [ref=e151]
+            - cell "28/04/2026 02:16" [ref=e152]

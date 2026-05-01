@@ -1,0 +1,21 @@
+[     337ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[ 4176538ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 4530327ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[ 6138434ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 6185904ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[ 7674299ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 7680951ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[22047547ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[22051523ms] [ERROR] TypeError: Failed to fetch
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12532:23
+    at _handleRequest2 (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12822:20)
+    at _request (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12812:22)
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18436:22
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12598:32
+    at http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12610:7
+    at new Promise (<anonymous>)
+    at retryable (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12593:19)
+    at SupabaseAuthClient._refreshAccessToken (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18431:20)
+    at SupabaseAuthClient._callRefreshToken (http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:18559:42) @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=1775b614:12823
+[22070278ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069
+[29048940ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-FRA7QK43.js?v=1775b614:17069

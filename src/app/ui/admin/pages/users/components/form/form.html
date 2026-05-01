@@ -1,38 +1,51 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()"
-      class="bg-white border border-slate-200 rounded-xl p-6 space-y-5">
+      class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-5 shadow-sm">
   <div>
-    <h3 class="font-semibold text-slate-900">Nuevo usuario</h3>
-    <p class="text-sm text-slate-500">
-      El usuario debe estar primero creado en Supabase → Authentication → Users.
-      Luego pega aquí su UUID para asignarle el rol en tu negocio.
+    <h3 class="font-semibold text-foreground">
+      @if (isEdit()) { Editar colaborador } @else { Nuevo colaborador }
+    </h3>
+    <p class="text-sm text-foreground-subtle">
+      @if (isEdit()) {
+        Modifica nombre, CI o rol. El email y la password no se pueden cambiar desde aquí.
+      } @else {
+        Define el email y la password con la que el usuario va a entrar al sistema.
+        Compártelas con él por un canal seguro.
+      }
     </p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="md:col-span-2">
-      <label for="user_id" class="block text-sm font-medium text-slate-700 mb-1">UUID del usuario (auth.users)</label>
-      <input id="user_id" type="text" formControlName="user_id"
-             placeholder="00000000-0000-0000-0000-000000000000"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-xs" />
-      <p class="text-xs text-slate-500 mt-1">Lo encuentras en el dashboard de Supabase, en Authentication → Users.</p>
-    </div>
+    @if (!isEdit()) {
+      <div>
+        <label for="email" class="block text-sm font-medium text-foreground-muted mb-1">Email</label>
+        <input id="email" type="email" formControlName="email" autocomplete="off"
+               placeholder="usuario@ejemplo.com"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-foreground-muted mb-1">Password (mínimo 6)</label>
+        <input id="password" type="password" formControlName="password" autocomplete="new-password"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
+      </div>
+    }
 
     <div>
-      <label for="name" class="block text-sm font-medium text-slate-700 mb-1">Nombre completo</label>
+      <label for="name" class="block text-sm font-medium text-foreground-muted mb-1">Nombre completo</label>
       <input id="name" type="text" formControlName="name"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
     </div>
 
     <div>
-      <label for="ci" class="block text-sm font-medium text-slate-700 mb-1">CI</label>
+      <label for="ci" class="block text-sm font-medium text-foreground-muted mb-1">CI</label>
       <input id="ci" type="text" formControlName="ci"
-             class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent font-mono text-sm" />
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
     </div>
 
     <div class="md:col-span-2">
-      <label for="role" class="block text-sm font-medium text-slate-700 mb-1">Rol</label>
+      <label for="role" class="block text-sm font-medium text-foreground-muted mb-1">Rol</label>
       <select id="role" formControlName="role"
-              class="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white">
+              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
         <option value="caja">Caja — opera ventas y asistencia</option>
         <option value="admin">Admin — gestiona todo el negocio</option>
       </select>
@@ -40,22 +53,22 @@
   </div>
 
   @if (errorMessage(); as msg) {
-    <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
     </div>
   }
 
-  <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
     <button type="button" (click)="cancel.emit()"
-            class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition">
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || submitting()"
-            class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg transition">
+            class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
-        Creando…
+        @if (isEdit()) { Guardando… } @else { Creando… }
       } @else {
-        Crear usuario
+        @if (isEdit()) { Guardar cambios } @else { Crear colaborador }
       }
     </button>
   </div>

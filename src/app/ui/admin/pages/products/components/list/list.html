@@ -1,39 +1,46 @@
-<div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
   @if (loading()) {
-    <div class="px-6 py-8 text-center text-sm text-slate-500">Cargando…</div>
+    <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
   } @else if (products().length === 0) {
     <div class="px-6 py-12 text-center">
-      <p class="text-slate-500">Aún no hay productos registrados.</p>
-      <p class="text-sm text-slate-400 mt-1">Crea el primero con el botón "Nuevo producto".</p>
+      <p class="text-foreground-muted">Aún no hay productos registrados.</p>
+      <p class="text-sm text-foreground-faint mt-1">Crea el primero con el botón "Nuevo producto".</p>
     </div>
   } @else {
     <table class="w-full text-sm">
-      <thead class="bg-slate-50 border-b border-slate-200">
+      <thead class="bg-muted border-b border-border-subtle">
         <tr>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Nombre</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Categoría</th>
-          <th class="text-right px-6 py-3 font-medium text-slate-700">Precio</th>
-          <th class="text-right px-6 py-3 font-medium text-slate-700">Costo</th>
-          <th class="text-right px-6 py-3 font-medium text-slate-700">Stock</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Proveedor</th>
-          <th class="text-left px-6 py-3 font-medium text-slate-700">Alta</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Nombre</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Categoría</th>
+          <th class="text-right px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Precio</th>
+          <th class="text-right px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Costo</th>
+          <th class="text-right px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Stock</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Proveedor</th>
+          <th class="text-left px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Alta</th>
+          <th class="text-right px-6 py-3 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Acciones</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody class="divide-y divide-border-subtle">
         @for (product of products(); track product.id) {
-          <tr class="hover:bg-slate-50">
-            <td class="px-6 py-3 font-medium text-slate-900">{{ product.name }}</td>
-            <td class="px-6 py-3 text-slate-600">{{ product.category ?? '—' }}</td>
-            <td class="px-6 py-3 text-right font-mono text-slate-700">{{ product.price | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
-            <td class="px-6 py-3 text-right font-mono text-slate-500">{{ product.cost | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+          <tr class="hover:bg-muted/50 transition">
+            <td class="px-6 py-3 font-medium text-foreground">{{ product.name }}</td>
+            <td class="px-6 py-3 text-foreground-muted">{{ product.category ?? '—' }}</td>
+            <td class="px-6 py-3 text-right font-mono text-foreground-muted">{{ product.price | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+            <td class="px-6 py-3 text-right font-mono text-foreground-subtle">{{ product.cost | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
             <td class="px-6 py-3 text-right font-mono"
-                [class.text-red-600]="product.stock === 0"
-                [class.text-amber-600]="product.stock > 0 && product.stock < 5"
-                [class.text-slate-700]="product.stock >= 5">
+                [class.text-danger]="product.stock === 0"
+                [class.text-warning]="product.stock > 0 && product.stock < 5"
+                [class.text-foreground-muted]="product.stock >= 5">
               {{ product.stock }}
             </td>
-            <td class="px-6 py-3 text-slate-600">{{ product.provider ?? '—' }}</td>
-            <td class="px-6 py-3 text-slate-500">{{ product.created_at | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3 text-foreground-muted">{{ product.provider ?? '—' }}</td>
+            <td class="px-6 py-3 text-foreground-subtle">{{ product.created_at | date: 'dd/MM/yyyy' }}</td>
+            <td class="px-6 py-3 text-right space-x-3">
+              <button type="button" (click)="edit.emit(product)"
+                      class="text-foreground-muted hover:text-foreground hover:underline text-sm font-medium transition">Editar</button>
+              <button type="button" (click)="remove.emit(product)"
+                      class="text-danger hover:underline text-sm font-medium transition">Eliminar</button>
+            </td>
           </tr>
         }
       </tbody>

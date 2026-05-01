@@ -11,6 +11,8 @@ export interface Sale {
   client_membership_id: string | null;
   created_by: string | null;
   created_at: string;
+  cancelled_at: string | null;
+  cancelled_by: string | null;
 }
 
 // Sale + nombres denormalizados para listar sin joins manuales en el HTML.

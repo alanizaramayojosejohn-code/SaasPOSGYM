@@ -366,14 +366,11 @@ allow_dynamic_registration = false
 
 [edge_runtime]
 enabled = true
-# Supported request policies: `oneshot`, `per_worker`.
-# `per_worker` (default) — enables hot reload during local development.
-# `oneshot` — fallback mode if hot reload causes issues (e.g. in large repos or with symlinks).
-policy = "per_worker"
-# Port to attach the Chrome inspector for debugging edge functions.
-inspector_port = 8083
-# The Deno major version to use.
-deno_version = 2
+
+# create-business-user valida el JWT manualmente en el código (porque también
+# necesita el preflight OPTIONS sin Authorization). No usar verify_jwt del gateway.
+[functions.create-business-user]
+verify_jwt = false
 
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"

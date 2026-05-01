@@ -1,29 +1,30 @@
-<div class="min-h-screen bg-slate-50 flex flex-col">
-  <header class="bg-white border-b border-slate-200">
+<div class="min-h-screen flex flex-col">
+  <header class="bg-surface backdrop-blur-xl border-b border-border-subtle sticky top-0 z-30">
     <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
       <div class="flex items-baseline gap-6">
         <div class="flex items-baseline gap-2">
-          <h1 class="text-lg font-bold text-slate-900">SaasGym</h1>
-          <span class="text-xs font-semibold text-emerald-600 uppercase tracking-wide">{{ audienceLabel }}</span>
+          <h1 class="text-lg font-bold text-foreground tracking-tight">SaasGym</h1>
+          <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-2 py-0.5 rounded bg-muted border border-border-subtle">{{ audienceLabel }}</span>
         </div>
-        <nav class="flex items-center gap-4 text-sm">
-          <a routerLink="/caja/home" routerLinkActive="text-emerald-700 font-semibold"
-             class="text-slate-600 hover:text-slate-900">Inicio</a>
-          <a routerLink="/caja/sales" routerLinkActive="text-emerald-700 font-semibold"
-             class="text-slate-600 hover:text-slate-900">Ventas</a>
+        <nav class="flex items-center gap-1 text-sm">
+          <a routerLink="/caja/home" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+             class="text-foreground-muted hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-lg transition font-medium">Inicio</a>
+          <a routerLink="/caja/sales" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+             class="text-foreground-muted hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-lg transition font-medium">Ventas</a>
           @if (isGym()) {
-            <a routerLink="/caja/attendance" routerLinkActive="text-emerald-700 font-semibold"
-               class="text-slate-600 hover:text-slate-900">Asistencia</a>
+            <a routerLink="/caja/attendance" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+               class="text-foreground-muted hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-lg transition font-medium">Asistencia</a>
           }
         </nav>
       </div>
       <div class="flex items-center gap-4 text-sm">
-        <span class="text-slate-600">
+        <span class="text-foreground-muted">
           {{ auth.profile()?.name }}
-          <span class="text-slate-400">·</span>
-          <span class="text-slate-500">{{ auth.profile()?.role }}</span>
+          <span class="text-foreground-faint">·</span>
+          <span class="text-foreground-subtle">{{ auth.profile()?.role }}</span>
         </span>
-        <button (click)="logout()" class="text-slate-600 hover:text-slate-900 font-medium">
+        <button (click)="logout()"
+                class="text-foreground-muted hover:text-foreground font-medium px-3 py-1.5 rounded-lg hover:bg-muted transition">
           Salir
         </button>
       </div>

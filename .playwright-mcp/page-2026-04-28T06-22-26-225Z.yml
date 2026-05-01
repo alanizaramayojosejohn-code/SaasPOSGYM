@@ -1,0 +1,67 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - generic [ref=e8]:
+          - heading "SaasGym" [level=1] [ref=e9]
+          - generic [ref=e10]: Admin
+        - navigation [ref=e11]:
+          - link "Inicio" [ref=e12] [cursor=pointer]:
+            - /url: /admin/home
+          - link "Clientes" [ref=e13] [cursor=pointer]:
+            - /url: /admin/clients
+          - link "Productos" [ref=e14] [cursor=pointer]:
+            - /url: /admin/products
+          - link "Planes" [ref=e15] [cursor=pointer]:
+            - /url: /admin/membership-plans
+          - link "Usuarios" [ref=e16] [cursor=pointer]:
+            - /url: /admin/users
+          - link "Ventas" [ref=e17] [cursor=pointer]:
+            - /url: /caja/sales
+          - link "Asistencia" [ref=e18] [cursor=pointer]:
+            - /url: /caja/attendance
+          - link "Reports" [ref=e19] [cursor=pointer]:
+            - /url: /admin/reports
+      - generic [ref=e20]:
+        - generic [ref=e21]: Admin Gym ·admin
+        - button "Salir" [ref=e22]
+  - main [ref=e23]:
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - heading "Productos" [level=2] [ref=e28]
+          - paragraph [ref=e29]: Inventario disponible para venta en caja.
+        - button "Cerrar formulario" [active] [ref=e36]
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - heading "Nuevo producto" [level=3] [ref=e40]
+          - paragraph [ref=e41]: Agrega un ítem al inventario del negocio.
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - generic [ref=e44]: Nombre
+            - textbox "Nombre" [ref=e45]
+          - generic [ref=e46]:
+            - generic [ref=e47]: Descripción (opcional)
+            - textbox "Descripción (opcional)" [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: Categoría (opcional)
+            - textbox "Categoría (opcional)" [ref=e51]:
+              - /placeholder: bebidas, suplementos, ropa…
+          - generic [ref=e52]:
+            - generic [ref=e53]: Proveedor (opcional)
+            - textbox "Proveedor (opcional)" [ref=e54]
+          - generic [ref=e55]:
+            - generic [ref=e56]: Precio
+            - spinbutton "Precio" [ref=e57]: "0"
+          - generic [ref=e58]:
+            - generic [ref=e59]: Costo
+            - spinbutton "Costo" [ref=e60]: "0"
+          - generic [ref=e61]:
+            - generic [ref=e62]: Stock inicial
+            - spinbutton "Stock inicial" [ref=e63]: "0"
+        - generic [ref=e64]:
+          - button "Cancelar" [ref=e65]
+          - button "Crear producto" [disabled] [ref=e66]
+      - generic [ref=e33]:
+        - paragraph [ref=e34]: Aún no hay productos registrados.
+        - paragraph [ref=e35]: Crea el primero con el botón "Nuevo producto".
