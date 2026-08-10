@@ -4,7 +4,7 @@
     <div>
       <h3 class="text-base font-semibold text-foreground tracking-tight">Productos</h3>
       <p class="text-[11px] text-foreground-muted mt-0.5">
-        {{ counts().all }} SKUs · {{ counts().inStock }} en stock · {{ counts().lowStock }} bajo stock · {{ counts().outOfStock }} sin stock
+        {{ counts().all }} productos · {{ counts().inStock }} en stock · {{ counts().lowStock }} bajo stock · {{ counts().outOfStock }} sin stock · {{ counts().inactive }} inactivos
       </p>
     </div>
     <div class="flex-1"></div>
@@ -13,7 +13,7 @@
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
       </svg>
       <input type="text" [value]="search()" (input)="setSearch($any($event.target).value)"
-             placeholder="Buscar nombre, categoría, proveedor…"
+             placeholder="Buscar nombre, SKU, código de barras, categoría…"
              class="bg-transparent text-foreground text-xs font-medium outline-none flex-1 min-w-0 placeholder:text-foreground-muted" />
     </div>
   </div>
@@ -55,6 +55,13 @@
               [class.text-foreground-muted]="filter() !== 'no-category'"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
         Sin categoría · {{ counts().noCategory }}
+      </button>
+      <button type="button" (click)="setFilter('inactive')"
+              [class.bg-input]="filter() === 'inactive'"
+              [class.text-foreground]="filter() === 'inactive'"
+              [class.text-foreground-muted]="filter() !== 'inactive'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Inactivos · {{ counts().inactive }}
       </button>
     </div>
 
@@ -109,6 +116,7 @@
         <thead class="bg-muted/40 border-b border-border-subtle">
           <tr>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Producto</th>
+            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Código</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Categoría</th>
             <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Stock</th>
             <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Precio</th>
@@ -119,19 +127,44 @@
         </thead>
         <tbody>
           @for (product of filteredSorted(); track product.id; let even = $even) {
-            <tr [class.bg-muted]="even" class="hover:bg-muted/40 transition border-b border-border-subtle/50 last:border-b-0">
+            <tr [class.bg-muted]="even" [class.opacity-60]="!product.is_active"
+                class="hover:bg-muted/40 transition border-b border-border-subtle/50 last:border-b-0">
               <td class="px-5 py-3">
                 <button type="button" (click)="view.emit(product)" class="flex items-center gap-3 group text-left">
                   <span class="w-9 h-9 rounded-lg bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
                     {{ initials(product.name) }}
                   </span>
                   <span>
-                    <span class="block font-semibold text-foreground group-hover:underline">{{ product.name }}</span>
+                    <span class="flex items-center gap-1.5">
+                      <span class="font-semibold text-foreground group-hover:underline">{{ product.name }}</span>
+                      @if (!product.is_active) {
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">
+                          inactivo
+                        </span>
+                      }
+                    </span>
                     @if (product.description) {
                       <span class="block text-[11px] text-foreground-faint truncate max-w-[28ch]">{{ product.description }}</span>
                     }
                   </span>
                 </button>
+              </td>
+              <td class="px-5 py-3">
+                @if (product.sku || product.barcode) {
+                  <span class="block font-mono text-[11px] text-foreground-muted">
+                    @if (product.sku) { {{ product.sku }} } @else { — }
+                  </span>
+                  @if (product.barcode) {
+                    <span class="flex items-center gap-1 text-[10px] text-foreground-faint font-mono mt-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+                        <path d="M3 5v14"/><path d="M8 5v14"/><path d="M12 5v14"/><path d="M17 5v14"/><path d="M21 5v14"/>
+                      </svg>
+                      {{ product.barcode }}
+                    </span>
+                  }
+                } @else {
+                  <span class="text-foreground-faint text-xs">—</span>
+                }
               </td>
               <td class="px-5 py-3">
                 @if (product.category) {
@@ -155,7 +188,7 @@
                         [class.text-warning]="product.stock > 0 && product.stock < 5"
                         [class.bg-danger/10]="product.stock === 0"
                         [class.text-danger]="product.stock === 0">
-                    {{ product.stock }}
+                    {{ product.stock }} {{ unitShort(product.sale_unit) }}
                   </span>
                 }
               </td>
@@ -169,6 +202,19 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
                     </svg>
+                  </button>
+                  <button type="button" (click)="toggleActive.emit(product)"
+                          [title]="product.is_active ? 'Desactivar' : 'Activar'"
+                          class="w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">
+                    @if (product.is_active) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                      </svg>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"/>
+                      </svg>
+                    }
                   </button>
                   <button type="button" (click)="edit.emit(product)" title="Editar"
                           class="w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">

@@ -3,7 +3,7 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Client } from '../../../../../models/client.model';
 import { MembershipPlan } from '../../../../../models/membership-plan.model';
-import { Product } from '../../../../../models/product.model';
+import { Product, SaleUnit, saleUnitShort } from '../../../../../models/product.model';
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { ClientQueryService } from '../../../../../services/client/query.service';
 import { MembershipPlanQueryService } from '../../../../../services/membership-plan/query.service';
@@ -57,12 +57,16 @@ export class CajaSalesNewComponent {
   readonly activeCategory = signal<string | null>(null);
   readonly productPage = signal(1);
 
+  // Lectura de código de barras / SKU desde el buscador.
+  readonly scanning = signal(false);
+  readonly scanError = signal<string | null>(null);
+
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
   readonly isGym = computed(() => this.auth.businessType() === 'gym');
 
   readonly availableProducts = computed(() =>
-    this.products().filter((p) => !p.has_stock || p.stock > 0)
+    this.products().filter((p) => p.is_active && (!p.has_stock || p.stock > 0))
   );
 
   readonly categories = computed<string[]>(() => {
@@ -78,8 +82,13 @@ export class CajaSalesNewComponent {
     const cat = this.activeCategory();
     return this.availableProducts().filter((p) => {
       if (cat && p.category?.name !== cat) return false;
-      if (q && !p.name.toLowerCase().includes(q)) return false;
-      return true;
+      if (!q) return true;
+      return (
+        p.name.toLowerCase().includes(q) ||
+        (p.short_name ?? '').toLowerCase().includes(q) ||
+        (p.sku ?? '').toLowerCase().includes(q) ||
+        (p.barcode ?? '').toLowerCase().includes(q)
+      );
     });
   });
 
@@ -129,7 +138,7 @@ export class CajaSalesNewComponent {
     this.loading.set(true);
     try {
       const tasks: Promise<unknown>[] = [
-        this.productQuery.listProducts().then((v) => this.products.set(v)),
+        this.productQuery.listActiveProducts().then((v) => this.products.set(v)),
         this.clientQuery.listClients().then((v) => this.clients.set(v)),
       ];
       if (this.isGym()) {
@@ -154,6 +163,10 @@ export class CajaSalesNewComponent {
 
   setProductPage(p: number): void {
     this.productPage.set(p);
+  }
+
+  unitShort(unit: SaleUnit): string {
+    return saleUnitShort(unit);
   }
 
   addToCart(product: Product): void {
@@ -203,6 +216,53 @@ export class CajaSalesNewComponent {
 
   setSearch(value: string): void {
     this.searchQuery.set(value);
+    this.scanError.set(null);
+  }
+
+  // Enter en el buscador = lectura del escáner. Busca coincidencia exacta por
+  // código de barras o SKU y manda el producto al carrito sin más clics.
+  // Si el catálogo en memoria no lo tiene (alta reciente), consulta al servidor.
+  async submitSearch(): Promise<void> {
+    const code = this.searchQuery().trim();
+    if (!code) return;
+
+    const lower = code.toLowerCase();
+    const local = this.availableProducts().find(
+      (p) => p.barcode?.toLowerCase() === lower || p.sku?.toLowerCase() === lower,
+    );
+    if (local) {
+      this.addToCart(local);
+      this.searchQuery.set('');
+      this.scanError.set(null);
+      return;
+    }
+
+    this.scanning.set(true);
+    this.scanError.set(null);
+    try {
+      const remote = await this.productQuery.findByCode(code);
+      if (!remote) {
+        // Puede ser una búsqueda por nombre: la lista filtrada ya la resuelve.
+        if (this.filteredProducts().length === 0) {
+          this.scanError.set(`Ningún producto con el código "${code}".`);
+        }
+        return;
+      }
+      if (remote.has_stock && remote.stock <= 0) {
+        this.scanError.set(`"${remote.name}" está sin stock.`);
+        return;
+      }
+      // Incorpora el producto al catálogo en memoria para que aparezca en la grilla.
+      this.products.update((list) =>
+        list.some((p) => p.id === remote.id) ? list : [remote, ...list],
+      );
+      this.addToCart(remote);
+      this.searchQuery.set('');
+    } catch (err) {
+      this.scanError.set(errorMessage(err, 'Error al buscar el producto'));
+    } finally {
+      this.scanning.set(false);
+    }
   }
 
   selectCategory(cat: string | null): void {

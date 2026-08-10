@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Category } from '../../../../../models/category.model';
-import { Product } from '../../../../../models/product.model';
+import { Product, saleUnitShort } from '../../../../../models/product.model';
 import { CategoryQueryService } from '../../../../../services/category/query.service';
 import { CreateProductInput, ProductService } from '../../../../../services/product/product.service';
 import { ProductQueryService } from '../../../../../services/product/query.service';
@@ -34,6 +34,9 @@ export class AdminProductsContainerComponent {
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
 
+  // Errores de acciones sobre la fila (activar/desactivar), fuera del formulario.
+  readonly actionError = signal<string | null>(null);
+
   // Soft delete via modal — los productos no requieren type-to-confirm porque
   // queda en deleted_at, las ventas históricas siguen viendolo.
   readonly deleting = signal<Product | null>(null);
@@ -60,7 +63,9 @@ export class AdminProductsContainerComponent {
     const p = this.deleting();
     if (!p) return null;
     const cat = p.category?.name ?? 'Sin categoría';
-    return `${cat} · Stock ${p.stock}`;
+    const code = p.sku ?? p.barcode;
+    const stock = `Stock ${p.stock} ${saleUnitShort(p.sale_unit)}`;
+    return code ? `${cat} · ${code} · ${stock}` : `${cat} · ${stock}`;
   });
 
   constructor() {
@@ -120,6 +125,26 @@ export class AdminProductsContainerComponent {
       );
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  // Activar/desactivar desde la fila. Actualiza la lista en memoria y sincroniza
+  // con el servidor; si falla, revierte y muestra el error sobre la tabla.
+  async handleToggleActive(product: Product): Promise<void> {
+    const next = !product.is_active;
+    this.actionError.set(null);
+    this.products.update((list) =>
+      list.map((p) => (p.id === product.id ? { ...p, is_active: next } : p)),
+    );
+    try {
+      await this.productService.setProductActive(product.id, next);
+    } catch (err: unknown) {
+      this.products.update((list) =>
+        list.map((p) => (p.id === product.id ? { ...p, is_active: product.is_active } : p)),
+      );
+      this.actionError.set(
+        errorMessage(err, next ? 'Error al activar producto' : 'Error al desactivar producto'),
+      );
     }
   }
 

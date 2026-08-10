@@ -45,7 +45,7 @@ export class NewPurchaseOrderComponent {
   async loadData(): Promise<void> {
     try {
       const [products, suppliers] = await Promise.all([
-        this.productQuery.listProducts(),
+        this.productQuery.listActiveProducts(),
         this.supplierService.listSuppliers(),
       ]);
       this.products.set(products);

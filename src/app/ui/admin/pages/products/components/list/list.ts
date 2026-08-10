@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
-import { Product } from '../../../../../../models/product.model';
+import { Product, SaleUnit, saleUnitShort } from '../../../../../../models/product.model';
 
-type ProductFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock' | 'no-category';
+type ProductFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock' | 'no-category' | 'inactive';
 type ProductSort = 'name' | 'stock-asc' | 'price-desc' | 'created';
 
 @Component({
@@ -18,11 +18,16 @@ export class ProductsListComponent {
   readonly edit = output<Product>();
   readonly remove = output<Product>();
   readonly view = output<Product>();
+  readonly toggleActive = output<Product>();
 
   readonly search = signal('');
   readonly filter = signal<ProductFilter>('all');
   readonly sort = signal<ProductSort>('created');
   readonly sortMenuOpen = signal(false);
+
+  unitShort(unit: SaleUnit): string {
+    return saleUnitShort(unit);
+  }
 
   initials(name: string): string {
     const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -40,6 +45,7 @@ export class ProductsListComponent {
       lowStock: list.filter((p) => p.has_stock && p.stock > 0 && p.stock < 5).length,
       outOfStock: list.filter((p) => p.has_stock && p.stock === 0).length,
       noCategory: list.filter((p) => !p.category_id).length,
+      inactive: list.filter((p) => !p.is_active).length,
     };
   });
 
@@ -53,11 +59,15 @@ export class ProductsListComponent {
     else if (f === 'low-stock') list = list.filter((p) => p.has_stock && p.stock > 0 && p.stock < 5);
     else if (f === 'out-of-stock') list = list.filter((p) => p.has_stock && p.stock === 0);
     else if (f === 'no-category') list = list.filter((p) => !p.category_id);
+    else if (f === 'inactive') list = list.filter((p) => !p.is_active);
 
     if (q) {
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
+          (p.short_name ?? '').toLowerCase().includes(q) ||
+          (p.sku ?? '').toLowerCase().includes(q) ||
+          (p.barcode ?? '').toLowerCase().includes(q) ||
           (p.category?.name ?? '').toLowerCase().includes(q) ||
           (p.provider ?? '').toLowerCase().includes(q),
       );
