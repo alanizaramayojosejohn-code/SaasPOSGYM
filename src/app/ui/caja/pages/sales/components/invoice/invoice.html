@@ -1,8 +1,8 @@
 <!-- Backdrop -->
-<div class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" (click)="close.emit()">
+<div class="m-backdrop fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" (click)="close.emit()">
 
   <!-- Invoice card — click stops propagation to backdrop -->
-  <div class="invoice-print-area bg-surface border border-border-subtle rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col"
+  <div class="m-panel invoice-print-area bg-elevated border border-border-subtle rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto flex flex-col"
        (click)="$event.stopPropagation()">
 
     <!-- Header -->

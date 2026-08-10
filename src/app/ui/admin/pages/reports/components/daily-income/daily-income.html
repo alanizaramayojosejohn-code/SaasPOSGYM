@@ -1,4 +1,4 @@
-<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+<div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
   <header class="px-6 py-4 border-b border-border-subtle">
     <h3 class="font-semibold text-foreground">Ingresos diarios</h3>
     <p class="text-xs text-foreground-subtle">Últimos 30 días, separados por tipo de venta.</p>
@@ -22,7 +22,7 @@
         </thead>
         <tbody class="divide-y divide-border-subtle">
           @for (row of pivoted(); track row.day) {
-            <tr class="hover:bg-muted/50 transition">
+            <tr class="row-hover hover:bg-muted/50">
               <td class="px-6 py-2 text-foreground-muted">{{ row.day | date: 'dd/MM/yyyy' }}</td>
               <td class="px-6 py-2 text-right font-mono text-foreground-muted">{{ row.product | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
               <td class="px-6 py-2 text-right font-mono text-foreground-muted">{{ row.membership | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>

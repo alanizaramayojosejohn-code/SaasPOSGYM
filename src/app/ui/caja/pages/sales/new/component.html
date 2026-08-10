@@ -134,11 +134,11 @@
             </p>
           </div>
         } @else {
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 a-stagger">
             @for (product of paginatedProducts(); track product.id) {
               <button type="button"
                       (click)="addToCart(product)"
-                      class="text-left bg-elevated border border-border-subtle rounded-xl p-3 hover:border-primary hover:shadow-md transition group flex flex-col gap-2">
+                      class="hover-raise press text-left bg-elevated border border-border-subtle rounded-xl p-3 group flex flex-col gap-2">
                 <!-- Top row: category tag + stock -->
                 <div class="flex items-center justify-between gap-1">
                   <span class="text-[9px] font-bold uppercase tracking-wider text-foreground-subtle px-1.5 py-0.5 rounded bg-muted border border-border-subtle">
@@ -365,7 +365,7 @@
 
             <!-- Cobrar -->
             <button type="button" (click)="charge()" [disabled]="!canCharge()"
-                    class="w-full py-3 bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-bold rounded-xl transition shadow-lg shadow-primary/20 disabled:shadow-none flex items-center justify-center gap-2">
+                    class="press w-full py-3 bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-bold rounded-xl transition shadow-lg shadow-primary/20 disabled:shadow-none flex items-center justify-center gap-2">
               @if (submitting()) {
                 Cobrando…
               } @else {

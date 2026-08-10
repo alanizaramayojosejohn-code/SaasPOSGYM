@@ -1,4 +1,4 @@
-<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+<div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
   @if (loading()) {
     <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
   } @else if (attendance().length === 0) {
@@ -17,7 +17,7 @@
       </thead>
       <tbody class="divide-y divide-border-subtle">
         @for (att of attendance(); track att.id) {
-          <tr class="hover:bg-muted/50 transition">
+          <tr class="row-hover hover:bg-muted/50">
             <td class="px-6 py-3 font-medium text-foreground">{{ att.client_label }}</td>
             <td class="px-6 py-3 text-foreground-muted">{{ att.plan_name ?? '—' }}</td>
             <td class="px-6 py-3 text-foreground-subtle">{{ att.attended_at | date: 'dd/MM/yyyy HH:mm' }}</td>

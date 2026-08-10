@@ -8,15 +8,15 @@
       <p class="text-foreground-muted text-sm">{{ now() | date: 'EEEE d MMMM y' }} · super_admin</p>
     </div>
     <a routerLink="/saas/businesses"
-       class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
+       class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
       Nuevo negocio
     </a>
   </div>
 
   <!-- ============================== KPIs ============================== -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 a-stagger">
     <!-- Total negocios + split GYM/POS -->
-    <div class="md:col-span-2 bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 shadow-sm">
+    <div class="hover-lift md:col-span-2 bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 shadow-sm">
       <div class="flex items-start justify-between gap-4 mb-4">
         <div>
           <p class="text-xs font-semibold text-foreground-muted uppercase tracking-wider">Negocios totales</p>
@@ -51,7 +51,7 @@
             <span class="font-mono text-foreground-muted">{{ posCount() }}</span>
           </div>
           <div class="flex h-2 rounded-full overflow-hidden bg-muted mt-2">
-            <div class="bg-foreground transition-all" [style.width.%]="gymPct()"></div>
+            <div class="chart-fill bg-foreground transition-all" [style.width.%]="gymPct()"></div>
             <div class="flex-1 bg-primary"></div>
           </div>
         </div>
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Paletas usadas -->
-    <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-5 shadow-sm flex flex-col">
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-5 shadow-sm flex flex-col">
       <div class="flex items-center gap-2 mb-3">
         <div class="w-7 h-7 rounded-lg bg-muted border border-border-subtle flex items-center justify-center">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-foreground-muted">
@@ -92,7 +92,7 @@
   </div>
 
   <!-- Negocios recientes -->
-  <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+  <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
     <header class="px-6 py-4 border-b border-border-subtle flex items-center justify-between">
       <div>
         <h3 class="font-semibold text-foreground">Negocios recientes</h3>
@@ -120,7 +120,7 @@
         </thead>
         <tbody class="divide-y divide-border-subtle">
           @for (b of latestBusinesses(); track b.id) {
-            <tr class="hover:bg-muted/50 transition">
+            <tr class="row-hover hover:bg-muted/50">
               <td class="px-6 py-2.5 font-medium text-foreground">{{ b.name }}</td>
               <td class="px-6 py-2.5">
                 @if (b.type === 'gym') {

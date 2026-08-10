@@ -1,21 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
+import { SidebarService } from '../../../services/layout/sidebar.service';
+import { BurgerButtonComponent } from '../../shared/burger-button.component';
 import { ThemeModeToggleComponent } from '../../shared/theme-mode-toggle.component';
 
 @Component({
   selector: 'app-admin-container',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggleComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggleComponent, BurgerButtonComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminContainerComponent {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  protected readonly sidebar = inject(SidebarService);
 
   readonly audienceLabel = 'Admin';
   readonly isGym = computed(() => this.auth.businessType() === 'gym');
-  readonly sidebarOpen = signal(false);
 
   // 2 letras del nombre para el avatar circle del sidebar.
   // Ej: "Daniela Mendez" → "DM", "Jose" → "JO".

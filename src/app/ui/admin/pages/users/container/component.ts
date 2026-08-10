@@ -4,12 +4,13 @@ import { ProfileService } from '../../../../../services/profile/profile.service'
 import { ProfileQueryService } from '../../../../../services/profile/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
+import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { UserFormValue, UsersFormComponent } from '../components/form/form';
 import { UsersListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-users',
-  imports: [UsersListComponent, UsersFormComponent, ConfirmDeleteModalComponent],
+  imports: [ModalShellComponent, UsersListComponent, UsersFormComponent, ConfirmDeleteModalComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

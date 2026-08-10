@@ -5,10 +5,11 @@ import { Supplier } from '../../../../../models/supplier.model';
 import { SupplierService } from '../../../../../services/supplier/supplier.service';
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
+import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 
 @Component({
   selector: 'app-purchases-suppliers',
-  imports: [ReactiveFormsModule, RouterLink, ConfirmDeleteModalComponent],
+  imports: [ModalShellComponent, ReactiveFormsModule, RouterLink, ConfirmDeleteModalComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

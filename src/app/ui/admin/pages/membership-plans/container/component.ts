@@ -6,12 +6,13 @@ import { MembershipPlanQueryService } from '../../../../../services/membership-p
 import { ServiceQueryService } from '../../../../../services/service/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
+import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { MembershipPlansFormComponent } from '../components/form/form';
 import { MembershipPlansListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-membership-plans',
-  imports: [MembershipPlansListComponent, MembershipPlansFormComponent, ConfirmDeleteModalComponent],
+  imports: [ModalShellComponent, MembershipPlansListComponent, MembershipPlansFormComponent, ConfirmDeleteModalComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

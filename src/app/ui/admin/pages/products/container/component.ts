@@ -6,12 +6,13 @@ import { CreateProductInput, ProductService } from '../../../../../services/prod
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
+import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { ProductsFormComponent } from '../components/form/form';
 import { ProductsListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-products',
-  imports: [ProductsListComponent, ProductsFormComponent, ConfirmDeleteModalComponent],
+  imports: [ModalShellComponent, ProductsListComponent, ProductsFormComponent, ConfirmDeleteModalComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

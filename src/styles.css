@@ -88,3 +88,427 @@ html, body {
   color: var(--c-foreground);
   min-height: 100vh;
 }
+
+/* =====================================================================
+   SISTEMA DE MOVIMIENTO
+
+   Un solo lugar para duraciones, curvas y keyframes. Las utilidades de
+   abajo se aplican como clases sueltas (a-rise, hover-lift, chart-bar…)
+   sobre el markup existente, sin tocar Tailwind.
+
+   Reglas de la casa:
+   - Las animaciones de entrada usan `backwards`, no `both`. Con `both` el
+     estado final queda fijado por la animación, que gana sobre cualquier
+     transición posterior: los hover con transform (row-hover, hover-lift)
+     dejarían de moverse justo después de entrar.
+   - Nada anima layout (width/height/top): solo transform y opacity, que
+     corren en compositor y no disparan reflow.
+   - El bloque prefers-reduced-motion del final apaga todo. Es obligatorio:
+     un POS se usa 8 horas seguidas y el movimiento de más marea.
+   ===================================================================== */
+
+:root {
+  --motion-fast: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 420ms;
+  --motion-slower: 720ms;
+
+  /* Desaceleración suave: arranca rápido y aterriza. Es la curva por defecto. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Con rebote corto — solo para cosas que "aparecen" (modales, badges). */
+  --ease-out-back: cubic-bezier(0.34, 1.42, 0.64, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Paso del stagger en listas. */
+  --stagger-step: 45ms;
+}
+
+/* ---------------------------------------------------------------- Keyframes */
+
+@keyframes a-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes a-rise {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes a-rise-sm {
+  from { opacity: 0; transform: translate3d(0, 7px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes a-pop {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes a-modal-in {
+  from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.97); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes a-slide-from-left {
+  from { opacity: 0; transform: translate3d(-16px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes a-slide-from-right {
+  from { opacity: 0; transform: translate3d(16px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Barras verticales del gráfico: crecen desde la base. */
+@keyframes a-grow-bar {
+  from { transform: scaleY(0); opacity: 0.35; }
+  to   { transform: scaleY(1); opacity: 1; }
+}
+
+/* Barras horizontales de progreso: crecen desde la izquierda. */
+@keyframes a-grow-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Donut: barrido circular + escala. Rota el SVG entero para no pelear con
+   los stroke-dasharray/dashoffset que calcula el componente. */
+@keyframes a-sweep-in {
+  from { opacity: 0; transform: rotate(-42deg) scale(0.88); }
+  to   { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+
+/* Brillo de carga para skeletons. */
+@keyframes a-shimmer {
+  from { background-position: -180% 0; }
+  to   { background-position: 180% 0; }
+}
+
+/* Latido sutil para indicadores "en vivo". */
+@keyframes a-pulse-ring {
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 0.55; }
+  70%  { box-shadow: 0 0 0 7px transparent; opacity: 0; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 0; }
+}
+
+@keyframes a-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ------------------------------------------------------- Utilidades de entrada */
+
+.a-fade-in  { animation: a-fade-in var(--motion-base) var(--ease-out-soft) backwards; }
+.a-rise     { animation: a-rise var(--motion-slow) var(--ease-out-soft) backwards; }
+.a-rise-sm  { animation: a-rise-sm var(--motion-base) var(--ease-out-soft) backwards; }
+.a-pop      { animation: a-pop var(--motion-base) var(--ease-out-back) backwards; }
+.a-in-left  { animation: a-slide-from-left var(--motion-slow) var(--ease-out-soft) backwards; }
+.a-in-right { animation: a-slide-from-right var(--motion-slow) var(--ease-out-soft) backwards; }
+
+/* Retardos manuales para orquestar secciones de una página. */
+.a-d1 { animation-delay: 60ms; }
+.a-d2 { animation-delay: 120ms; }
+.a-d3 { animation-delay: 180ms; }
+.a-d4 { animation-delay: 240ms; }
+.a-d5 { animation-delay: 300ms; }
+.a-d6 { animation-delay: 360ms; }
+
+/* Cascada automática sobre los hijos directos. Cubre 18 elementos; a partir
+   de ahí todos entran con el último retardo, que es lo correcto: una lista de
+   200 filas no debe tardar 9 segundos en aparecer. */
+.a-stagger > * { animation: a-rise-sm var(--motion-base) var(--ease-out-soft) backwards; }
+.a-stagger > *:nth-child(1)  { animation-delay: calc(var(--stagger-step) * 0); }
+.a-stagger > *:nth-child(2)  { animation-delay: calc(var(--stagger-step) * 1); }
+.a-stagger > *:nth-child(3)  { animation-delay: calc(var(--stagger-step) * 2); }
+.a-stagger > *:nth-child(4)  { animation-delay: calc(var(--stagger-step) * 3); }
+.a-stagger > *:nth-child(5)  { animation-delay: calc(var(--stagger-step) * 4); }
+.a-stagger > *:nth-child(6)  { animation-delay: calc(var(--stagger-step) * 5); }
+.a-stagger > *:nth-child(7)  { animation-delay: calc(var(--stagger-step) * 6); }
+.a-stagger > *:nth-child(8)  { animation-delay: calc(var(--stagger-step) * 7); }
+.a-stagger > *:nth-child(9)  { animation-delay: calc(var(--stagger-step) * 8); }
+.a-stagger > *:nth-child(10) { animation-delay: calc(var(--stagger-step) * 9); }
+.a-stagger > *:nth-child(11) { animation-delay: calc(var(--stagger-step) * 10); }
+.a-stagger > *:nth-child(12) { animation-delay: calc(var(--stagger-step) * 11); }
+.a-stagger > *:nth-child(13) { animation-delay: calc(var(--stagger-step) * 12); }
+.a-stagger > *:nth-child(14) { animation-delay: calc(var(--stagger-step) * 13); }
+.a-stagger > *:nth-child(15) { animation-delay: calc(var(--stagger-step) * 14); }
+.a-stagger > *:nth-child(16) { animation-delay: calc(var(--stagger-step) * 15); }
+.a-stagger > *:nth-child(17) { animation-delay: calc(var(--stagger-step) * 16); }
+.a-stagger > *:nth-child(n+18) { animation-delay: calc(var(--stagger-step) * 17); }
+
+/* Cascada más rápida para filas de tabla, que suelen ser muchas. */
+.a-stagger-rows { --stagger-step: 26ms; }
+
+/* --------------------------------------------------------- Utilidades de hover */
+
+/* Card que se levanta. El will-change se activa solo en hover para no
+   dejar capas de compositor vivas en toda la grilla. */
+.hover-lift {
+  transition:
+    transform var(--motion-base) var(--ease-out-soft),
+    box-shadow var(--motion-base) var(--ease-out-soft),
+    border-color var(--motion-base) var(--ease-out-soft);
+}
+.hover-lift:hover {
+  transform: translate3d(0, -3px, 0);
+  box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.28);
+  border-color: var(--c-border);
+}
+
+/* Variante fuerte para tarjetas clicables del POS y KPIs. */
+.hover-raise {
+  transition:
+    transform var(--motion-base) var(--ease-out-soft),
+    box-shadow var(--motion-base) var(--ease-out-soft),
+    border-color var(--motion-base) var(--ease-out-soft);
+}
+.hover-raise:hover {
+  transform: translate3d(0, -5px, 0) scale(1.015);
+  box-shadow: 0 18px 36px -14px rgba(0, 0, 0, 0.34);
+  border-color: var(--c-primary);
+}
+
+/* Feedback táctil: todo lo clicable se hunde un pelo al presionar. */
+.press { transition: transform var(--motion-fast) var(--ease-out-soft); }
+.press:active { transform: scale(0.96); }
+
+/* Fila de tabla: fondo + desplazamiento mínimo hacia la derecha. */
+.row-hover {
+  transition:
+    background-color var(--motion-fast) ease,
+    transform var(--motion-fast) var(--ease-out-soft);
+}
+.row-hover:hover { transform: translate3d(3px, 0, 0); }
+
+/* Botón de icono: el glifo crece, no el botón. */
+.icon-btn svg { transition: transform var(--motion-base) var(--ease-out-back); }
+.icon-btn:hover svg { transform: scale(1.18); }
+.icon-btn:active svg { transform: scale(0.94); }
+
+/* Link de navegación con barra deslizante a la izquierda. */
+.nav-link { position: relative; overflow: hidden; }
+.nav-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: currentColor;
+  transform: translateY(-50%);
+  transition: height var(--motion-base) var(--ease-out-soft);
+}
+.nav-link:hover::before { height: 60%; }
+.nav-link svg { transition: transform var(--motion-base) var(--ease-out-back); }
+.nav-link:hover svg { transform: translateX(2px) scale(1.1); }
+
+/* Subrayado que crece desde el centro. Para links de texto. */
+.underline-grow { position: relative; }
+.underline-grow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform var(--motion-base) var(--ease-out-soft);
+}
+.underline-grow:hover::after { transform: scaleX(1); }
+
+/* -------------------------------------------------------------- Menú hamburguesa */
+
+.burger {
+  /* inline-block es obligatorio: el elemento es un <span> y en display:inline
+     el ancho y el alto se ignoran, con lo que las tres barras colapsan a 0. */
+  display: inline-block;
+  position: relative;
+  width: 18px;
+  height: 14px;
+  flex-shrink: 0;
+}
+.burger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition:
+    transform var(--motion-slow) var(--ease-out-soft),
+    opacity var(--motion-fast) ease,
+    width var(--motion-slow) var(--ease-out-soft);
+}
+.burger span:nth-child(1) { top: 0; }
+.burger span:nth-child(2) { top: 6px; width: 72%; }
+.burger span:nth-child(3) { top: 12px; }
+
+/* Al abrir: la barra del medio se desvanece y las otras dos forman la X. */
+.burger.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.burger.is-open span:nth-child(2) { opacity: 0; width: 0; }
+.burger.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* En reposo, el hover alarga la barra corta: avisa que es interactivo. */
+.burger:not(.is-open):hover span:nth-child(2) { width: 100%; }
+
+/* Chevron del colapso de escritorio. */
+.chev { transition: transform var(--motion-slow) var(--ease-out-soft); }
+.chev.is-flipped { transform: rotate(180deg); }
+
+/* ------------------------------------------------------ Sidebar colapsable */
+
+/* La barra lateral anima su ancho; el contenido que se oculta se desvanece
+   antes para que no queden textos apretados a mitad de la transición.
+   El ancho vive acá y no en clases de Tailwind porque es un valor que cambia
+   por binding: resolverlo en CSS evita generar clases dinámicas que el JIT
+   de Tailwind no puede ver al escanear las plantillas. */
+.rail {
+  width: 15rem;
+  transition: width var(--motion-slow) var(--ease-in-out-soft);
+}
+.rail-label {
+  transition:
+    opacity var(--motion-fast) ease,
+    transform var(--motion-base) var(--ease-out-soft);
+  white-space: nowrap;
+}
+
+/* El colapso es solo de escritorio: en móvil el drawer siempre va completo. */
+@media (min-width: 1024px) {
+  .rail.is-collapsed { width: 4.75rem; }
+  .rail.is-collapsed .rail-label {
+    opacity: 0;
+    transform: translateX(-6px);
+    pointer-events: none;
+  }
+  /* Se descuelgan del layout: títulos de sección, textos de marca y perfil. */
+  .rail.is-collapsed .rail-hide { display: none; }
+  /* Los items quedan como iconos centrados. */
+  .rail.is-collapsed .rail-item {
+    justify-content: center;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  /* Sin espacio para la barrita del hover, se apaga. */
+  .rail.is-collapsed .nav-link::before { display: none; }
+}
+
+/* --------------------------------------------------------------- Modales */
+
+.m-backdrop { animation: a-fade-in var(--motion-base) ease backwards; }
+.m-panel    { animation: a-modal-in var(--motion-slow) var(--ease-out-back) backwards; }
+
+/* En modo bare la superficie la pone el contenido. Los formularios usan
+   bg-surface, que es translúcido y sobre el backdrop oscuro se ve lavado:
+   acá se fuerza la capa opaca y la sombra propia de una ventana. */
+.m-panel-bare > :first-child {
+  background-color: var(--c-elevated);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* Bloquea el scroll del fondo mientras hay un modal abierto. */
+body.modal-open { overflow: hidden; }
+
+/* ---------------------------------------------------------------- Gráficas */
+
+/* Barra vertical: crece desde abajo. El delay lo pone .a-stagger del padre. */
+.chart-bar {
+  transform-origin: bottom center;
+  animation: a-grow-bar var(--motion-slower) var(--ease-out-soft) backwards;
+  transition: background-color var(--motion-base) ease, filter var(--motion-base) ease;
+}
+.chart-bar:hover { filter: brightness(1.15); }
+
+/* Cascada de las barras de un gráfico. El delay va sobre el .chart-bar que
+   cuelga de cada columna, no sobre la columna: animation-delay no se hereda. */
+.chart-bars > *:nth-child(1)  .chart-bar { animation-delay: 0ms; }
+.chart-bars > *:nth-child(2)  .chart-bar { animation-delay: 55ms; }
+.chart-bars > *:nth-child(3)  .chart-bar { animation-delay: 110ms; }
+.chart-bars > *:nth-child(4)  .chart-bar { animation-delay: 165ms; }
+.chart-bars > *:nth-child(5)  .chart-bar { animation-delay: 220ms; }
+.chart-bars > *:nth-child(6)  .chart-bar { animation-delay: 275ms; }
+.chart-bars > *:nth-child(7)  .chart-bar { animation-delay: 330ms; }
+.chart-bars > *:nth-child(8)  .chart-bar { animation-delay: 385ms; }
+.chart-bars > *:nth-child(9)  .chart-bar { animation-delay: 440ms; }
+.chart-bars > *:nth-child(10) .chart-bar { animation-delay: 495ms; }
+.chart-bars > *:nth-child(11) .chart-bar { animation-delay: 550ms; }
+.chart-bars > *:nth-child(n+12) .chart-bar { animation-delay: 605ms; }
+
+/* Barra horizontal de proporción. */
+.chart-fill {
+  transform-origin: left center;
+  animation: a-grow-fill var(--motion-slower) var(--ease-out-soft) backwards;
+}
+
+/* Donut / anillos SVG. */
+.chart-sweep {
+  transform-origin: center;
+  animation: a-sweep-in var(--motion-slower) var(--ease-out-soft) backwards;
+}
+
+/* Sparkline: cada barrita entra con su micro-retardo. */
+.chart-spark > * {
+  transform-origin: bottom center;
+  animation: a-grow-bar var(--motion-slow) var(--ease-out-soft) backwards;
+}
+.chart-spark > *:nth-child(1) { animation-delay: 0ms; }
+.chart-spark > *:nth-child(2) { animation-delay: 40ms; }
+.chart-spark > *:nth-child(3) { animation-delay: 80ms; }
+.chart-spark > *:nth-child(4) { animation-delay: 120ms; }
+.chart-spark > *:nth-child(5) { animation-delay: 160ms; }
+.chart-spark > *:nth-child(6) { animation-delay: 200ms; }
+.chart-spark > *:nth-child(n+7) { animation-delay: 240ms; }
+
+/* Número grande de KPI. */
+.kpi-value { animation: a-pop var(--motion-slow) var(--ease-out-back) backwards; }
+
+/* ------------------------------------------------------------- Indicadores */
+
+/* Punto "en vivo" con onda expansiva. */
+.live-dot { position: relative; }
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  animation: a-pulse-ring 2s var(--ease-out-soft) infinite;
+}
+
+.spin { animation: a-spin 900ms linear infinite; }
+
+/* Skeleton de carga. */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--c-muted) 25%,
+    var(--c-input) 50%,
+    var(--c-muted) 75%
+  );
+  background-size: 220% 100%;
+  animation: a-shimmer 1.4s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* =====================================================================
+   Accesibilidad: si el sistema pide menos movimiento, apagamos todo.
+   Las utilidades siguen existiendo (no rompen el layout), solo dejan de
+   animar y quedan en su estado final.
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hover-lift:hover,
+  .hover-raise:hover,
+  .row-hover:hover,
+  .press:active {
+    transform: none;
+  }
+}

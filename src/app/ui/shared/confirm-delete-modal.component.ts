@@ -15,10 +15,10 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, output, si
   template: `
     @if (open()) {
       <!-- Backdrop. Click cierra. -->
-      <div class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+      <div class="m-backdrop fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
            (click)="onBackdropClick($event)">
         <!-- Card. Stop propagation para que click adentro NO cierre. -->
-        <div class="w-full max-w-md bg-elevated backdrop-blur-xl border border-border-subtle rounded-2xl shadow-2xl shadow-black/20 overflow-hidden"
+        <div class="m-panel w-full max-w-md bg-elevated backdrop-blur-xl border border-border-subtle rounded-2xl shadow-2xl shadow-black/20 overflow-hidden"
              role="dialog"
              aria-modal="true"
              (click)="$event.stopPropagation()">
@@ -89,13 +89,13 @@ import { ChangeDetectionStrategy, Component, computed, effect, input, output, si
             <div class="flex gap-2">
               <button type="button"
                       (click)="onCancel()"
-                      class="px-4 py-1.5 text-sm font-semibold bg-elevated border border-border-subtle text-foreground hover:bg-muted rounded-lg transition">
+                      class="press px-4 py-1.5 text-sm font-semibold bg-elevated border border-border-subtle text-foreground hover:bg-muted rounded-lg transition">
                 Cancelar
               </button>
               <button type="button"
                       (click)="onConfirm()"
                       [disabled]="!canConfirm()"
-                      class="px-4 py-1.5 text-sm font-bold bg-danger text-white hover:bg-danger/90 disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-danger/20 disabled:shadow-none flex items-center gap-1.5">
+                      class="press px-4 py-1.5 text-sm font-bold bg-danger text-white hover:bg-danger/90 disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-danger/20 disabled:shadow-none flex items-center gap-1.5">
                 @if (submitting()) {
                   Eliminando…
                 } @else {

@@ -1,29 +1,31 @@
-<div class="max-w-7xl mx-auto px-6 py-10 space-y-6">
+<div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
   <div class="flex items-center justify-between">
     <div>
       <h2 class="text-2xl font-bold text-foreground tracking-tight">Socios</h2>
       <p class="text-foreground-muted text-sm">Socios registrados en tu negocio.</p>
     </div>
-    @if (showForm()) {
-      <button (click)="closeForm()"
-              class="px-4 py-2 text-sm font-semibold bg-muted hover:bg-input text-foreground border border-border-subtle rounded-lg transition">
-        Cerrar formulario
-      </button>
-    } @else {
-      <button (click)="openCreate()"
-              class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
-        Nuevo socio
-      </button>
-    }
+    <button (click)="openCreate()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+      Nuevo socio
+    </button>
   </div>
 
+  <!-- El formulario vive en una ventana modal sobre el listado. El @if externo
+       lo destruye al cerrar para que la próxima apertura arranque limpia. -->
   @if (showForm()) {
-    <app-admin-clients-form
-      [value]="editing()"
-      [submitting]="submitting()"
-      [errorMessage]="formError()"
-      (submitForm)="handleSubmit($event)"
-      (cancel)="closeForm()" />
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      [title]="editing() ? 'Editar socio' : 'Nuevo socio'"
+      [busy]="submitting()"
+      (closed)="closeForm()">
+      <app-admin-clients-form
+        [value]="editing()"
+        [submitting]="submitting()"
+        [errorMessage]="formError()"
+        (submitForm)="handleSubmit($event)"
+        (cancel)="closeForm()" />
+    </app-modal-shell>
   }
 
   <app-admin-clients-list

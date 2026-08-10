@@ -11,71 +11,78 @@
     <div class="flex-1">
       <h1 class="text-xl font-bold text-foreground">Proveedores</h1>
     </div>
-    @if (!showForm()) {
-      <button (click)="openCreate()"
-              class="px-4 py-2 text-sm font-semibold bg-primary text-primary-fg rounded-lg hover:bg-primary/90 transition shadow-md shadow-primary/20">
-        + Proveedor
-      </button>
-    }
+    <button (click)="openCreate()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary text-primary-fg rounded-lg hover:bg-primary/90 transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+      + Proveedor
+    </button>
   </div>
 
-  <!-- Formulario -->
+  <!-- Formulario en ventana modal sobre el listado. El @if externo lo
+       destruye al cerrar para que la próxima apertura arranque limpia. -->
   @if (showForm()) {
-    <form [formGroup]="form" (ngSubmit)="onSubmit()"
-          class="bg-surface border border-border-subtle rounded-2xl p-6 space-y-4 shadow-sm">
-      <h3 class="font-semibold text-foreground">
-        @if (editing()) { Editar proveedor } @else { Nuevo proveedor }
-      </h3>
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      size="md"
+      [title]="editing() ? 'Editar proveedor' : 'Nuevo proveedor'"
+      [busy]="submitting()"
+      (closed)="closeForm()">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()"
+            class="bg-surface border border-border-subtle rounded-2xl p-6 space-y-4 shadow-sm">
+        <h3 class="font-semibold text-foreground">
+          @if (editing()) { Editar proveedor } @else { Nuevo proveedor }
+        </h3>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium text-foreground-muted mb-1">Nombre *</label>
-          <input formControlName="name" type="text" placeholder="Distribuidora XYZ"
-                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-foreground-muted mb-1">Nombre *</label>
+            <input formControlName="name" type="text" placeholder="Distribuidora XYZ"
+                   class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-foreground-muted mb-1">Contacto</label>
+            <input formControlName="contact" type="text" placeholder="Nombre del vendedor"
+                   class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-foreground-muted mb-1">Teléfono</label>
+            <input formControlName="phone" type="tel" placeholder="+591 70000000"
+                   class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-foreground-muted mb-1">Email</label>
+            <input formControlName="email" type="email" placeholder="ventas@proveedor.com"
+                   class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-foreground-muted mb-1">Notas</label>
+            <input formControlName="notes" type="text" placeholder="Entrega los martes…"
+                   class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium text-foreground-muted mb-1">Contacto</label>
-          <input formControlName="contact" type="text" placeholder="Nombre del vendedor"
-                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-foreground-muted mb-1">Teléfono</label>
-          <input formControlName="phone" type="tel" placeholder="+591 70000000"
-                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-foreground-muted mb-1">Email</label>
-          <input formControlName="email" type="email" placeholder="ventas@proveedor.com"
-                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-foreground-muted mb-1">Notas</label>
-          <input formControlName="notes" type="text" placeholder="Entrega los martes…"
-                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
-        </div>
-      </div>
 
-      @if (formError(); as msg) {
-        <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
-      }
+        @if (formError(); as msg) {
+          <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+        }
 
-      <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
-        <button type="button" (click)="closeForm()"
-                class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
-          Cancelar
-        </button>
-        <button type="submit" [disabled]="form.invalid || submitting()"
-                class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
-          @if (submitting()) { Guardando… } @else if (editing()) { Guardar cambios } @else { Crear proveedor }
-        </button>
-      </div>
-    </form>
+        <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+          <button type="button" (click)="closeForm()"
+                  class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="form.invalid || submitting()"
+                  class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+            @if (submitting()) { Guardando… } @else if (editing()) { Guardar cambios } @else { Crear proveedor }
+          </button>
+        </div>
+      </form>
+    </app-modal-shell>
   }
 
   <!-- Lista -->
   @if (loading()) {
     <div class="text-center py-10 text-sm text-foreground-muted">Cargando…</div>
-  } @else if (suppliers().length === 0 && !showForm()) {
+  } @else if (suppliers().length === 0) {
     <div class="rounded-xl border border-border-subtle bg-surface px-5 py-12 text-center">
       <p class="text-sm text-foreground-muted">No hay proveedores registrados.</p>
       <button (click)="openCreate()"
@@ -86,7 +93,7 @@
   } @else {
     <div class="rounded-xl border border-border-subtle bg-surface divide-y divide-border-subtle overflow-hidden">
       @for (s of suppliers(); track s.id) {
-        <div class="px-5 py-4 flex items-center gap-4">
+        <div class="row-hover px-5 py-4 flex items-center gap-4 hover:bg-muted/40">
           <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold flex-shrink-0">
             {{ s.name.slice(0, 2).toUpperCase() }}
           </div>
@@ -100,11 +107,11 @@
           </div>
           <div class="flex gap-2 flex-shrink-0">
             <button (click)="openEdit(s)"
-                    class="px-3 py-1.5 text-xs font-medium text-foreground-muted border border-border-subtle rounded-lg hover:bg-muted transition">
+                    class="press px-3 py-1.5 text-xs font-medium text-foreground-muted border border-border-subtle rounded-lg hover:bg-muted transition">
               Editar
             </button>
             <button (click)="handleDelete(s)"
-                    class="px-3 py-1.5 text-xs font-medium text-danger/80 border border-danger/20 rounded-lg hover:bg-danger/10 transition">
+                    class="press px-3 py-1.5 text-xs font-medium text-danger/80 border border-danger/20 rounded-lg hover:bg-danger/10 transition">
               Eliminar
             </button>
           </div>

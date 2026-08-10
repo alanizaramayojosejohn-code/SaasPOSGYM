@@ -1,30 +1,32 @@
-<div class="max-w-7xl mx-auto px-6 py-10 space-y-6">
+<div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
   <div class="flex items-center justify-between">
     <div>
       <h2 class="text-2xl font-bold text-foreground tracking-tight">Productos</h2>
       <p class="text-foreground-muted text-sm">Inventario disponible para venta en caja.</p>
     </div>
-    @if (showForm()) {
-      <button (click)="closeForm()"
-              class="px-4 py-2 text-sm font-semibold bg-muted hover:bg-input text-foreground border border-border-subtle rounded-lg transition">
-        Cerrar formulario
-      </button>
-    } @else {
-      <button (click)="openCreate()"
-              class="px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
-        Nuevo producto
-      </button>
-    }
+    <button (click)="openCreate()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+      Nuevo producto
+    </button>
   </div>
 
+  <!-- El formulario vive en una ventana modal sobre el listado. El @if externo
+       lo destruye al cerrar para que la próxima apertura arranque limpia. -->
   @if (showForm()) {
-    <app-admin-products-form
-      [value]="editing()"
-      [categories]="categories()"
-      [submitting]="submitting()"
-      [errorMessage]="formError()"
-      (submitForm)="handleSubmit($event)"
-      (cancel)="closeForm()" />
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      [title]="editing() ? 'Editar producto' : 'Nuevo producto'"
+      [busy]="submitting()"
+      (closed)="closeForm()">
+      <app-admin-products-form
+        [value]="editing()"
+        [categories]="categories()"
+        [submitting]="submitting()"
+        [errorMessage]="formError()"
+        (submitForm)="handleSubmit($event)"
+        (cancel)="closeForm()" />
+    </app-modal-shell>
   }
 
   @if (actionError(); as msg) {

@@ -1,98 +1,103 @@
 <div class="min-h-screen flex flex-col lg:flex-row">
 
   <!-- Mobile topbar -->
-  <header class="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 h-14 bg-surface border-b border-border-subtle flex-shrink-0">
-    <button (click)="sidebarOpen.set(!sidebarOpen())"
-            class="p-2 rounded-lg hover:bg-muted text-foreground-muted hover:text-foreground transition">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" x2="20" y1="6" y2="6"/>
-        <line x1="4" x2="20" y1="12" y2="12"/>
-        <line x1="4" x2="20" y1="18" y2="18"/>
-      </svg>
-    </button>
+  <header class="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 h-14 bg-surface backdrop-blur-xl border-b border-border-subtle flex-shrink-0">
+    <app-burger-button [open]="sidebar.mobileOpen()" (toggled)="sidebar.toggleMobile()" />
     <div class="w-7 h-7 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-xs flex-shrink-0">S</div>
     <span class="font-bold text-foreground tracking-tight">SaasGym</span>
     <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-1.5 py-0.5 rounded bg-muted border border-border-subtle">{{ audienceLabel }}</span>
   </header>
 
-  <!-- Backdrop -->
-  @if (sidebarOpen()) {
-    <div class="fixed inset-0 z-40 bg-black/50 lg:hidden" (click)="sidebarOpen.set(false)"></div>
+  <!-- Backdrop del drawer móvil -->
+  @if (sidebar.mobileOpen()) {
+    <div class="m-backdrop fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" (click)="sidebar.closeMobile()"></div>
   }
 
   <!-- ============================== Sidebar ============================== -->
-  <aside class="fixed inset-y-0 left-0 z-50 w-60 bg-surface backdrop-blur-xl border-r border-border-subtle flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out lg:sticky lg:inset-auto lg:top-0 lg:h-screen lg:z-auto lg:translate-x-0"
-         [class.-translate-x-full]="!sidebarOpen()">
+  <aside class="rail fixed inset-y-0 left-0 z-50 bg-surface backdrop-blur-xl border-r border-border-subtle flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out lg:sticky lg:inset-auto lg:top-0 lg:h-screen lg:z-auto lg:translate-x-0"
+         [class.is-collapsed]="sidebar.collapsed()"
+         [class.-translate-x-full]="!sidebar.mobileOpen()">
 
     <!-- Brand -->
-    <div class="px-5 py-5 flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-sm">S</div>
-      <span class="font-bold text-foreground tracking-tight">SaasGym</span>
-      <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-1.5 py-0.5 rounded bg-muted border border-border-subtle">{{ audienceLabel }}</span>
+    <div class="px-5 py-5 flex items-center gap-2.5 rail-item">
+      <div class="w-9 h-9 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-sm flex-shrink-0 press hover-lift">S</div>
+      <span class="font-bold text-foreground tracking-tight rail-label rail-hide">SaasGym</span>
+      <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-1.5 py-0.5 rounded bg-muted border border-border-subtle rail-label rail-hide">{{ audienceLabel }}</span>
     </div>
 
     <!-- Nav -->
-    <nav class="px-3 flex-1 overflow-y-auto pb-4">
-      <p class="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint">Operación</p>
+    <nav class="px-3 flex-1 overflow-y-auto overflow-x-hidden pb-4">
+      <p class="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Operación</p>
 
-      <a routerLink="/caja/home" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+      <a routerLink="/caja/home" title="Inicio" routerLinkActive="bg-primary text-primary-fg shadow-sm"
          [routerLinkActiveOptions]="{ exact: true }"
-         (click)="sidebarOpen.set(false)"
-         class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+         (click)="sidebar.closeMobile()"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
           <path d="M3 12 12 3l9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/>
         </svg>
-        Inicio
+        <span class="rail-label">Inicio</span>
       </a>
 
-      <a routerLink="/caja/sales" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-         (click)="sidebarOpen.set(false)"
-         class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a routerLink="/caja/sales" title="Ventas" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+         (click)="sidebar.closeMobile()"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
           <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
         </svg>
-        Ventas
+        <span class="rail-label">Ventas</span>
       </a>
 
-      <a routerLink="/caja/clients" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-         (click)="sidebarOpen.set(false)"
-         class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a routerLink="/caja/clients" title="Clientes" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+         (click)="sidebar.closeMobile()"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
           <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        Clientes
+        <span class="rail-label">Clientes</span>
       </a>
 
       @if (isGym()) {
-        <a routerLink="/caja/attendance" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-           (click)="sidebarOpen.set(false)"
-           class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a routerLink="/caja/attendance" title="Asistencia" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+           (click)="sidebar.closeMobile()"
+           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
             <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>
           </svg>
-          Asistencia
+          <span class="rail-label">Asistencia</span>
         </a>
       }
     </nav>
 
     <!-- Footer: theme toggle + user profile + logout -->
     <div class="p-3 border-t border-border-subtle space-y-3">
-      <div class="flex justify-center">
+      <!-- Colapsar/expandir: solo escritorio -->
+      <button type="button" (click)="sidebar.toggleCollapsed()"
+              [title]="sidebar.collapsed() ? 'Expandir menú' : 'Contraer menú'"
+              class="hidden lg:flex rail-item press w-full items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="chev flex-shrink-0" [class.is-flipped]="sidebar.collapsed()">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        <span class="rail-label">Contraer</span>
+      </button>
+
+      <div class="flex justify-center rail-hide">
         <app-theme-mode-toggle />
       </div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-elevated border border-border-subtle">
-        <a routerLink="/caja/profile" (click)="sidebarOpen.set(false)"
-           class="flex items-center gap-2 flex-1 min-w-0 hover:opacity-75 transition">
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-elevated border border-border-subtle rail-item hover-lift">
+        <a routerLink="/caja/profile" (click)="sidebar.closeMobile()"
+           class="flex items-center gap-2 flex-1 min-w-0 transition">
           <div class="w-8 h-8 rounded-full bg-primary text-primary-fg flex items-center justify-center text-xs font-bold flex-shrink-0">
             {{ initials() }}
           </div>
-          <div class="flex-1 min-w-0">
+          <div class="flex-1 min-w-0 rail-label rail-hide">
             <p class="text-sm font-semibold text-foreground truncate">{{ auth.profile()?.name }}</p>
             <p class="text-[10px] text-foreground-subtle uppercase tracking-wider">{{ auth.profile()?.role }}</p>
           </div>
         </a>
         <button (click)="logout()" title="Salir"
-                class="text-foreground-muted hover:text-foreground p-1.5 rounded hover:bg-muted transition flex-shrink-0">
+                class="icon-btn press text-foreground-muted hover:text-foreground p-1.5 rounded hover:bg-muted transition flex-shrink-0 rail-hide">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>
           </svg>
