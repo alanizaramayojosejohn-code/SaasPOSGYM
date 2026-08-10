@@ -49,7 +49,7 @@
   <!-- ======================== Modo: Membresía ======================== -->
   @if (mode() === 'membership' && isGym()) {
     <app-caja-sales-membership-form
-      [clients]="clients()"
+      [clients]="activeClients()"
       [plans]="plans()"
       [submitting]="submitting()"
       [errorMessage]="formError()"
@@ -236,8 +236,8 @@
                   (change)="selectCustomer($any($event.target).value)"
                   class="w-full px-3 py-2 bg-input text-foreground text-sm border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
             <option value="">— Venta sin cliente —</option>
-            @for (c of clients(); track c.id) {
-              <option [value]="c.id">{{ c.ci }} · {{ c.name }}</option>
+            @for (c of activeClients(); track c.id) {
+              <option [value]="c.id">{{ c.ci }} · {{ c.name }}@if (c.nit) { · NIT {{ c.nit }} }</option>
             }
           </select>
         </div>

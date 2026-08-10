@@ -4,7 +4,7 @@
     <div>
       <h3 class="text-base font-semibold text-foreground tracking-tight">Socios</h3>
       <p class="text-[11px] text-foreground-muted mt-0.5">
-        {{ counts().all }} registrados · {{ counts().recent }} alta reciente · {{ counts().noPhone }} sin teléfono
+        {{ counts().all }} registrados · {{ counts().recent }} alta reciente · {{ counts().withNit }} con NIT · {{ counts().inactive }} inactivos
       </p>
     </div>
     <div class="flex-1"></div>
@@ -35,12 +35,26 @@
               class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
         Alta reciente · {{ counts().recent }}
       </button>
-      <button type="button" (click)="setFilter('no-phone')"
-              [class.bg-input]="filter() === 'no-phone'"
-              [class.text-foreground]="filter() === 'no-phone'"
-              [class.text-foreground-muted]="filter() !== 'no-phone'"
+      <button type="button" (click)="setFilter('with-nit')"
+              [class.bg-input]="filter() === 'with-nit'"
+              [class.text-foreground]="filter() === 'with-nit'"
+              [class.text-foreground-muted]="filter() !== 'with-nit'"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
-        Sin teléfono · {{ counts().noPhone }}
+        Con NIT · {{ counts().withNit }}
+      </button>
+      <button type="button" (click)="setFilter('no-nit')"
+              [class.bg-input]="filter() === 'no-nit'"
+              [class.text-foreground]="filter() === 'no-nit'"
+              [class.text-foreground-muted]="filter() !== 'no-nit'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Sin NIT · {{ counts().noNit }}
+      </button>
+      <button type="button" (click)="setFilter('inactive')"
+              [class.bg-input]="filter() === 'inactive'"
+              [class.text-foreground]="filter() === 'inactive'"
+              [class.text-foreground-muted]="filter() !== 'inactive'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Inactivos · {{ counts().inactive }}
       </button>
     </div>
 
@@ -95,31 +109,54 @@
           <tr>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Socio</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">CI</th>
-            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Teléfono</th>
+            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">NIT / Razón social</th>
+            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Contacto</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Alta</th>
             <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @for (client of filteredSorted(); track client.id; let even = $even) {
-            <tr [class.bg-muted]="even" class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
+            <tr [class.bg-muted]="even" [class.opacity-60]="!client.is_active"
+                class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
               <td class="px-5 py-3">
                 <button type="button" (click)="view.emit(client)" class="flex items-center gap-3 group text-left">
                   <span class="w-9 h-9 rounded-full bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
                     {{ initials(client.name) }}
                   </span>
                   <span>
-                    <span class="block font-semibold text-foreground group-hover:underline">{{ client.name }}</span>
+                    <span class="flex items-center gap-1.5">
+                      <span class="font-semibold text-foreground group-hover:underline">{{ client.name }}</span>
+                      @if (!client.is_active) {
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">
+                          inactivo
+                        </span>
+                      }
+                    </span>
                     <span class="block text-[11px] text-foreground-faint">ID #{{ client.id.slice(0, 8) }}</span>
                   </span>
                 </button>
               </td>
               <td class="px-5 py-3 font-mono text-foreground-muted text-xs">{{ client.ci }}</td>
-              <td class="px-5 py-3 text-foreground-muted">
-                @if (client.phone) {
-                  <span class="font-mono text-xs">{{ client.phone }}</span>
+              <td class="px-5 py-3">
+                @if (client.nit) {
+                  <span class="block font-mono text-xs text-foreground-muted">{{ client.nit }}</span>
+                  @if (client.business_name) {
+                    <span class="block text-[11px] text-foreground-faint truncate max-w-[22ch]">{{ client.business_name }}</span>
+                  }
                 } @else {
-                  <span class="text-foreground-faint">—</span>
+                  <span class="text-foreground-faint text-xs">—</span>
+                }
+              </td>
+              <td class="px-5 py-3">
+                @if (client.phone) {
+                  <span class="block font-mono text-xs text-foreground-muted">{{ client.phone }}</span>
+                }
+                @if (client.email) {
+                  <span class="block text-[11px] text-foreground-faint truncate max-w-[22ch]">{{ client.email }}</span>
+                }
+                @if (!client.phone && !client.email) {
+                  <span class="text-foreground-faint text-xs">—</span>
                 }
               </td>
               <td class="px-5 py-3 text-foreground-subtle text-xs">{{ client.created_at | date: 'dd MMM yyyy' }}</td>
@@ -130,6 +167,19 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
                     </svg>
+                  </button>
+                  <button type="button" (click)="toggleActive.emit(client)"
+                          [title]="client.is_active ? 'Desactivar' : 'Activar'"
+                          class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">
+                    @if (client.is_active) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                      </svg>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5"/>
+                      </svg>
+                    }
                   </button>
                   <button type="button" (click)="edit.emit(client)" title="Editar"
                           class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">

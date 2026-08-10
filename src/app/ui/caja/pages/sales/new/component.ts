@@ -112,6 +112,9 @@ export class CajaSalesNewComponent {
   readonly cartTotalQuantity = computed(() => this.cart().reduce((s, i) => s + i.quantity, 0));
   readonly cashChange = computed(() => this.cashReceived() - this.cartSubtotal());
 
+  // Solo los activos: un cliente desactivado no debe poder elegirse al cobrar.
+  readonly activeClients = computed(() => this.clients().filter((c) => c.is_active));
+
   readonly selectedCustomer = computed<Client | null>(() => {
     const id = this.cartCustomerId();
     if (!id) return null;

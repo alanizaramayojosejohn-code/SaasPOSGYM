@@ -1,0 +1,151 @@
+<div class="space-y-6">
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 a-stagger">
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Pagado neto</p>
+      <p class="kpi-value text-2xl font-bold font-mono text-foreground tracking-tight mt-1">
+        {{ totalNet() | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+      </p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Descontado</p>
+      <p class="kpi-value text-2xl font-bold font-mono text-foreground tracking-tight mt-1">
+        {{ totalDeductions() | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+      </p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Pendiente de aplicar</p>
+      <p class="kpi-value text-2xl font-bold font-mono tracking-tight mt-1"
+         [class.text-warning]="totalPending() > 0"
+         [class.text-foreground]="totalPending() === 0">
+        {{ totalPending() | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+      </p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">En planilla</p>
+      <p class="kpi-value text-2xl font-bold font-mono text-foreground tracking-tight mt-1">{{ activeCount() }}</p>
+    </div>
+  </div>
+
+  <!-- Costo mensual -->
+  <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-5 shadow-sm">
+    <div class="mb-4">
+      <h3 class="font-semibold text-foreground">Costo de personal por mes</h3>
+      <p class="text-xs text-foreground-subtle">Neto efectivamente pagado. Los pagos anulados no cuentan.</p>
+    </div>
+
+    @if (loading()) {
+      <div class="py-12 text-center text-sm text-foreground-subtle">Cargando…</div>
+    } @else if (monthlyChrono().length === 0) {
+      <div class="py-12 text-center text-sm text-foreground-subtle">Sin sueldos liquidados todavía.</div>
+    } @else {
+      <div class="chart-bars flex items-end justify-between gap-2 h-40 pt-4">
+        @for (m of monthlyChrono(); track m.month) {
+          <div class="flex-1 h-full flex flex-col items-center gap-2 group"
+               [title]="(m.employees_count) + ' empleados — Bs ' + m.total_net">
+            <div class="w-full flex-1 min-h-0 flex items-end">
+              <div class="chart-bar w-full rounded-t-md bg-primary/80 hover:bg-primary relative"
+                   [style.height.%]="barHeight(m.total_net)">
+                <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-semibold text-foreground-muted opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
+                  {{ m.total_net | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+                </span>
+              </div>
+            </div>
+            <span class="text-[10px] text-foreground-faint font-mono">{{ m.month | date: 'MMM yy' }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Detalle por empleado -->
+    <div class="lg:col-span-2 hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+      <header class="px-6 py-4 border-b border-border-subtle">
+        <h3 class="font-semibold text-foreground">Detalle por empleado</h3>
+        <p class="text-xs text-foreground-subtle">Acumulado histórico de cada persona.</p>
+      </header>
+
+      @if (loading()) {
+        <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
+      } @else if (summary().length === 0) {
+        <div class="px-6 py-12 text-center text-sm text-foreground-subtle">Sin empleados registrados.</div>
+      } @else {
+        <div class="max-h-96 overflow-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-muted border-b border-border-subtle sticky top-0">
+              <tr>
+                <th class="text-left px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Empleado</th>
+                <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Pagos</th>
+                <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Bruto</th>
+                <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Desc.</th>
+                <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Neto</th>
+                <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Pendiente</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              @for (r of summary(); track r.employee_id) {
+                <tr class="row-hover hover:bg-muted/50" [class.opacity-60]="!r.is_active">
+                  <td class="px-6 py-2">
+                    <span class="block font-medium text-foreground">{{ r.name }}</span>
+                    <span class="block text-[11px] text-foreground-faint">
+                      {{ r.position ?? 'Sin cargo' }}
+                      @if (!r.is_active) { · de baja }
+                    </span>
+                  </td>
+                  <td class="px-6 py-2 text-right font-mono text-foreground-subtle text-xs">{{ r.payments_count }}</td>
+                  <td class="px-6 py-2 text-right font-mono text-foreground-muted text-xs">{{ r.total_gross | currency: 'BOB':'symbol-narrow':'1.0-0' }}</td>
+                  <td class="px-6 py-2 text-right font-mono text-foreground-muted text-xs">{{ r.total_deductions | currency: 'BOB':'symbol-narrow':'1.0-0' }}</td>
+                  <td class="px-6 py-2 text-right font-mono font-semibold text-foreground text-xs">{{ r.total_net | currency: 'BOB':'symbol-narrow':'1.0-0' }}</td>
+                  <td class="px-6 py-2 text-right">
+                    @if (r.pending_deductions > 0) {
+                      <span class="font-mono text-xs font-bold text-warning">{{ r.pending_deductions | currency: 'BOB':'symbol-narrow':'1.0-0' }}</span>
+                    } @else {
+                      <span class="text-foreground-faint text-xs">—</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+    <!-- Descuentos por tipo -->
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+      <header class="px-6 py-4 border-b border-border-subtle">
+        <h3 class="font-semibold text-foreground">Descuentos por tipo</h3>
+        <p class="text-xs text-foreground-subtle">De dónde salen los descuentos.</p>
+      </header>
+
+      @if (loading()) {
+        <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
+      } @else if (byType().length === 0) {
+        <div class="px-6 py-12 text-center text-sm text-foreground-subtle">Sin descuentos cargados.</div>
+      } @else {
+        <div class="divide-y divide-border-subtle a-stagger">
+          @for (t of byType(); track t.type) {
+            <div class="row-hover hover:bg-muted/40 px-6 py-3 flex items-center gap-3">
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-foreground">{{ typeLabel(t.type) }}</p>
+                <p class="text-[11px] text-foreground-faint">
+                  {{ t.deductions_count }} registros
+                  @if (t.pending_count > 0) { · {{ t.pending_count }} pendientes }
+                </p>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <p class="text-sm font-mono font-semibold text-foreground">{{ t.total_amount | currency: 'BOB':'symbol-narrow':'1.0-0' }}</p>
+                @if (t.pending_amount > 0) {
+                  <p class="text-[11px] font-mono text-warning">{{ t.pending_amount | currency: 'BOB':'symbol-narrow':'1.0-0' }} pend.</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

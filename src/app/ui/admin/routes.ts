@@ -48,6 +48,13 @@ export const AdminRoutes: Routes = [
       ),
   },
   {
+    path: 'employees',
+    loadComponent: () =>
+      import('./pages/employees/container/component').then(
+        (m) => m.AdminEmployeesContainerComponent,
+      ),
+  },
+  {
     path: 'purchases',
     loadComponent: () =>
       import('./pages/purchases/container/component').then(

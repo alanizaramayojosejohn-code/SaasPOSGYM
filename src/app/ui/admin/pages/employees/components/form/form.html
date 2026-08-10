@@ -1,0 +1,153 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()"
+      class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-5 shadow-sm">
+  <div>
+    <h3 class="font-semibold text-foreground">
+      @if (isEdit()) { Editar empleado } @else { Nuevo empleado }
+    </h3>
+    <p class="text-sm text-foreground-subtle">
+      @if (isEdit()) { Modifica los datos del empleado. } @else { Registra a alguien de tu personal, entre o no al sistema. }
+    </p>
+  </div>
+
+  <!-- Datos personales -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="md:col-span-2">
+      <label for="emp_name" class="block text-sm font-medium text-foreground-muted mb-1">Nombre completo</label>
+      <input id="emp_name" type="text" formControlName="name"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+    </div>
+
+    <div>
+      <label for="emp_ci" class="block text-sm font-medium text-foreground-muted mb-1">CI</label>
+      <input id="emp_ci" type="text" formControlName="ci" autocomplete="off"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
+    </div>
+
+    <div>
+      <label for="emp_position" class="block text-sm font-medium text-foreground-muted mb-1">Cargo <span class="text-foreground-faint">(opcional)</span></label>
+      <input id="emp_position" type="text" formControlName="position" placeholder="Entrenador, recepción…"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+    </div>
+
+    <div>
+      <label for="emp_phone" class="block text-sm font-medium text-foreground-muted mb-1">Teléfono <span class="text-foreground-faint">(opcional)</span></label>
+      <input id="emp_phone" type="tel" formControlName="phone"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+    </div>
+
+    <div>
+      <label for="emp_email" class="block text-sm font-medium text-foreground-muted mb-1">Email <span class="text-foreground-faint">(opcional)</span></label>
+      <input id="emp_email" type="email" formControlName="email"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+      @if (form.controls.email.invalid && form.controls.email.value) {
+        <p class="text-xs text-danger mt-1">Email inválido.</p>
+      }
+    </div>
+  </div>
+
+  <!-- Contrato -->
+  <div class="pt-4 border-t border-border-subtle">
+    <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-3">Contrato y sueldo</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label for="emp_hire" class="block text-sm font-medium text-foreground-muted mb-1">Fecha de ingreso</label>
+        <input id="emp_hire" type="date" formControlName="hire_date"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+      </div>
+
+      <div>
+        <label for="emp_term" class="block text-sm font-medium text-foreground-muted mb-1">Fecha de baja <span class="text-foreground-faint">(opcional)</span></label>
+        <input id="emp_term" type="date" formControlName="termination_date" [min]="form.controls.hire_date.value"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+        @if (datesInvalid()) {
+          <p class="text-xs text-danger mt-1">La baja no puede ser anterior al ingreso.</p>
+        }
+      </div>
+
+      <div>
+        <label for="emp_salary_type" class="block text-sm font-medium text-foreground-muted mb-1">Modalidad</label>
+        <select id="emp_salary_type" formControlName="salary_type"
+                class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+          @for (t of salaryTypes; track t.value) {
+            <option [value]="t.value">{{ t.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div>
+        <label for="emp_base" class="block text-sm font-medium text-foreground-muted mb-1">Sueldo base</label>
+        <input id="emp_base" type="number" min="0" step="0.01" formControlName="base_salary"
+               class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+        <p class="text-xs text-foreground-faint mt-1">Se propone al liquidar; el monto real se confirma en cada pago.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acceso al panel -->
+  <div class="pt-4 border-t border-border-subtle">
+    <label for="emp_profile" class="block text-sm font-medium text-foreground-muted mb-1">
+      Cuenta del panel <span class="text-foreground-faint">(opcional)</span>
+    </label>
+    <select id="emp_profile" formControlName="profile_id"
+            class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+      <option value="">— Sin acceso al sistema —</option>
+      @for (p of profiles(); track p.id) {
+        <option [value]="p.id">{{ p.name }} · {{ p.role }}</option>
+      }
+    </select>
+    <p class="text-xs text-foreground-faint mt-1">
+      Enlaza al empleado con su usuario de Personal. Déjalo vacío si solo cobra sueldo y no entra al sistema.
+    </p>
+  </div>
+
+  <!-- Estado y notas -->
+  <div class="pt-4 border-t border-border-subtle grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="flex items-center gap-3 cursor-pointer select-none">
+        <div class="relative">
+          <input type="checkbox" formControlName="is_active"
+                 [checked]="isActive()"
+                 (change)="toggleIsActive($any($event.target).checked)"
+                 class="sr-only peer" />
+          <div class="w-11 h-6 bg-muted peer-checked:bg-success rounded-full transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-success/40"></div>
+          <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform peer-checked:translate-x-5"></div>
+        </div>
+        <span class="text-sm font-medium text-foreground-muted">En planilla</span>
+      </label>
+      <p class="text-xs text-foreground-faint mt-1">
+        @if (isActive()) {
+          Aparece al liquidar sueldos.
+        } @else {
+          Dado de baja. Conserva su historial de pagos.
+        }
+      </p>
+    </div>
+
+    <div>
+      <label for="emp_notes" class="block text-sm font-medium text-foreground-muted mb-1">Notas <span class="text-foreground-faint">(opcional)</span></label>
+      <input id="emp_notes" type="text" formControlName="notes"
+             class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+    </div>
+  </div>
+
+  @if (errorMessage(); as msg) {
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
+      {{ msg }}
+    </div>
+  }
+
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+    <button type="button" (click)="cancel.emit()"
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+      Cancelar
+    </button>
+    <button type="submit" [disabled]="form.invalid || datesInvalid() || submitting()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+      @if (submitting()) {
+        @if (isEdit()) { Guardando… } @else { Creando… }
+      } @else {
+        @if (isEdit()) { Guardar cambios } @else { Crear empleado }
+      }
+    </button>
+  </div>
+</form>

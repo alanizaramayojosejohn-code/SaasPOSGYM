@@ -40,6 +40,16 @@
         <div class="mt-3 pt-3 border-t border-border-subtle">
           <p class="text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-0.5">Cliente</p>
           <p class="text-sm text-foreground">{{ order().client_label }}</p>
+          <!-- Datos de facturación: razón social si la hay, si no el nombre del socio. -->
+          @if (order().client_nit) {
+            <div class="mt-1.5 flex items-baseline gap-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-foreground-faint">NIT</span>
+              <span class="text-sm font-mono text-foreground">{{ order().client_nit }}</span>
+            </div>
+            @if (order().client_business_name) {
+              <p class="text-xs text-foreground-muted">{{ order().client_business_name }}</p>
+            }
+          }
         </div>
       }
 

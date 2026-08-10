@@ -32,6 +32,9 @@ export class AdminClientsContainerComponent {
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
 
+  // Errores de acciones sobre la fila (activar/desactivar), fuera del formulario.
+  readonly actionError = signal<string | null>(null);
+
   // Modal de borrado: null = cerrado, Client = mostrando confirmación para ese cliente.
   readonly deleting = signal<Client | null>(null);
   readonly deletingError = signal<string | null>(null);
@@ -97,6 +100,25 @@ export class AdminClientsContainerComponent {
     }
   }
 
+  // Activa o desactiva desde la fila, con reversión si el servidor rechaza.
+  async handleToggleActive(client: Client): Promise<void> {
+    const next = !client.is_active;
+    this.actionError.set(null);
+    this.clients.update((list) =>
+      list.map((c) => (c.id === client.id ? { ...c, is_active: next } : c)),
+    );
+    try {
+      await this.clientService.setClientActive(client.id, next);
+    } catch (err: unknown) {
+      this.clients.update((list) =>
+        list.map((c) => (c.id === client.id ? { ...c, is_active: client.is_active } : c)),
+      );
+      this.actionError.set(
+        errorMessage(err, next ? 'Error al activar cliente' : 'Error al desactivar cliente'),
+      );
+    }
+  }
+
   // Abre el modal de confirmación. El borrado real ocurre en confirmDelete().
   handleDelete(client: Client): void {
     this.deleting.set(client);
@@ -115,7 +137,7 @@ export class AdminClientsContainerComponent {
     this.deletingSubmitting.set(true);
     this.deletingError.set(null);
     try {
-      await this.clientService.deleteClient(client.id);
+      await this.clientService.softDeleteClient(client.id);
       if (this.editing()?.id === client.id) this.formState.set(null);
       this.deleting.set(null);
       await this.refresh();

@@ -12,7 +12,7 @@ export class OrderQueryService {
       .from('orders')
       .select(`
         *,
-        clients(ci, name),
+        clients(ci, name, nit, business_name),
         order_items(
           *,
           products(name),
@@ -39,6 +39,8 @@ export class OrderQueryService {
       return {
         ...order,
         client_label: clients ? `${clients.ci} · ${clients.name}` : null,
+        client_nit: clients?.nit ?? null,
+        client_business_name: clients?.business_name ?? null,
         items,
       } as OrderWithDetails;
     });

@@ -1,0 +1,362 @@
+<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl shadow-sm flex flex-col max-h-[calc(100vh-3rem)]">
+
+  <!-- Header -->
+  <div class="px-6 py-5 border-b border-border-subtle flex items-start gap-4 flex-shrink-0">
+    <div class="w-11 h-11 rounded-xl bg-foreground text-base flex items-center justify-center text-sm font-bold flex-shrink-0 a-pop">
+      {{ employee().name.slice(0, 2).toUpperCase() }}
+    </div>
+    <div class="flex-1 min-w-0">
+      <h3 class="text-lg font-bold text-foreground tracking-tight">{{ employee().name }}</h3>
+      <p class="text-xs text-foreground-muted">
+        <span class="font-mono">{{ employee().ci }}</span>
+        @if (employee().position) { · {{ employee().position }} }
+        · Ingreso {{ employee().hire_date | date: 'dd MMM yyyy' }}
+      </p>
+    </div>
+    <div class="text-right flex-shrink-0">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Pendiente</p>
+      <p class="text-base font-bold font-mono"
+         [class.text-warning]="pendingTotal() > 0"
+         [class.text-foreground-faint]="pendingTotal() === 0">
+        {{ pendingTotal() | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+      </p>
+    </div>
+    <button type="button" (click)="close.emit()" aria-label="Cerrar"
+            class="icon-btn press w-8 h-8 -mr-1 -mt-1 inline-flex items-center justify-center rounded-lg text-foreground-muted hover:text-foreground hover:bg-muted transition flex-shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="px-6 pt-4 flex-shrink-0">
+    <div class="inline-flex bg-elevated border border-border-subtle rounded-xl p-1 gap-1">
+      <button type="button" (click)="setTab('pay')"
+              [class.bg-input]="tab() === 'pay'"
+              [class.text-foreground]="tab() === 'pay'"
+              [class.text-foreground-muted]="tab() !== 'pay'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Liquidar sueldo
+      </button>
+      <button type="button" (click)="setTab('deductions')"
+              [class.bg-input]="tab() === 'deductions'"
+              [class.text-foreground]="tab() === 'deductions'"
+              [class.text-foreground-muted]="tab() !== 'deductions'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Descuentos · {{ pending().length }}
+      </button>
+      <button type="button" (click)="setTab('history')"
+              [class.bg-input]="tab() === 'history'"
+              [class.text-foreground]="tab() === 'history'"
+              [class.text-foreground-muted]="tab() !== 'history'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Historial · {{ payments().length }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Cuerpo -->
+  <div class="px-6 py-5 overflow-y-auto flex-1 min-h-0">
+
+    @if (loading()) {
+      <div class="py-12 text-center text-sm text-foreground-subtle">Cargando…</div>
+    } @else {
+
+      <!-- ============================ LIQUIDAR ============================ -->
+      @if (tab() === 'pay') {
+        <form [formGroup]="payForm" (ngSubmit)="onSubmitPayment()" class="space-y-5 a-rise-sm">
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="pay_start" class="block text-sm font-medium text-foreground-muted mb-1">Período desde</label>
+              <input id="pay_start" type="date" formControlName="period_start"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+            </div>
+            <div>
+              <label for="pay_end" class="block text-sm font-medium text-foreground-muted mb-1">Período hasta</label>
+              <input id="pay_end" type="date" formControlName="period_end"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+              @if (periodInvalid()) {
+                <p class="text-xs text-danger mt-1">El fin no puede ser anterior al inicio.</p>
+              }
+            </div>
+
+            <div>
+              <label for="pay_gross" class="block text-sm font-medium text-foreground-muted mb-1">Sueldo bruto</label>
+              <input id="pay_gross" type="number" min="0" step="0.01" formControlName="gross_amount"
+                     (input)="onGrossInput($any($event.target).value)"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+            </div>
+            <div>
+              <label for="pay_bonus" class="block text-sm font-medium text-foreground-muted mb-1">Bonos / horas extra</label>
+              <input id="pay_bonus" type="number" min="0" step="0.01" formControlName="bonus_amount"
+                     (input)="onBonusInput($any($event.target).value)"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+            </div>
+          </div>
+
+          <!-- Descuentos a aplicar -->
+          <div class="border border-border-subtle rounded-xl overflow-hidden">
+            <div class="px-4 py-3 bg-muted/40 border-b border-border-subtle flex items-center gap-3 flex-wrap">
+              <p class="text-xs font-bold uppercase tracking-widest text-foreground-muted flex-1">
+                Descuentos a aplicar
+              </p>
+              @if (pending().length > 0) {
+                <button type="button" (click)="selectAllPending()"
+                        class="press text-[11px] font-semibold text-foreground-muted hover:text-foreground underline-grow">
+                  Marcar todos
+                </button>
+                <button type="button" (click)="clearSelection()"
+                        class="press text-[11px] font-semibold text-foreground-muted hover:text-foreground underline-grow">
+                  Limpiar
+                </button>
+              }
+            </div>
+
+            @if (pending().length === 0) {
+              <p class="px-4 py-6 text-center text-xs text-foreground-subtle">
+                Sin descuentos pendientes. Cárgalos en la pestaña "Descuentos".
+              </p>
+            } @else {
+              <div class="divide-y divide-border-subtle a-stagger">
+                @for (d of pending(); track d.id) {
+                  <label class="row-hover hover:bg-muted/40 px-4 py-2.5 flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" [checked]="isSelected(d.id)" (change)="toggleSelected(d.id)"
+                           class="w-4 h-4 accent-current text-foreground flex-shrink-0" />
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle flex-shrink-0">
+                      {{ typeLabel(d.type) }}
+                    </span>
+                    <span class="flex-1 min-w-0 text-xs text-foreground-muted truncate">
+                      {{ d.description ?? '—' }}
+                    </span>
+                    <span class="text-[11px] text-foreground-faint flex-shrink-0">{{ d.applied_on | date: 'dd/MM' }}</span>
+                    <span class="text-xs font-mono font-semibold text-foreground flex-shrink-0">
+                      −{{ d.amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+                    </span>
+                  </label>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Resumen -->
+          <div class="bg-elevated border border-border-subtle rounded-xl p-4 space-y-1.5">
+            <div class="flex justify-between text-xs text-foreground-muted">
+              <span>Bruto</span>
+              <span class="font-mono">{{ previewGross() | currency: 'BOB':'symbol-narrow':'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-xs text-foreground-muted">
+              <span>Bonos</span>
+              <span class="font-mono">+{{ previewBonus() | currency: 'BOB':'symbol-narrow':'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between text-xs text-foreground-muted">
+              <span>Descuentos ({{ selected().size }})</span>
+              <span class="font-mono">−{{ selectedTotal() | currency: 'BOB':'symbol-narrow':'1.2-2' }}</span>
+            </div>
+            <div class="flex justify-between pt-2 border-t border-border-subtle">
+              <span class="text-sm font-bold text-foreground">Neto a pagar</span>
+              <span class="text-lg font-bold font-mono tracking-tight"
+                    [class.text-danger]="previewNet() < 0"
+                    [class.text-foreground]="previewNet() >= 0">
+                {{ previewNet() | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+              </span>
+            </div>
+            @if (previewNet() < 0) {
+              <p class="text-xs text-danger pt-1">Los descuentos superan el total. Quita alguno o sube el bruto.</p>
+            }
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label for="pay_method" class="block text-sm font-medium text-foreground-muted mb-1">Forma de pago</label>
+              <select id="pay_method" formControlName="payment_method"
+                      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                @for (m of methods; track m.value) {
+                  <option [value]="m.value">{{ m.label }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="pay_on" class="block text-sm font-medium text-foreground-muted mb-1">Fecha de pago</label>
+              <input id="pay_on" type="date" formControlName="paid_on"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+            </div>
+            <div>
+              <label for="pay_notes" class="block text-sm font-medium text-foreground-muted mb-1">Notas <span class="text-foreground-faint">(opcional)</span></label>
+              <input id="pay_notes" type="text" formControlName="notes"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+            </div>
+          </div>
+
+          @if (errorMessage(); as msg) {
+            <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+          }
+
+          <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+            <button type="button" (click)="close.emit()"
+                    class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+              Cerrar
+            </button>
+            <button type="submit" [disabled]="!canSubmitPayment()"
+                    class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+              @if (submitting()) { Registrando… } @else { Registrar pago }
+            </button>
+          </div>
+        </form>
+      }
+
+      <!-- ============================ DESCUENTOS ============================ -->
+      @if (tab() === 'deductions') {
+        <div class="space-y-5 a-rise-sm">
+          <form [formGroup]="deductionForm" (ngSubmit)="onSubmitDeduction()"
+                class="bg-elevated border border-border-subtle rounded-xl p-4 grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+            <div>
+              <label for="ded_type" class="block text-xs font-medium text-foreground-muted mb-1">Tipo</label>
+              <select id="ded_type" formControlName="type"
+                      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                @for (t of deductionTypes; track t.value) {
+                  <option [value]="t.value">{{ t.label }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label for="ded_amount" class="block text-xs font-medium text-foreground-muted mb-1">Monto</label>
+              <input id="ded_amount" type="number" min="0.01" step="0.01" formControlName="amount"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+            </div>
+            <div>
+              <label for="ded_date" class="block text-xs font-medium text-foreground-muted mb-1">Fecha</label>
+              <input id="ded_date" type="date" formControlName="applied_on"
+                     class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+            </div>
+            <div class="flex gap-2">
+              <input type="text" formControlName="description" placeholder="Detalle (opcional)"
+                     class="flex-1 min-w-0 px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm placeholder:text-foreground-faint" />
+              <button type="submit" [disabled]="deductionForm.invalid || submitting()"
+                      class="press px-3 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition flex-shrink-0">
+                +
+              </button>
+            </div>
+          </form>
+
+          @if (errorMessage(); as msg) {
+            <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+          }
+
+          <!-- Pendientes -->
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-2">
+              Pendientes de aplicar · {{ pendingTotal() | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+            </p>
+            @if (pending().length === 0) {
+              <p class="text-xs text-foreground-subtle py-4 text-center border border-border-subtle rounded-xl">
+                Sin descuentos pendientes.
+              </p>
+            } @else {
+              <div class="border border-border-subtle rounded-xl divide-y divide-border-subtle overflow-hidden a-stagger">
+                @for (d of pending(); track d.id) {
+                  <div class="row-hover hover:bg-muted/40 px-4 py-2.5 flex items-center gap-3">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle flex-shrink-0">
+                      {{ typeLabel(d.type) }}
+                    </span>
+                    <span class="flex-1 min-w-0 text-xs text-foreground-muted truncate">{{ d.description ?? '—' }}</span>
+                    <span class="text-[11px] text-foreground-faint flex-shrink-0">{{ d.applied_on | date: 'dd/MM/yy' }}</span>
+                    <span class="text-xs font-mono font-semibold text-foreground flex-shrink-0">
+                      {{ d.amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+                    </span>
+                    <button type="button" (click)="removeDeduction.emit(d)" title="Quitar"
+                            class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-danger hover:bg-danger/10 rounded-md transition flex-shrink-0">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                      </svg>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Ya aplicados -->
+          @if (applied().length > 0) {
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-2">
+                Ya aplicados en una liquidación
+              </p>
+              <div class="border border-border-subtle rounded-xl divide-y divide-border-subtle overflow-hidden opacity-70">
+                @for (d of applied(); track d.id) {
+                  <div class="px-4 py-2 flex items-center gap-3">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle flex-shrink-0">
+                      {{ typeLabel(d.type) }}
+                    </span>
+                    <span class="flex-1 min-w-0 text-xs text-foreground-muted truncate">{{ d.description ?? '—' }}</span>
+                    <span class="text-[11px] text-foreground-faint flex-shrink-0">{{ d.applied_on | date: 'dd/MM/yy' }}</span>
+                    <span class="text-xs font-mono text-foreground-subtle flex-shrink-0">
+                      {{ d.amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ============================ HISTORIAL ============================ -->
+      @if (tab() === 'history') {
+        <div class="a-rise-sm">
+          @if (payments().length === 0) {
+            <p class="text-sm text-foreground-subtle py-12 text-center">
+              Este empleado todavía no tiene sueldos liquidados.
+            </p>
+          } @else {
+            <div class="border border-border-subtle rounded-xl overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-muted/40 border-b border-border-subtle">
+                  <tr>
+                    <th class="text-left px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Período</th>
+                    <th class="text-right px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Bruto</th>
+                    <th class="text-right px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Desc.</th>
+                    <th class="text-right px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Neto</th>
+                    <th class="text-left px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Pago</th>
+                    <th class="text-right px-4 py-2.5 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted"></th>
+                  </tr>
+                </thead>
+                <tbody class="a-stagger a-stagger-rows">
+                  @for (p of payments(); track p.id) {
+                    <tr class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0"
+                        [class.opacity-50]="p.status === 'cancelled'">
+                      <td class="px-4 py-2.5 text-xs text-foreground-muted">
+                        {{ p.period_start | date: 'dd/MM/yy' }} → {{ p.period_end | date: 'dd/MM/yy' }}
+                        @if (p.status === 'cancelled') {
+                          <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-danger/10 text-danger">anulado</span>
+                        }
+                      </td>
+                      <td class="px-4 py-2.5 text-right font-mono text-xs text-foreground-muted">{{ p.gross_amount + p.bonus_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+                      <td class="px-4 py-2.5 text-right font-mono text-xs text-foreground-subtle">{{ p.deductions_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+                      <td class="px-4 py-2.5 text-right font-mono text-xs font-bold text-foreground">{{ p.net_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+                      <td class="px-4 py-2.5 text-xs text-foreground-muted">
+                        {{ p.paid_on | date: 'dd/MM/yy' }} · {{ methodLabel(p.payment_method) }}
+                      </td>
+                      <td class="px-4 py-2.5 text-right">
+                        @if (p.status === 'paid') {
+                          <button type="button" (click)="cancelPayment.emit(p)" title="Anular pago"
+                                  class="press px-2 py-1 text-[11px] font-semibold text-danger/80 border border-danger/20 rounded-md hover:bg-danger/10 transition">
+                            Anular
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <p class="text-[11px] text-foreground-faint mt-2">
+              Anular un pago devuelve sus descuentos al estado pendiente.
+            </p>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

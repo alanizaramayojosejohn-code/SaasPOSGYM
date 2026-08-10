@@ -1,0 +1,88 @@
+<div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h2 class="text-2xl font-bold text-foreground tracking-tight">Empleados</h2>
+      <p class="text-foreground-muted text-sm">
+        Personal del negocio, sueldos y descuentos. Incluye a quienes no entran al sistema.
+      </p>
+    </div>
+    <button (click)="openCreate()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+      Nuevo empleado
+    </button>
+  </div>
+
+  <!-- Alta y edición en ventana modal -->
+  @if (showForm()) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      [title]="editing() ? 'Editar empleado' : 'Nuevo empleado'"
+      [busy]="submitting()"
+      (closed)="closeForm()">
+      <app-admin-employees-form
+        [value]="editing()"
+        [profiles]="availableProfiles()"
+        [submitting]="submitting()"
+        [errorMessage]="formError()"
+        (submitForm)="handleSubmit($event)"
+        (cancel)="closeForm()" />
+    </app-modal-shell>
+  }
+
+  <!-- Nómina del empleado seleccionado -->
+  @if (payrollFor(); as employee) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      size="xl"
+      [title]="'Nómina de ' + employee.name"
+      [busy]="payrollSubmitting()"
+      (closed)="closePayroll()">
+      <app-admin-employees-payroll
+        [employee]="employee"
+        [deductions]="deductions()"
+        [payments]="payments()"
+        [loading]="payrollLoading()"
+        [submitting]="payrollSubmitting()"
+        [errorMessage]="payrollError()"
+        (addDeduction)="handleAddDeduction($event)"
+        (removeDeduction)="handleRemoveDeduction($event)"
+        (registerPayment)="handleRegisterPayment($event)"
+        (cancelPayment)="handleCancelPayment($event)"
+        (close)="closePayroll()" />
+    </app-modal-shell>
+  }
+
+  @if (actionError(); as msg) {
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
+      {{ msg }}
+    </div>
+  }
+
+  <app-admin-employees-list
+    [employees]="employees()"
+    [summary]="summaryById()"
+    [loading]="loading()"
+    (edit)="openEdit($event)"
+    (remove)="handleDelete($event)"
+    (toggleActive)="handleToggleActive($event)"
+    (openPayroll)="openPayroll($event)" />
+
+  @if (deleting(); as e) {
+    <app-confirm-delete
+      [open]="true"
+      title="¿Eliminar a este empleado?"
+      [description]="deletingError() ?? 'Sale de la planilla y del listado. Su historial de sueldos se conserva para los reportes.'"
+      confirmLabel="Eliminar empleado"
+      [entityLabel]="e.name"
+      [entitySublabel]="deletingSublabel()"
+      [entityInitials]="deletingInitials()"
+      [amount]="deletingSalary()"
+      amountLabel="Sueldo base"
+      confirmWord="ELIMINAR"
+      [submitting]="deletingSubmitting()"
+      (confirmed)="confirmDelete()"
+      (cancelled)="cancelDelete()" />
+  }
+</div>

@@ -36,6 +36,9 @@ export interface Order {
 
 export interface OrderWithDetails extends Order {
   client_label: string | null;
+  // Datos de facturación, para la factura impresa.
+  client_nit: string | null;
+  client_business_name: string | null;
   items: OrderItemWithDetails[];
 }
 

@@ -28,11 +28,18 @@
     </app-modal-shell>
   }
 
+  @if (actionError(); as msg) {
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
+      {{ msg }}
+    </div>
+  }
+
   <app-admin-clients-list
     [clients]="clients()"
     [loading]="loading()"
     (edit)="openEdit($event)"
-    (remove)="handleDelete($event)" />
+    (remove)="handleDelete($event)"
+    (toggleActive)="handleToggleActive($event)" />
 
   @if (deleting(); as c) {
     <app-confirm-delete

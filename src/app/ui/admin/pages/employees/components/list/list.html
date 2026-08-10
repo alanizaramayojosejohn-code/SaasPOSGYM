@@ -1,0 +1,210 @@
+<div class="space-y-4">
+  <!-- Topbar -->
+  <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl px-5 py-4 flex items-center gap-4 flex-wrap">
+    <div>
+      <h3 class="text-base font-semibold text-foreground tracking-tight">Personal en planilla</h3>
+      <p class="text-[11px] text-foreground-muted mt-0.5">
+        {{ counts().all }} empleados · {{ counts().active }} activos · {{ counts().withPending }} con descuentos pendientes
+      </p>
+    </div>
+    <div class="flex-1"></div>
+    <div class="text-right">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Costo mensual fijo</p>
+      <p class="kpi-value text-lg font-bold font-mono text-foreground leading-tight">
+        {{ monthlyPayroll() | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+      </p>
+    </div>
+    <div class="flex items-center gap-2 bg-elevated border border-border-subtle rounded-xl px-3.5 py-2.5 w-full md:w-72">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-foreground-muted flex-shrink-0">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" [value]="search()" (input)="setSearch($any($event.target).value)"
+             placeholder="Buscar nombre, CI, cargo…"
+             class="bg-transparent text-foreground text-xs font-medium outline-none flex-1 min-w-0 placeholder:text-foreground-muted" />
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="flex items-center gap-3 flex-wrap">
+    <div class="inline-flex bg-surface backdrop-blur-xl border border-border-subtle rounded-xl p-1 gap-1 flex-wrap">
+      <button type="button" (click)="setFilter('all')"
+              [class.bg-input]="filter() === 'all'"
+              [class.text-foreground]="filter() === 'all'"
+              [class.text-foreground-muted]="filter() !== 'all'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Todos · {{ counts().all }}
+      </button>
+      <button type="button" (click)="setFilter('active')"
+              [class.bg-input]="filter() === 'active'"
+              [class.text-foreground]="filter() === 'active'"
+              [class.text-foreground-muted]="filter() !== 'active'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        En planilla · {{ counts().active }}
+      </button>
+      <button type="button" (click)="setFilter('inactive')"
+              [class.bg-input]="filter() === 'inactive'"
+              [class.text-foreground]="filter() === 'inactive'"
+              [class.text-foreground-muted]="filter() !== 'inactive'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        De baja · {{ counts().inactive }}
+      </button>
+      <button type="button" (click)="setFilter('with-pending')"
+              [class.bg-input]="filter() === 'with-pending'"
+              [class.text-warning]="filter() === 'with-pending'"
+              [class.text-foreground-muted]="filter() !== 'with-pending'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Con pendientes · {{ counts().withPending }}
+      </button>
+    </div>
+
+    <div class="flex-1"></div>
+
+    <div class="relative">
+      <button type="button" (click)="toggleSortMenu()"
+              class="press inline-flex items-center gap-1.5 bg-surface backdrop-blur-xl border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs font-semibold text-foreground-muted hover:text-foreground transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 4h10"/><path d="M11 8h7"/><path d="M11 12h4"/>
+        </svg>
+        {{ sortLabel() }}
+      </button>
+      @if (sortMenuOpen()) {
+        <div class="a-pop absolute right-0 top-full mt-1 w-52 bg-elevated backdrop-blur-xl border border-border-subtle rounded-lg shadow-lg shadow-black/10 z-10 p-1">
+          <button type="button" (click)="setSort('name')"
+                  class="w-full text-left px-3 py-1.5 text-xs font-medium text-foreground-muted hover:bg-input hover:text-foreground rounded transition">Nombre A→Z</button>
+          <button type="button" (click)="setSort('salary-desc')"
+                  class="w-full text-left px-3 py-1.5 text-xs font-medium text-foreground-muted hover:bg-input hover:text-foreground rounded transition">Sueldo descendente</button>
+          <button type="button" (click)="setSort('hire-date')"
+                  class="w-full text-left px-3 py-1.5 text-xs font-medium text-foreground-muted hover:bg-input hover:text-foreground rounded transition">Ingreso reciente</button>
+          <button type="button" (click)="setSort('pending-desc')"
+                  class="w-full text-left px-3 py-1.5 text-xs font-medium text-foreground-muted hover:bg-input hover:text-foreground rounded transition">Más descuentos pendientes</button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden">
+    @if (loading()) {
+      <div class="px-6 py-12 text-center text-sm text-foreground-subtle">Cargando…</div>
+    } @else if (filteredSorted().length === 0) {
+      <div class="px-6 py-16 text-center">
+        @if (employees().length === 0) {
+          <p class="text-sm text-foreground-muted">Aún no hay empleados registrados.</p>
+          <p class="text-xs text-foreground-faint mt-1">Crea el primero con el botón "Nuevo empleado".</p>
+        } @else {
+          <p class="text-sm text-foreground-muted">Sin resultados para los filtros actuales.</p>
+        }
+      </div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-muted/40 border-b border-border-subtle">
+            <tr>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Empleado</th>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Cargo</th>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Modalidad</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Sueldo base</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Pendientes</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Pagado total</th>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Último pago</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of filteredSorted(); track e.id; let even = $even) {
+              <tr [class.bg-muted]="even" [class.opacity-60]="!e.is_active"
+                  class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
+                <td class="px-5 py-3">
+                  <button type="button" (click)="openPayroll.emit(e)" class="flex items-center gap-3 group text-left">
+                    <span class="w-9 h-9 rounded-full bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                      {{ initials(e.name) }}
+                    </span>
+                    <span>
+                      <span class="flex items-center gap-1.5">
+                        <span class="font-semibold text-foreground group-hover:underline">{{ e.name }}</span>
+                        @if (!e.is_active) {
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">
+                            baja
+                          </span>
+                        }
+                        @if (e.profile_id) {
+                          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-elevated text-foreground-muted border border-border-subtle" title="Tiene cuenta en el panel">
+                            acceso
+                          </span>
+                        }
+                      </span>
+                      <span class="block text-[11px] text-foreground-faint font-mono">{{ e.ci }}</span>
+                    </span>
+                  </button>
+                </td>
+                <td class="px-5 py-3 text-foreground-muted text-xs">{{ e.position ?? '—' }}</td>
+                <td class="px-5 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">
+                    {{ typeLabel(e.salary_type) }}
+                  </span>
+                </td>
+                <td class="px-5 py-3 text-right font-mono text-foreground text-xs">{{ e.base_salary | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+                <td class="px-5 py-3 text-right">
+                  @if (pending(e.id) > 0) {
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-warning/10 text-warning">
+                      {{ pending(e.id) | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+                    </span>
+                  } @else {
+                    <span class="text-foreground-faint text-xs">—</span>
+                  }
+                </td>
+                <td class="px-5 py-3 text-right font-mono text-foreground-subtle text-xs">{{ totalNet(e.id) | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
+                <td class="px-5 py-3 text-foreground-subtle text-xs">
+                  @if (lastPayment(e.id); as d) {
+                    {{ d | date: 'dd MMM yyyy' }}
+                  } @else {
+                    <span class="text-foreground-faint">Sin pagos</span>
+                  }
+                </td>
+                <td class="px-5 py-3 text-right">
+                  <div class="inline-flex items-center gap-1">
+                    <button type="button" (click)="openPayroll.emit(e)" title="Sueldos y descuentos"
+                            class="press px-2.5 py-1 text-[11px] font-semibold text-foreground-muted border border-border-subtle rounded-md hover:bg-muted hover:text-foreground transition">
+                      Nómina
+                    </button>
+                    <button type="button" (click)="toggleActive.emit(e)"
+                            [title]="e.is_active ? 'Dar de baja' : 'Reincorporar'"
+                            class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">
+                      @if (e.is_active) {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.53 13.53 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>
+                        </svg>
+                      } @else {
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                      }
+                    </button>
+                    <button type="button" (click)="edit.emit(e)" title="Editar"
+                            class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-foreground hover:bg-input rounded-md transition">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>
+                      </svg>
+                    </button>
+                    <button type="button" (click)="remove.emit(e)" title="Eliminar"
+                            class="icon-btn press w-7 h-7 inline-flex items-center justify-center text-foreground-muted hover:text-danger hover:bg-danger/10 rounded-md transition">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-5 py-3 flex items-center justify-between gap-3 border-t border-border-subtle bg-elevated/30">
+        <span class="text-[11px] text-foreground-muted font-medium">
+          Mostrando {{ filteredSorted().length }} de {{ counts().all }} empleados
+        </span>
+      </div>
+    }
+  </div>
+</div>

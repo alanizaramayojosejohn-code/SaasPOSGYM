@@ -88,6 +88,15 @@
         <span class="rail-label">Personal</span>
       </a>
 
+      <a routerLink="/admin/employees" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+         (click)="sidebar.closeMobile()" title="Empleados"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+          <rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+        </svg>
+        <span class="rail-label">Empleados</span>
+      </a>
+
       <p class="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Compras</p>
 
       <a routerLink="/admin/purchases" routerLinkActive="bg-primary text-primary-fg shadow-sm"

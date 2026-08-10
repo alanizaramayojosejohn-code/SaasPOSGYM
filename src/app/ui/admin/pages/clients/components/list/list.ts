@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { Client } from '../../../../../../models/client.model';
 
 // Tabs del listado: filtran sobre el array completo en memoria.
-type ClientFilter = 'all' | 'recent' | 'no-phone';
+type ClientFilter = 'all' | 'recent' | 'with-nit' | 'no-nit' | 'inactive';
 type ClientSort = 'name' | 'ci' | 'created';
 
 @Component({
@@ -19,6 +19,7 @@ export class ClientsListComponent {
   readonly edit = output<Client>();
   readonly remove = output<Client>();
   readonly view = output<Client>();
+  readonly toggleActive = output<Client>();
 
   readonly search = signal('');
   readonly filter = signal<ClientFilter>('all');
@@ -45,7 +46,9 @@ export class ClientsListComponent {
     return {
       all: list.length,
       recent: list.filter((c) => c.created_at >= this.thirtyDaysAgo).length,
-      noPhone: list.filter((c) => !c.phone).length,
+      withNit: list.filter((c) => !!c.nit).length,
+      noNit: list.filter((c) => !c.nit).length,
+      inactive: list.filter((c) => !c.is_active).length,
     };
   });
 
@@ -56,13 +59,18 @@ export class ClientsListComponent {
     let list = this.clients().slice();
 
     if (f === 'recent') list = list.filter((c) => c.created_at >= this.thirtyDaysAgo);
-    else if (f === 'no-phone') list = list.filter((c) => !c.phone);
+    else if (f === 'with-nit') list = list.filter((c) => !!c.nit);
+    else if (f === 'no-nit') list = list.filter((c) => !c.nit);
+    else if (f === 'inactive') list = list.filter((c) => !c.is_active);
 
     if (q) {
       list = list.filter(
         (c) =>
           c.name.toLowerCase().includes(q) ||
           c.ci.toLowerCase().includes(q) ||
+          (c.nit ?? '').toLowerCase().includes(q) ||
+          (c.business_name ?? '').toLowerCase().includes(q) ||
+          (c.email ?? '').toLowerCase().includes(q) ||
           (c.phone ?? '').toLowerCase().includes(q),
       );
     }
