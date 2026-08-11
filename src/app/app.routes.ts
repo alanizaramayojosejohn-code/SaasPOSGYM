@@ -12,6 +12,17 @@ import { SaasRoutes } from './ui/saas/routes';
 
 export const routes: Routes = [
   {
+    // La landing va suelta, fuera del PublicContainer: ese contenedor centra
+    // una card pensada para el login y no sirve para una página completa.
+    // pathMatch full hace que solo '' entre acá; '/login' cae al bloque de abajo.
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./ui/public/pages/landing/landing.component').then(
+        (m) => m.LandingComponent,
+      ),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./ui/public/container/component').then(

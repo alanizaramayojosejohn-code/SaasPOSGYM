@@ -1,0 +1,447 @@
+<div class="min-h-screen bg-base text-foreground overflow-x-hidden">
+
+  <!-- ============================== NAV ============================== -->
+  <header class="sticky top-0 z-50 border-b border-border-subtle/60 bg-base/70 backdrop-blur-xl">
+    <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center gap-6">
+      <a href="#top" class="flex items-center gap-2.5 press">
+        <span class="w-8 h-8 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-sm">S</span>
+        <span class="font-bold tracking-tight">SaasGym</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-1 ml-4">
+        <a href="#producto" class="px-3 py-1.5 text-sm font-medium text-foreground-muted hover:text-foreground rounded-lg hover:bg-muted transition">Producto</a>
+        <a href="#precios" class="px-3 py-1.5 text-sm font-medium text-foreground-muted hover:text-foreground rounded-lg hover:bg-muted transition">Precios</a>
+        <a href="#preguntas" class="px-3 py-1.5 text-sm font-medium text-foreground-muted hover:text-foreground rounded-lg hover:bg-muted transition">Preguntas</a>
+      </div>
+
+      <div class="flex-1"></div>
+
+      <a [routerLink]="primaryCta().link"
+         class="press px-4 py-2 text-sm font-semibold bg-primary text-primary-fg rounded-lg hover:bg-primary/90 transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+        {{ primaryCta().label }}
+      </a>
+    </nav>
+  </header>
+
+  <!-- ============================== HERO ============================== -->
+  <section id="top" class="relative">
+    <!-- Fondo: aurora + malla de puntos. aria-hidden porque no aporta contenido. -->
+    <div aria-hidden="true" class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="aurora aurora-a -top-32 -left-24 w-[38rem] h-[38rem] bg-primary/12"></div>
+      <div class="aurora aurora-b top-10 -right-32 w-[42rem] h-[42rem] bg-success/10"></div>
+      <div class="aurora aurora-c bottom-0 left-1/3 w-[32rem] h-[32rem] bg-warning/8"></div>
+      <div class="dot-grid absolute inset-0"></div>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+      <div class="max-w-3xl">
+        <span class="a-pop inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border-subtle bg-surface backdrop-blur text-[11px] font-bold uppercase tracking-widest text-foreground-muted">
+          <span class="live-dot w-1.5 h-1.5 rounded-full bg-success"></span>
+          Hecho en Oruro, para Bolivia
+        </span>
+
+        <h1 class="a-rise a-d1 mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
+          El sistema que tu
+          <span class="text-sheen">gimnasio o tienda</span>
+          debería tener hace años.
+        </h1>
+
+        <p class="a-rise a-d2 mt-6 text-lg text-foreground-muted leading-relaxed max-w-2xl">
+          Vende con lector de códigos, controla tu stock, cobra membresías y paga sueldos
+          desde un solo lugar. Sin instalar nada, sin planillas que no cuadran.
+        </p>
+
+        <div class="a-rise a-d3 mt-8 flex flex-wrap items-center gap-3">
+          <a [routerLink]="primaryCta().link"
+             class="press group inline-flex items-center gap-2 px-6 py-3 text-sm font-bold bg-primary text-primary-fg rounded-xl hover:bg-primary/90 transition shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35">
+            {{ primaryCta().label }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                 class="transition-transform group-hover:translate-x-1">
+              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="#precios"
+             class="press inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold border border-border-subtle bg-surface backdrop-blur text-foreground rounded-xl hover:bg-muted transition">
+            Ver precios
+          </a>
+        </div>
+
+        <p class="a-fade-in a-d5 mt-5 text-xs text-foreground-faint">
+          14 días de prueba · Sin tarjeta de crédito · Pagas por QR o transferencia
+        </p>
+      </div>
+
+      <!-- Mockup del POS -->
+      <div appReveal="150" class="mt-16 md:mt-20">
+        <div class="mockup-3d relative rounded-2xl border border-border-subtle bg-elevated shadow-2xl shadow-black/25 overflow-hidden">
+          <!-- Barra de escaneo sobre el borde superior -->
+          <div aria-hidden="true" class="absolute top-0 left-0 right-0 h-px overflow-hidden">
+            <div class="scanline h-full w-1/3 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+          </div>
+
+          <!-- Barra de ventana -->
+          <div class="flex items-center gap-2 px-4 h-10 border-b border-border-subtle bg-surface">
+            <span class="w-2.5 h-2.5 rounded-full bg-danger/60"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-warning/60"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-success/60"></span>
+            <span class="ml-3 text-[11px] text-foreground-faint font-mono">caja · nueva venta</span>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 p-4 bg-base/40">
+            <!-- Catálogo simulado -->
+            <div class="space-y-3">
+              <div class="flex items-center gap-2 bg-input border border-border-subtle rounded-lg px-3 py-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-foreground-faint">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                </svg>
+                <span class="text-xs text-foreground-faint">Escanea o busca producto…</span>
+              </div>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 a-stagger">
+                @for (p of [
+                  { n: 'Proteína Whey', c: 'SUPL', v: '320' },
+                  { n: 'Barra energética', c: 'SNAC', v: '12' },
+                  { n: 'Agua 600 ml', c: 'BEBI', v: '8' },
+                  { n: 'Creatina 300 g', c: 'SUPL', v: '210' },
+                  { n: 'Gatorade', c: 'BEBI', v: '15' },
+                  { n: 'Toalla', c: 'ACCE', v: '45' },
+                  { n: 'Guantes', c: 'ACCE', v: '90' },
+                  { n: 'Shaker', c: 'ACCE', v: '35' }
+                ]; track p.n) {
+                  <div class="hover-raise bg-elevated border border-border-subtle rounded-lg p-2.5 flex flex-col gap-1.5">
+                    <span class="text-[8px] font-bold uppercase tracking-wider text-foreground-subtle px-1 py-0.5 rounded bg-muted w-fit">{{ p.c }}</span>
+                    <span class="text-[11px] font-semibold leading-tight line-clamp-2">{{ p.n }}</span>
+                    <span class="text-xs font-bold font-mono mt-auto">Bs {{ p.v }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Carrito simulado -->
+            <div class="bg-elevated border border-border-subtle rounded-xl p-3 flex flex-col gap-2.5">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Ticket</p>
+              @for (l of [
+                { n: 'Proteína Whey', q: '1', t: '320' },
+                { n: 'Barra energética', q: '2', t: '24' },
+                { n: 'Agua 600 ml', q: '1', t: '8' }
+              ]; track l.n) {
+                <div class="flex items-center gap-2 text-[11px]">
+                  <span class="w-4 h-4 rounded bg-muted text-foreground-muted flex items-center justify-center text-[9px] font-bold flex-shrink-0">{{ l.q }}</span>
+                  <span class="flex-1 truncate text-foreground-muted">{{ l.n }}</span>
+                  <span class="font-mono font-semibold">{{ l.t }}</span>
+                </div>
+              }
+              <div class="mt-auto pt-2.5 border-t border-border-subtle">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-[11px] text-foreground-muted">Total</span>
+                  <span class="text-xl font-bold font-mono tracking-tight">Bs 352</span>
+                </div>
+                <div class="mt-2.5 h-9 rounded-lg bg-primary text-primary-fg text-xs font-bold flex items-center justify-center">
+                  Cobrar
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CIFRAS ============================== -->
+  <section class="border-y border-border-subtle bg-surface/50 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div appReveal class="text-center">
+        <p class="text-3xl md:text-4xl font-bold font-mono tracking-tight">
+          <span [appCountUp]="3" suffix="s"></span>
+        </p>
+        <p class="text-xs text-foreground-muted mt-1">por venta con lector</p>
+      </div>
+      <div appReveal="80" class="text-center">
+        <p class="text-3xl md:text-4xl font-bold font-mono tracking-tight">
+          <span [appCountUp]="14" suffix=" días"></span>
+        </p>
+        <p class="text-xs text-foreground-muted mt-1">de prueba sin tarjeta</p>
+      </div>
+      <div appReveal="160" class="text-center">
+        <p class="text-3xl md:text-4xl font-bold font-mono tracking-tight">
+          <span [appCountUp]="149" prefix="Bs "></span>
+        </p>
+        <p class="text-xs text-foreground-muted mt-1">desde, al mes</p>
+      </div>
+      <div appReveal="240" class="text-center">
+        <p class="text-3xl md:text-4xl font-bold font-mono tracking-tight">
+          <span [appCountUp]="0" suffix=""></span>
+        </p>
+        <p class="text-xs text-foreground-muted mt-1">instalaciones que hacer</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== PRODUCTO ============================== -->
+  <section id="producto" class="max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div appReveal class="max-w-2xl">
+      <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint">Todo en uno</p>
+      <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tight leading-tight">
+        Seis módulos que trabajan juntos, no seis programas sueltos.
+      </h2>
+      <p class="mt-4 text-foreground-muted leading-relaxed">
+        Cuando vendes, baja el stock. Cuando recibes mercadería, sube. Cuando cobras una
+        membresía, se activa sola. Nada que copiar de un lado a otro.
+      </p>
+    </div>
+
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (c of capabilities; track c.title; let i = $index) {
+        <div [appReveal]="i * 70"
+             (mousemove)="onSpotlight($event)"
+             class="spotlight glow-border hover-lift group bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6">
+          <div class="w-11 h-11 rounded-xl bg-primary text-primary-fg flex items-center justify-center shadow-md shadow-primary/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 class="transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3">
+              <path [attr.d]="c.icon"/>
+            </svg>
+          </div>
+          <h3 class="mt-4 font-bold tracking-tight">{{ c.title }}</h3>
+          <p class="mt-2 text-sm text-foreground-muted leading-relaxed">{{ c.body }}</p>
+          @if (c.feature) {
+            <p class="mt-3 text-[10px] font-bold uppercase tracking-widest text-foreground-faint">
+              Desde el plan Profesional
+            </p>
+          } @else {
+            <p class="mt-3 text-[10px] font-bold uppercase tracking-widest text-success">
+              En todos los planes
+            </p>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ============================== MARQUESINA ============================== -->
+  <section class="marquee-host border-y border-border-subtle bg-surface/40 py-5 overflow-hidden">
+    <div class="marquee-mask">
+      <!-- El contenido va duplicado: es lo que permite que el bucle no salte. -->
+      <div class="marquee gap-8">
+        @for (pass of [1, 2]; track pass) {
+          @for (w of [
+            'Código de barras', 'Stock en tiempo real', 'Factura con NIT', 'Membresías',
+            'Control de asistencia', 'Órdenes de compra', 'Nómina y descuentos',
+            'Reportes de caja', 'Multi-usuario', 'Modo claro y oscuro'
+          ]; track w) {
+            <span class="flex items-center gap-8 text-sm font-semibold text-foreground-faint whitespace-nowrap">
+              {{ w }}
+              <span class="w-1 h-1 rounded-full bg-foreground-faint/50"></span>
+            </span>
+          }
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== PRECIOS ============================== -->
+  <section id="precios" class="relative max-w-6xl mx-auto px-6 py-20 md:py-28">
+    <div aria-hidden="true" class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="aurora aurora-b top-20 left-1/4 w-[34rem] h-[34rem] bg-primary/8"></div>
+    </div>
+
+    <div appReveal class="relative text-center max-w-2xl mx-auto">
+      <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint">Precios en bolivianos</p>
+      <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tight">Elige por tamaño, no por promesas.</h2>
+      <p class="mt-4 text-foreground-muted">
+        Todos los planes incluyen punto de venta, inventario y clientes. Cambias cuando quieras.
+      </p>
+
+      <!-- Conmutador mensual / anual -->
+      <div class="mt-8 inline-flex items-center bg-surface backdrop-blur border border-border-subtle rounded-xl p-1 gap-1">
+        <button type="button" (click)="setBilling('monthly')"
+                [class.bg-primary]="billing() === 'monthly'"
+                [class.text-primary-fg]="billing() === 'monthly'"
+                [class.shadow-sm]="billing() === 'monthly'"
+                [class.text-foreground-muted]="billing() !== 'monthly'"
+                class="press px-4 py-1.5 text-xs font-bold rounded-lg transition">
+          Mensual
+        </button>
+        <button type="button" (click)="setBilling('yearly')"
+                [class.bg-primary]="billing() === 'yearly'"
+                [class.text-primary-fg]="billing() === 'yearly'"
+                [class.shadow-sm]="billing() === 'yearly'"
+                [class.text-foreground-muted]="billing() !== 'yearly'"
+                class="press px-4 py-1.5 text-xs font-bold rounded-lg transition inline-flex items-center gap-1.5">
+          Anual
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-success/15 text-success">2 meses gratis</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="relative mt-12 grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+      @for (p of catalog(); track p.code; let i = $index) {
+        <div [appReveal]="i * 90"
+             (mousemove)="onSpotlight($event)"
+             class="spotlight hover-lift relative bg-surface backdrop-blur-xl border rounded-2xl p-6 flex flex-col"
+             [class.border-primary]="isFeatured(p)"
+             [class.shadow-xl]="isFeatured(p)"
+             [class.shadow-primary/15]="isFeatured(p)"
+             [class.md:-translate-y-3]="isFeatured(p)"
+             [class.border-border-subtle]="!isFeatured(p)">
+
+          @if (isFeatured(p)) {
+            <span class="a-pop absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-primary text-primary-fg shadow-md shadow-primary/25 whitespace-nowrap">
+              El más elegido
+            </span>
+          }
+
+          <h3 class="font-bold text-lg tracking-tight">{{ p.name }}</h3>
+          @if (p.description) {
+            <p class="mt-1.5 text-xs text-foreground-muted leading-relaxed min-h-[3rem]">{{ p.description }}</p>
+          }
+
+          <div class="mt-5 flex items-baseline gap-1.5">
+            <span class="text-4xl font-bold font-mono tracking-tight">
+              {{ displayPrice(p) | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+            </span>
+            <span class="text-sm text-foreground-faint">/mes</span>
+          </div>
+
+          @if (billing() === 'yearly' && yearlySaving(p); as saved) {
+            <p class="mt-1.5 text-[11px] font-semibold text-success">
+              Ahorras {{ saved | currency: 'BOB':'symbol-narrow':'1.0-0' }} al año
+            </p>
+          } @else {
+            <p class="mt-1.5 text-[11px] text-foreground-faint">Facturado mes a mes</p>
+          }
+
+          <a [routerLink]="primaryCta().link"
+             class="press mt-5 w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold rounded-xl transition"
+             [class.bg-primary]="isFeatured(p)"
+             [class.text-primary-fg]="isFeatured(p)"
+             [class.shadow-md]="isFeatured(p)"
+             [class.shadow-primary/20]="isFeatured(p)"
+             [class.hover:bg-primary/90]="isFeatured(p)"
+             [class.border]="!isFeatured(p)"
+             [class.border-border-subtle]="!isFeatured(p)"
+             [class.text-foreground]="!isFeatured(p)"
+             [class.hover:bg-muted]="!isFeatured(p)">
+            Empezar prueba
+          </a>
+
+          <ul class="mt-6 space-y-2.5 text-sm">
+            <li class="flex items-start gap-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-success flex-shrink-0 mt-0.5">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              <span class="text-foreground-muted">{{ limitLabel(p.max_users, 'usuario', 'usuarios') }}</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-success flex-shrink-0 mt-0.5">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              <span class="text-foreground-muted">{{ limitLabel(p.max_clients, 'cliente', 'clientes') }}</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-success flex-shrink-0 mt-0.5">
+                <path d="M20 6 9 17l-5-5"/>
+              </svg>
+              <span class="text-foreground-muted">{{ limitLabel(p.max_products, 'producto', 'productos') }}</span>
+            </li>
+
+            <li class="pt-2 border-t border-border-subtle"></li>
+
+            @for (f of [
+              { key: 'memberships', label: 'Membresías y asistencia' },
+              { key: 'purchases', label: 'Compras y proveedores' },
+              { key: 'product_images', label: 'Imágenes de producto' },
+              { key: 'client_reports', label: 'Reportes de clientes' },
+              { key: 'employees', label: 'Sueldos y descuentos' },
+              { key: 'payroll_reports', label: 'Reportes de nómina' }
+            ]; track f.key) {
+              <li class="flex items-start gap-2.5">
+                @if (hasFeature(p, $any(f.key))) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-success flex-shrink-0 mt-0.5">
+                    <path d="M20 6 9 17l-5-5"/>
+                  </svg>
+                  <span class="text-foreground-muted">{{ f.label }}</span>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-foreground-faint/50 flex-shrink-0 mt-0.5">
+                    <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                  </svg>
+                  <span class="text-foreground-faint/70 line-through decoration-foreground-faint/30">{{ f.label }}</span>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+
+    <p appReveal class="relative mt-10 text-center text-xs text-foreground-muted">
+      La implementación inicial —migrar tu catálogo y capacitar a tu equipo— se cotiza aparte.
+      Pagas por QR Simple o transferencia.
+    </p>
+  </section>
+
+  <!-- ============================== PREGUNTAS ============================== -->
+  <section id="preguntas" class="border-t border-border-subtle bg-surface/40">
+    <div class="max-w-3xl mx-auto px-6 py-20 md:py-24">
+      <h2 appReveal class="text-3xl md:text-4xl font-bold tracking-tight text-center">Preguntas frecuentes</h2>
+
+      <div class="mt-10 space-y-3">
+        @for (f of faqs; track f.q; let i = $index) {
+          <div [appReveal]="i * 50"
+               class="bg-surface backdrop-blur-xl border border-border-subtle rounded-xl overflow-hidden transition"
+               [class.border-primary/40]="openFaq() === i">
+            <button type="button" (click)="toggleFaq(i)"
+                    [attr.aria-expanded]="openFaq() === i"
+                    class="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-muted/40 transition">
+              <span class="flex-1 font-semibold text-sm">{{ f.q }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                   class="text-foreground-muted flex-shrink-0 transition-transform duration-300"
+                   [class.rotate-45]="openFaq() === i">
+                <path d="M5 12h14"/><path d="M12 5v14"/>
+              </svg>
+            </button>
+            @if (openFaq() === i) {
+              <p class="a-rise-sm px-5 pb-4 text-sm text-foreground-muted leading-relaxed">{{ f.a }}</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CIERRE ============================== -->
+  <section class="relative overflow-hidden">
+    <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div class="aurora aurora-a top-0 left-1/2 -translate-x-1/2 w-[46rem] h-[30rem] bg-primary/12"></div>
+    </div>
+    <div appReveal class="relative max-w-3xl mx-auto px-6 py-24 text-center">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight leading-tight">
+        Deja el cuaderno esta semana.
+      </h2>
+      <p class="mt-5 text-foreground-muted text-lg">
+        Prueba 14 días. Si no te sirve, no pagas nada y tus datos siguen siendo tuyos.
+      </p>
+      <a [routerLink]="primaryCta().link"
+         class="press group mt-8 inline-flex items-center gap-2 px-7 py-3.5 text-sm font-bold bg-primary text-primary-fg rounded-xl hover:bg-primary/90 transition shadow-xl shadow-primary/30 hover:shadow-2xl hover:shadow-primary/40">
+        {{ primaryCta().label }}
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+             class="transition-transform group-hover:translate-x-1">
+          <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== PIE ============================== -->
+  <footer class="border-t border-border-subtle">
+    <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center gap-4">
+      <div class="flex items-center gap-2.5">
+        <span class="w-7 h-7 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-xs">S</span>
+        <span class="font-bold tracking-tight text-sm">SaasGym</span>
+      </div>
+      <p class="text-xs text-foreground-faint sm:ml-4">Gestión de negocios POS y GYM · Oruro, Bolivia</p>
+      <div class="flex-1"></div>
+      <p class="text-xs text-foreground-faint">© {{ year }}</p>
+    </div>
+  </footer>
+</div>

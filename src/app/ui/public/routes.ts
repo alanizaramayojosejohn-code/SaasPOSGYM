@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { noAuthGuard } from '../../guards/auth-guard';
 
 export const PublicRoutes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'login' },
   {
     path: 'login',
     canActivate: [noAuthGuard],

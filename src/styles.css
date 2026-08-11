@@ -492,6 +492,202 @@ body.modal-open { overflow: hidden; }
 }
 
 /* =====================================================================
+   LANDING
+
+   Piezas que solo usa la página pública. Viven acá y no en el componente
+   porque comparten las curvas y duraciones del sistema de movimiento, y
+   porque el bloque de prefers-reduced-motion del final las apaga junto con
+   todo lo demás.
+   ===================================================================== */
+
+/* ------------------------------------------------------------- Aurora */
+
+/* Fondo vivo del hero: tres manchas de color que se desplazan muy lento.
+   Se animan con transform y no con background-position, que obligaría a
+   repintar toda la superficie en cada cuadro. */
+@keyframes a-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(6%, -8%, 0) scale(1.12); }
+  66%      { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+}
+
+@keyframes a-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  40%      { transform: translate3d(-8%, 6%, 0) scale(0.92); }
+  75%      { transform: translate3d(5%, -6%, 0) scale(1.15); }
+}
+
+.aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+.aurora-a { animation: a-drift-a 22s var(--ease-in-out-soft) infinite; }
+.aurora-b { animation: a-drift-b 28s var(--ease-in-out-soft) infinite; }
+.aurora-c { animation: a-drift-a 34s var(--ease-in-out-soft) infinite reverse; }
+
+/* Malla de puntos que da profundidad sin competir con el texto. */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--c-border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  /* Se desvanece hacia los bordes para que no corte de golpe. */
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+}
+
+/* ------------------------------------------------------ Scroll reveal */
+
+/* Estado inicial de todo lo que revela la directiva appReveal. La clase
+   `is-in` la agrega el IntersectionObserver al entrar en pantalla. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 700ms var(--ease-out-soft),
+    transform 700ms var(--ease-out-soft);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ---------------------------------------------------------- Spotlight */
+
+/* Halo que sigue al cursor sobre una card. Las coordenadas llegan por las
+   variables --mx / --my que el componente actualiza en mousemove. */
+.spotlight { position: relative; isolation: isolate; }
+.spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--c-primary) 12%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity var(--motion-base) ease;
+  pointer-events: none;
+  z-index: -1;
+}
+.spotlight:hover::before { opacity: 1; }
+
+/* Borde que se ilumina en hover. Se pinta con un pseudo-elemento y no con
+   border-color para poder usar un degradado. */
+.glow-border { position: relative; }
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--c-primary) 45%, transparent),
+    transparent 40%,
+    transparent 60%,
+    color-mix(in srgb, var(--c-primary) 30%, transparent)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--motion-base) ease;
+  pointer-events: none;
+}
+.glow-border:hover::after { opacity: 1; }
+
+/* ------------------------------------------------------- Marquesina */
+
+@keyframes a-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  /* -50% porque el contenido va duplicado: al llegar a la mitad, la copia
+     está exactamente donde arrancó el original y el salto es invisible. */
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: a-marquee 32s linear infinite;
+}
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-host:hover .marquee { animation-play-state: paused; }
+
+/* -------------------------------------------------- Texto con degradado */
+
+/* Se usa background-image y NO el atajo `background`: al minificar, el
+   optimizador fusiona el atajo con background-clip y en el proceso pierde el
+   `text`, con lo que el degradado deja de recortarse contra las letras y pinta
+   un rectángulo sólido sobre el titular.
+
+   La banda del medio es el propio foreground a media opacidad, no un segundo
+   color del tema: en el preset monocromo --c-primary y --c-foreground son el
+   mismo negro, así que un degradado entre ambos no se vería. Con la
+   transparencia el brillo se lee en cualquier preset y en ambos modos. */
+.text-sheen {
+  background-image: linear-gradient(
+    100deg,
+    var(--c-foreground) 0%,
+    var(--c-foreground) 35%,
+    color-mix(in srgb, var(--c-foreground) 62%, transparent) 50%,
+    var(--c-foreground) 65%,
+    var(--c-foreground) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: a-sheen 6s linear infinite;
+}
+
+@keyframes a-sheen {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ------------------------------------------------ Mockup del producto */
+
+/* Perspectiva del panel del hero. Se endereza al pasar el mouse, que da la
+   sensación de que la pantalla "se acerca". */
+.mockup-3d {
+  transform: perspective(1600px) rotateX(9deg) rotateY(-6deg) scale(0.97);
+  transition: transform 900ms var(--ease-out-soft);
+  transform-style: preserve-3d;
+}
+.mockup-3d:hover {
+  transform: perspective(1600px) rotateX(0deg) rotateY(0deg) scale(1);
+}
+
+/* Barra que recorre el borde superior del mockup, como un escaneo. */
+@keyframes a-scanline {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+.scanline { animation: a-scanline 4.5s var(--ease-in-out-soft) infinite; }
+
+/* --------------------------------------------------------- Acordeón */
+
+/* interpolate-size permite animar de 0 a auto sin medir con JS. Donde no
+   está soportado, el detalle simplemente aparece sin transición. */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+  .accordion-body {
+    height: 0;
+    overflow: hidden;
+    transition: height var(--motion-slow) var(--ease-out-soft);
+  }
+  .accordion-body.is-open { height: auto; }
+}
+
+/* =====================================================================
    Accesibilidad: si el sistema pide menos movimiento, apagamos todo.
    Las utilidades siguen existiendo (no rompen el layout), solo dejan de
    animar y quedan en su estado final.
@@ -508,7 +704,15 @@ body.modal-open { overflow: hidden; }
   .hover-lift:hover,
   .hover-raise:hover,
   .row-hover:hover,
-  .press:active {
+  .press:active,
+  .mockup-3d,
+  .mockup-3d:hover {
     transform: none;
   }
+  /* El reveal debe quedar visible, no oculto para siempre. */
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .marquee { animation: none; }
 }
