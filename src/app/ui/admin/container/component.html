@@ -69,14 +69,16 @@
       </a>
 
       @if (isGym()) {
-        <a routerLink="/admin/membership-plans" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-           (click)="sidebar.closeMobile()" title="Planes"
-           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-            <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
-          </svg>
-          <span class="rail-label">Planes</span>
-        </a>
+        @if (plans.hasFeature('memberships')) {
+  <a routerLink="/admin/membership-plans" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+             (click)="sidebar.closeMobile()" title="Planes"
+             class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+              <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+            <span class="rail-label">Planes</span>
+          </a>
+      }
       }
 
       <a routerLink="/admin/users" routerLinkActive="bg-primary text-primary-fg shadow-sm"
@@ -88,25 +90,31 @@
         <span class="rail-label">Personal</span>
       </a>
 
-      <a routerLink="/admin/employees" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-         (click)="sidebar.closeMobile()" title="Empleados"
-         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-          <rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-        </svg>
-        <span class="rail-label">Empleados</span>
-      </a>
+      @if (plans.hasFeature('employees')) {
+  <a routerLink="/admin/employees" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+           (click)="sidebar.closeMobile()" title="Empleados"
+           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+            <rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <span class="rail-label">Empleados</span>
+        </a>
+      }
 
-      <p class="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Compras</p>
+      @if (plans.hasFeature('purchases')) {
+        <p class="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Compras</p>
+      }
 
-      <a routerLink="/admin/purchases" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-         (click)="sidebar.closeMobile()" title="Compras"
-         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span class="rail-label">Compras</span>
-      </a>
+      @if (plans.hasFeature('purchases')) {
+  <a routerLink="/admin/purchases" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+           (click)="sidebar.closeMobile()" title="Compras"
+           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="rail-label">Compras</span>
+        </a>
+      }
 
       <p class="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Ventas</p>
 
@@ -120,14 +128,16 @@
       </a>
 
       @if (isGym()) {
-        <a routerLink="/admin/attendance" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-           (click)="sidebar.closeMobile()" title="Asistencia"
-           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>
-          </svg>
-          <span class="rail-label">Asistencia</span>
-        </a>
+        @if (plans.hasFeature('memberships')) {
+  <a routerLink="/admin/attendance" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+             (click)="sidebar.closeMobile()" title="Asistencia"
+             class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>
+            </svg>
+            <span class="rail-label">Asistencia</span>
+          </a>
+      }
       }
 
       <p class="px-3 pt-4 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Análisis</p>
@@ -155,6 +165,20 @@
         <span class="rail-label">Contraer</span>
       </button>
 
+      <a routerLink="/admin/plan" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+         (click)="sidebar.closeMobile()" title="Mi plan"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+          <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+        </svg>
+        <span class="rail-label">Mi plan</span>
+        @if (plans.showExpiryWarning() || plans.isReadOnly()) {
+          <span class="live-dot ml-auto w-2 h-2 rounded-full flex-shrink-0"
+                [class.bg-danger]="plans.isReadOnly()"
+                [class.bg-warning]="!plans.isReadOnly()"></span>
+        }
+      </a>
+
       <div class="flex justify-center rail-hide">
         <app-theme-mode-toggle />
       </div>
@@ -181,6 +205,7 @@
 
   <!-- ============================== Main ============================== -->
   <main class="flex-1 min-w-0">
+    <app-subscription-banner />
     <router-outlet />
   </main>
 </div>

@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
 import { SidebarService } from '../../../services/layout/sidebar.service';
+import { PlanService } from '../../../services/plan/plan.service';
 import { BurgerButtonComponent } from '../../shared/burger-button.component';
+import { SubscriptionBannerComponent } from '../../shared/subscription-banner.component';
 import { ThemeModeToggleComponent } from '../../shared/theme-mode-toggle.component';
 
 @Component({
   selector: 'app-admin-container',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggleComponent, BurgerButtonComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggleComponent, BurgerButtonComponent, SubscriptionBannerComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -15,6 +17,7 @@ export class AdminContainerComponent {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly sidebar = inject(SidebarService);
+  protected readonly plans = inject(PlanService);
 
   readonly audienceLabel = 'Admin';
   readonly isGym = computed(() => this.auth.businessType() === 'gym');

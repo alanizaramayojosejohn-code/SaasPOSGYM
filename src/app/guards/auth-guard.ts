@@ -1,6 +1,8 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { PlanFeature } from '../models/plan.model';
 import { AuthService } from '../services/auth/auth.service';
+import { PlanService } from '../services/plan/plan.service';
 
 // Sólo autenticados.
 export const authGuard: CanActivateFn = () => {
@@ -46,3 +48,15 @@ export const cajaGuard: CanActivateFn = () => {
     ? true
     : router.parseUrl('/login');
 };
+
+// Módulo incluido en el plan del negocio. Es una guarda de NAVEGACIÓN, no de
+// seguridad: quien escriba la URL a mano llega a una pantalla vacía, y quien
+// llame a la API directamente choca con los triggers de la base, que son los
+// que de verdad aplican el límite.
+export function planFeatureGuard(feature: PlanFeature): CanActivateFn {
+  return () => {
+    const plans = inject(PlanService);
+    const router = inject(Router);
+    return plans.hasFeature(feature) ? true : router.parseUrl('/admin/plan');
+  };
+}

@@ -58,14 +58,16 @@
       </a>
 
       @if (isGym()) {
-        <a routerLink="/caja/attendance" title="Asistencia" routerLinkActive="bg-primary text-primary-fg shadow-sm"
-           (click)="sidebar.closeMobile()"
-           class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
-            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>
-          </svg>
-          <span class="rail-label">Asistencia</span>
-        </a>
+        @if (plans.hasFeature('memberships')) {
+  <a routerLink="/caja/attendance" title="Asistencia" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+             (click)="sidebar.closeMobile()"
+             class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/>
+            </svg>
+            <span class="rail-label">Asistencia</span>
+          </a>
+        }
       }
     </nav>
 
@@ -108,6 +110,7 @@
 
   <!-- ============================== Main ============================== -->
   <main class="flex-1 min-w-0">
+    <app-subscription-banner />
     <router-outlet />
   </main>
 </div>

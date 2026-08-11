@@ -1,7 +1,13 @@
 import { Routes } from '@angular/router';
+import { planFeatureGuard } from '../../guards/auth-guard';
 
 export const AdminRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
+  {
+    path: 'plan',
+    loadComponent: () =>
+      import('./pages/plan/component').then((m) => m.AdminPlanContainerComponent),
+  },
   {
     path: 'profile',
     loadComponent: () =>
@@ -35,6 +41,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'membership-plans',
+    canActivate: [planFeatureGuard('memberships')],
     loadComponent: () =>
       import('./pages/membership-plans/container/component').then(
         (m) => m.AdminMembershipPlansContainerComponent,
@@ -49,6 +56,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'employees',
+    canActivate: [planFeatureGuard('employees')],
     loadComponent: () =>
       import('./pages/employees/container/component').then(
         (m) => m.AdminEmployeesContainerComponent,
@@ -56,6 +64,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'purchases',
+    canActivate: [planFeatureGuard('purchases')],
     loadComponent: () =>
       import('./pages/purchases/container/component').then(
         (m) => m.PurchasesDashboardComponent,
@@ -63,6 +72,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'purchases/suppliers',
+    canActivate: [planFeatureGuard('purchases')],
     loadComponent: () =>
       import('./pages/purchases/suppliers/component').then(
         (m) => m.PurchasesSuppliersComponent,
@@ -70,6 +80,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'purchases/acquisitions/new',
+    canActivate: [planFeatureGuard('purchases')],
     loadComponent: () =>
       import('./pages/purchases/acquisitions/new/component').then(
         (m) => m.NewAcquisitionComponent,
@@ -77,6 +88,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'purchases/orders/new',
+    canActivate: [planFeatureGuard('purchases')],
     loadComponent: () =>
       import('./pages/purchases/orders/new/component').then(
         (m) => m.NewPurchaseOrderComponent,
@@ -105,6 +117,7 @@ export const AdminRoutes: Routes = [
   },
   {
     path: 'attendance',
+    canActivate: [planFeatureGuard('memberships')],
     loadComponent: () =>
       import('../caja/pages/attendance/container/component').then(
         (m) => m.CajaAttendanceContainerComponent,

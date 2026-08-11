@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import type { Session } from '@supabase/supabase-js';
 import { BusinessType } from '../../models/business.model';
 import { Profile, UserRole } from '../../models/profile.model';
+import { PlanService } from '../plan/plan.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { BusinessTheme, DEFAULT_THEME } from '../theme/theme.presets';
 import { ThemeService } from '../theme/theme.service';
@@ -14,6 +15,8 @@ interface ProfileWithBusiness extends Profile {
 export class AuthService {
   private readonly client = inject(SupabaseService).client;
   private readonly theme = inject(ThemeService);
+
+  private readonly plans = inject(PlanService);
 
   readonly session = signal<Session | null>(null);
   readonly profile = signal<Profile | null>(null);
@@ -114,6 +117,7 @@ export class AuthService {
       this.businessType.set(null);
       this.businessName.set(null);
       this.businessTheme.set(null);
+      this.plans.reset();
       this.theme.reset();
       return;
     }
@@ -130,6 +134,7 @@ export class AuthService {
       this.businessType.set(null);
       this.businessName.set(null);
       this.businessTheme.set(null);
+      this.plans.reset();
       this.theme.reset();
       return;
     }
@@ -143,6 +148,11 @@ export class AuthService {
     // el theme.service por su cuenta desde localStorage — es preferencia
     // del usuario, no del negocio.
     // super_admin no tiene business asignado → cae a default monochrome.
+    // El plan gobierna qué módulos ve el usuario, así que se carga junto con
+    // el profile y no bajo demanda: llegar a una pantalla y que recién ahí se
+    // descubra que el plan no la incluye da un parpadeo feo.
+    void this.plans.load();
+
     const businessTheme = businesses?.theme
       ? { preset: businesses.theme.preset }
       : DEFAULT_THEME;

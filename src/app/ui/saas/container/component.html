@@ -47,6 +47,15 @@
         </svg>
         <span class="rail-label">Negocios</span>
       </a>
+
+      <a routerLink="/saas/subscriptions" title="Suscripciones" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+         (click)="sidebar.closeMobile()"
+         class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+          <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/><path d="M6 15h4"/>
+        </svg>
+        <span class="rail-label">Suscripciones</span>
+      </a>
     </nav>
 
     <!-- Footer: theme toggle + user profile + logout -->

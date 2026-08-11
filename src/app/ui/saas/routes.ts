@@ -13,6 +13,11 @@ export const SaasRoutes: Routes = [
       import('./pages/home/home.component').then((m) => m.SaasHomeComponent),
   },
   {
+    path: 'subscriptions',
+    loadComponent: () =>
+      import('./pages/subscriptions/component').then((m) => m.SaasSubscriptionsComponent),
+  },
+  {
     path: 'businesses',
     loadComponent: () =>
       import('./pages/businesses/container/component').then(

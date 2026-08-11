@@ -1,0 +1,196 @@
+<div class="a-rise max-w-5xl mx-auto px-6 py-10 space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-foreground tracking-tight">Mi plan</h2>
+    <p class="text-foreground-muted text-sm">Estado de tu suscripción, consumo y pagos.</p>
+  </div>
+
+  @if (plans.usage(); as u) {
+    <!-- Estado -->
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 shadow-sm">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Plan actual</p>
+          <p class="kpi-value text-3xl font-bold text-foreground tracking-tight mt-1">{{ u.plan_name }}</p>
+          <p class="text-sm text-foreground-muted mt-1">
+            {{ u.price_monthly | currency: 'BOB':'symbol-narrow':'1.0-0' }} por mes
+          </p>
+        </div>
+
+        <div class="text-right">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border"
+                [class.bg-success/10]="u.can_write && u.subscription_status === 'active'"
+                [class.text-success]="u.can_write && u.subscription_status === 'active'"
+                [class.border-success/20]="u.can_write && u.subscription_status === 'active'"
+                [class.bg-warning/10]="u.can_write && u.subscription_status !== 'active'"
+                [class.text-warning]="u.can_write && u.subscription_status !== 'active'"
+                [class.border-warning/20]="u.can_write && u.subscription_status !== 'active'"
+                [class.bg-danger/10]="!u.can_write"
+                [class.text-danger]="!u.can_write"
+                [class.border-danger/20]="!u.can_write">
+            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+            {{ statusLabel() }}
+          </span>
+
+          @if (u.days_left !== null) {
+            <p class="text-xs text-foreground-muted mt-2">
+              @if (u.days_left > 0) {
+                Quedan <span class="font-bold text-foreground">{{ u.days_left }}</span> días
+              } @else if (u.days_left === 0) {
+                Vence hoy
+              } @else {
+                Venció hace {{ -u.days_left }} días
+              }
+            </p>
+          }
+          @if (u.current_period_end) {
+            <p class="text-[11px] text-foreground-faint mt-0.5">
+              Hasta {{ u.current_period_end | date: 'dd MMM yyyy' }}
+            </p>
+          } @else if (u.trial_ends_at) {
+            <p class="text-[11px] text-foreground-faint mt-0.5">
+              Prueba hasta {{ u.trial_ends_at | date: 'dd MMM yyyy' }}
+            </p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Consumo -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 a-stagger">
+      @for (res of ['users', 'clients', 'products']; track res) {
+        <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-5 shadow-sm">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">
+            @if (res === 'users') { Usuarios } @else if (res === 'clients') { Clientes } @else { Productos }
+          </p>
+
+          @if (quota($any(res)); as q) {
+            <p class="text-2xl font-bold font-mono text-foreground tracking-tight mt-1">
+              {{ q.used }}<span class="text-base text-foreground-faint"> / {{ q.max }}</span>
+            </p>
+            <div class="h-2 rounded-full bg-muted overflow-hidden mt-3">
+              <div class="chart-fill h-full rounded-full transition-all"
+                   [class.bg-danger]="(usagePercent($any(res)) ?? 0) >= 100"
+                   [class.bg-warning]="(usagePercent($any(res)) ?? 0) >= 80 && (usagePercent($any(res)) ?? 0) < 100"
+                   [class.bg-foreground]="(usagePercent($any(res)) ?? 0) < 80"
+                   [style.width.%]="usagePercent($any(res))"></div>
+            </div>
+            @if ((usagePercent($any(res)) ?? 0) >= 100) {
+              <p class="text-[11px] text-danger mt-1.5 font-medium">Llegaste al tope de tu plan.</p>
+            }
+          } @else {
+            <p class="text-2xl font-bold font-mono text-foreground tracking-tight mt-1">
+              {{ used($any(res)) }}
+            </p>
+            <p class="text-[11px] text-success mt-3 font-medium">Sin límite en tu plan</p>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Módulos -->
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+      <header class="px-6 py-4 border-b border-border-subtle">
+        <h3 class="font-semibold text-foreground">Módulos</h3>
+        <p class="text-xs text-foreground-subtle">Qué incluye tu plan hoy.</p>
+      </header>
+      <div class="divide-y divide-border-subtle a-stagger">
+        @for (f of allFeatures; track f) {
+          <div class="row-hover hover:bg-muted/40 px-6 py-3 flex items-center gap-3">
+            @if (has(f)) {
+              <span class="w-6 h-6 rounded-full bg-success/10 text-success flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6 9 17l-5-5"/>
+                </svg>
+              </span>
+            } @else {
+              <span class="w-6 h-6 rounded-full bg-muted text-foreground-faint flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+              </span>
+            }
+            <span class="flex-1 text-sm"
+                  [class.text-foreground]="has(f)"
+                  [class.text-foreground-faint]="!has(f)">
+              {{ featureLabel(f) }}
+            </span>
+            @if (!has(f)) {
+              <span class="text-[11px] font-semibold text-foreground-faint">No incluido</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Mejorar plan -->
+    @if (upgrades().length > 0) {
+      <div class="space-y-3">
+        <h3 class="font-semibold text-foreground">Mejorar tu plan</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 a-stagger">
+          @for (p of upgrades(); track p.code) {
+            <div class="hover-raise bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-5 shadow-sm">
+              <div class="flex items-baseline justify-between gap-2">
+                <p class="font-bold text-foreground">{{ p.name }}</p>
+                <p class="text-lg font-bold font-mono text-foreground">
+                  {{ p.price_monthly | currency: 'BOB':'symbol-narrow':'1.0-0' }}<span class="text-xs text-foreground-faint">/mes</span>
+                </p>
+              </div>
+              @if (p.description) {
+                <p class="text-xs text-foreground-muted mt-1.5">{{ p.description }}</p>
+              }
+              @if (p.price_yearly) {
+                <p class="text-[11px] text-success mt-2 font-medium">
+                  {{ p.price_yearly | currency: 'BOB':'symbol-narrow':'1.0-0' }} al año — dos meses gratis
+                </p>
+              }
+            </div>
+          }
+        </div>
+        <p class="text-xs text-foreground-muted">
+          Para cambiar de plan, contacta al administrador de la plataforma.
+        </p>
+      </div>
+    }
+
+    <!-- Pagos -->
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden shadow-sm">
+      <header class="px-6 py-4 border-b border-border-subtle">
+        <h3 class="font-semibold text-foreground">Historial de pagos</h3>
+      </header>
+      @if (loading()) {
+        <div class="px-6 py-8 text-center text-sm text-foreground-subtle">Cargando…</div>
+      } @else if (payments().length === 0) {
+        <div class="px-6 py-12 text-center text-sm text-foreground-subtle">Aún no hay pagos registrados.</div>
+      } @else {
+        <table class="w-full text-sm">
+          <thead class="bg-muted border-b border-border-subtle">
+            <tr>
+              <th class="text-left px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Fecha</th>
+              <th class="text-left px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Período</th>
+              <th class="text-left px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Referencia</th>
+              <th class="text-right px-6 py-2 font-semibold text-[11px] tracking-wider uppercase text-foreground-subtle">Monto</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-subtle a-stagger a-stagger-rows">
+            @for (p of payments(); track p.id) {
+              <tr class="row-hover hover:bg-muted/50">
+                <td class="px-6 py-2 text-xs text-foreground-muted">{{ p.paid_on | date: 'dd MMM yyyy' }}</td>
+                <td class="px-6 py-2 text-xs text-foreground-muted">
+                  {{ p.period_start | date: 'dd/MM/yy' }} → {{ p.period_end | date: 'dd/MM/yy' }}
+                </td>
+                <td class="px-6 py-2 text-xs font-mono text-foreground-faint">{{ p.reference ?? '—' }}</td>
+                <td class="px-6 py-2 text-right font-mono text-xs font-semibold text-foreground">
+                  {{ p.amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  } @else {
+    <div class="bg-surface border border-border-subtle rounded-2xl px-6 py-12 text-center">
+      <p class="text-sm text-foreground-muted">No se pudo cargar la información del plan.</p>
+    </div>
+  }
+</div>

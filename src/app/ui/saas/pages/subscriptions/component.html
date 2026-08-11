@@ -1,0 +1,265 @@
+<div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-foreground tracking-tight">Suscripciones</h2>
+    <p class="text-foreground-muted text-sm">Estado de cobro de cada negocio de la plataforma.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 a-stagger">
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Ingreso mensual</p>
+      <p class="kpi-value text-2xl font-bold font-mono text-foreground tracking-tight mt-1">
+        {{ mrr() | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+      </p>
+      <p class="text-[11px] text-foreground-faint mt-0.5">Solo suscripciones activas</p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Negocios</p>
+      <p class="kpi-value text-2xl font-bold font-mono text-foreground tracking-tight mt-1">{{ counts().all }}</p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Por vencer</p>
+      <p class="kpi-value text-2xl font-bold font-mono tracking-tight mt-1"
+         [class.text-warning]="counts().expiring > 0"
+         [class.text-foreground]="counts().expiring === 0">{{ counts().expiring }}</p>
+      <p class="text-[11px] text-foreground-faint mt-0.5">En 7 días o menos</p>
+    </div>
+    <div class="hover-lift bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-4 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-foreground-faint">Vencidos</p>
+      <p class="kpi-value text-2xl font-bold font-mono tracking-tight mt-1"
+         [class.text-danger]="counts().expired > 0"
+         [class.text-foreground]="counts().expired === 0">{{ counts().expired }}</p>
+      <p class="text-[11px] text-foreground-faint mt-0.5">En solo lectura</p>
+    </div>
+  </div>
+
+  @if (actionError(); as msg) {
+    <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+  }
+
+  <!-- Toolbar -->
+  <div class="flex items-center gap-3 flex-wrap">
+    <div class="inline-flex bg-surface backdrop-blur-xl border border-border-subtle rounded-xl p-1 gap-1 flex-wrap">
+      <button type="button" (click)="setFilter('all')"
+              [class.bg-input]="filter() === 'all'" [class.text-foreground]="filter() === 'all'"
+              [class.text-foreground-muted]="filter() !== 'all'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Todos · {{ counts().all }}
+      </button>
+      <button type="button" (click)="setFilter('expiring')"
+              [class.bg-input]="filter() === 'expiring'" [class.text-warning]="filter() === 'expiring'"
+              [class.text-foreground-muted]="filter() !== 'expiring'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Por vencer · {{ counts().expiring }}
+      </button>
+      <button type="button" (click)="setFilter('expired')"
+              [class.bg-input]="filter() === 'expired'" [class.text-danger]="filter() === 'expired'"
+              [class.text-foreground-muted]="filter() !== 'expired'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        Vencidos · {{ counts().expired }}
+      </button>
+      <button type="button" (click)="setFilter('trialing')"
+              [class.bg-input]="filter() === 'trialing'" [class.text-foreground]="filter() === 'trialing'"
+              [class.text-foreground-muted]="filter() !== 'trialing'"
+              class="px-3 py-1.5 text-xs font-semibold rounded-lg transition">
+        En prueba · {{ counts().trialing }}
+      </button>
+    </div>
+    <div class="flex-1"></div>
+    <div class="flex items-center gap-2 bg-surface border border-border-subtle rounded-lg px-3 py-1.5 w-full md:w-64">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-foreground-faint flex-shrink-0">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input type="text" [value]="search()" (input)="setSearch($any($event.target).value)"
+             placeholder="Buscar negocio…"
+             class="bg-transparent text-foreground text-xs outline-none flex-1 min-w-0 placeholder:text-foreground-faint" />
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl overflow-hidden">
+    @if (loading()) {
+      <div class="px-6 py-12 text-center text-sm text-foreground-subtle">Cargando…</div>
+    } @else if (filtered().length === 0) {
+      <div class="px-6 py-16 text-center text-sm text-foreground-muted">Sin resultados.</div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-muted/40 border-b border-border-subtle">
+            <tr>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Negocio</th>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Plan</th>
+              <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Estado</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Vence</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Uso</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Pagado</th>
+              <th class="text-right px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of filtered(); track r.business_id; let even = $even) {
+              <tr [class.bg-muted]="even" [class.opacity-70]="!r.can_write"
+                  class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
+                <td class="px-5 py-3">
+                  <span class="block font-semibold text-foreground">{{ r.name }}</span>
+                  <span class="block text-[11px] text-foreground-faint uppercase tracking-wider">{{ r.type }}</span>
+                </td>
+                <td class="px-5 py-3">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">
+                    {{ r.plan_name }}
+                  </span>
+                  <span class="block text-[11px] text-foreground-faint mt-0.5 font-mono">
+                    {{ r.price_monthly | currency: 'BOB':'symbol-narrow':'1.0-0' }}/mes
+                  </span>
+                </td>
+                <td class="px-5 py-3">
+                  <span class="inline-flex items-center gap-1.5 text-xs font-semibold"
+                        [class.text-success]="r.subscription_status === 'active' && r.can_write"
+                        [class.text-warning]="r.can_write && r.subscription_status !== 'active'"
+                        [class.text-danger]="!r.can_write">
+                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                    {{ statusLabel(r.subscription_status) }}
+                  </span>
+                </td>
+                <td class="px-5 py-3 text-right">
+                  @if (r.days_left !== null) {
+                    <span class="font-mono text-xs font-bold"
+                          [class.text-danger]="r.days_left < 0"
+                          [class.text-warning]="r.days_left >= 0 && r.days_left <= 7"
+                          [class.text-foreground-muted]="r.days_left > 7">
+                      @if (r.days_left < 0) { −{{ -r.days_left }}d } @else { {{ r.days_left }}d }
+                    </span>
+                    <span class="block text-[10px] text-foreground-faint">
+                      {{ (r.current_period_end ?? r.trial_ends_at) | date: 'dd/MM/yy' }}
+                    </span>
+                  } @else {
+                    <span class="text-foreground-faint text-xs">—</span>
+                  }
+                </td>
+                <td class="px-5 py-3 text-right text-[11px] text-foreground-muted font-mono">
+                  {{ r.users_count }}<span class="text-foreground-faint">/{{ r.max_users ?? '∞' }}</span> us ·
+                  {{ r.clients_count }}<span class="text-foreground-faint">/{{ r.max_clients ?? '∞' }}</span> cli
+                </td>
+                <td class="px-5 py-3 text-right font-mono text-xs text-foreground-subtle">
+                  {{ r.total_paid | currency: 'BOB':'symbol-narrow':'1.0-0' }}
+                </td>
+                <td class="px-5 py-3 text-right">
+                  <div class="inline-flex items-center gap-1">
+                    <button type="button" (click)="openCharge(r)"
+                            class="press px-2.5 py-1 text-[11px] font-bold bg-primary text-primary-fg rounded-md hover:bg-primary/90 transition">
+                      Cobrar
+                    </button>
+                    @if (r.subscription_status === 'trialing') {
+                      <button type="button" (click)="extendTrial(r)" title="Extender prueba 14 días"
+                              class="press px-2.5 py-1 text-[11px] font-semibold text-foreground-muted border border-border-subtle rounded-md hover:bg-muted transition">
+                        +14d
+                      </button>
+                    }
+                    @if (r.can_write) {
+                      <button type="button" (click)="suspend(r)"
+                              class="press px-2.5 py-1 text-[11px] font-semibold text-danger/80 border border-danger/20 rounded-md hover:bg-danger/10 transition">
+                        Suspender
+                      </button>
+                    } @else {
+                      <button type="button" (click)="reactivate(r)"
+                              class="press px-2.5 py-1 text-[11px] font-semibold text-success border border-success/20 rounded-md hover:bg-success/10 transition">
+                        Reactivar
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de cobro -->
+@if (charging(); as row) {
+  <app-modal-shell
+    [open]="true"
+    [title]="'Registrar pago · ' + row.name"
+    subtitle="El período nuevo se suma al vencimiento vigente, así el cliente no pierde días si paga antes."
+    size="md"
+    [busy]="submitting()"
+    (closed)="closeCharge()">
+    <form [formGroup]="payForm" (ngSubmit)="submitCharge()" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="sub_plan" class="block text-sm font-medium text-foreground-muted mb-1">Plan</label>
+          <select id="sub_plan" formControlName="plan_code" (change)="syncSuggestedAmount()"
+                  class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+            @for (p of plans.catalog(); track p.code) {
+              <option [value]="p.code">{{ p.name }} — {{ p.price_monthly | currency: 'BOB':'symbol-narrow':'1.0-0' }}/mes</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="sub_months" class="block text-sm font-medium text-foreground-muted mb-1">Meses</label>
+          <input id="sub_months" type="number" min="1" step="1" formControlName="months"
+                 (input)="syncSuggestedAmount()"
+                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+          <p class="text-xs text-foreground-faint mt-1">Con 12 meses se aplica el precio anual.</p>
+        </div>
+
+        <div>
+          <label for="sub_amount" class="block text-sm font-medium text-foreground-muted mb-1">Monto cobrado</label>
+          <input id="sub_amount" type="number" min="0" step="0.01" formControlName="amount"
+                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm" />
+          <p class="text-xs text-foreground-faint mt-1">Editable si aplicaste un descuento.</p>
+        </div>
+
+        <div>
+          <label for="sub_method" class="block text-sm font-medium text-foreground-muted mb-1">Forma de pago</label>
+          <select id="sub_method" formControlName="method"
+                  class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+            @for (m of methods; track m.value) {
+              <option [value]="m.value">{{ m.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label for="sub_ref" class="block text-sm font-medium text-foreground-muted mb-1">
+            Comprobante <span class="text-foreground-faint">(opcional)</span>
+          </label>
+          <input id="sub_ref" type="text" formControlName="reference" placeholder="Nro. de transacción"
+                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary font-mono text-sm placeholder:text-foreground-faint" />
+        </div>
+
+        <div>
+          <label for="sub_paid" class="block text-sm font-medium text-foreground-muted mb-1">Fecha de pago</label>
+          <input id="sub_paid" type="date" formControlName="paid_on"
+                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm" />
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="sub_notes" class="block text-sm font-medium text-foreground-muted mb-1">
+            Notas <span class="text-foreground-faint">(opcional)</span>
+          </label>
+          <input id="sub_notes" type="text" formControlName="notes"
+                 class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+        </div>
+      </div>
+
+      @if (formError(); as msg) {
+        <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+      }
+
+      <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+        <button type="button" (click)="closeCharge()"
+                class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+          Cancelar
+        </button>
+        <button type="submit" [disabled]="payForm.invalid || submitting()"
+                class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+          @if (submitting()) { Registrando… } @else { Registrar pago }
+        </button>
+      </div>
+    </form>
+  </app-modal-shell>
+}
