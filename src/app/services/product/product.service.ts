@@ -66,6 +66,17 @@ export class ProductService {
     };
   }
 
+  // La imagen se guarda aparte del resto del formulario: primero hay que
+  // crear el producto para conocer su id, que forma parte de la ruta en el
+  // bucket. Devuelve el producto actualizado para refrescar el listado.
+  async setProductImage(id: string, imagePath: string | null): Promise<void> {
+    const { error } = await this.client
+      .from('products')
+      .update({ image_path: imagePath })
+      .eq('id', id);
+    if (error) throw error;
+  }
+
   async createProduct(input: CreateProductInput): Promise<Product> {
     const businessId = this.auth.businessId();
     if (!businessId) throw new Error('Tu cuenta no tiene un negocio asignado.');

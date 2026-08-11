@@ -2,11 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, ou
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Category } from '../../../../../../models/category.model';
 import { Product, SALE_UNITS, SaleUnit, WEIGHABLE_UNITS } from '../../../../../../models/product.model';
+import { ProcessedImage } from '../../../../../../services/image/image-processor.service';
 import { CreateProductInput } from '../../../../../../services/product/product.service';
+import { ImagePickerComponent } from '../../../../../shared/image-picker.component';
 
 @Component({
   selector: 'app-admin-products-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ImagePickerComponent],
   templateUrl: './form.html',
   styleUrl: './form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,12 +20,20 @@ export class ProductsFormComponent {
   readonly categories = input<Category[]>([]);
   readonly submitting = input<boolean>(false);
   readonly errorMessage = input<string | null>(null);
-  readonly submitForm = output<CreateProductInput>();
+  // El payload del producto y la imagen viajan juntos: el contenedor necesita
+  // el id del producto (que solo existe tras crearlo) para armar la ruta.
+  readonly submitForm = output<{ input: CreateProductInput; image: ImageChange }>();
   readonly cancel = output<void>();
+
+  // URL de la imagen ya guardada, para la vista previa en modo edición.
+  readonly currentImageUrl = input<string | null>(null);
 
   readonly isEdit = computed(() => this.value() !== null);
 
   readonly saleUnits = SALE_UNITS;
+
+  // 'keep' = no se tocó; ProcessedImage = hay una nueva; 'remove' = se quitó.
+  readonly imageChange = signal<ImageChange>('keep');
 
   readonly hasStock = signal(true);
   readonly isActive = signal(true);
@@ -53,6 +63,7 @@ export class ProductsFormComponent {
   constructor() {
     effect(() => {
       const v = this.value();
+      this.imageChange.set('keep');
       if (v) {
         this.hasStock.set(v.has_stock);
         this.isActive.set(v.is_active);
@@ -86,6 +97,14 @@ export class ProductsFormComponent {
         });
       }
     });
+  }
+
+  onImageChanged(image: ProcessedImage | null): void {
+    this.imageChange.set(image ?? 'remove');
+  }
+
+  onImageRemoved(): void {
+    this.imageChange.set('remove');
   }
 
   toggleHasStock(checked: boolean): void {
@@ -124,20 +143,26 @@ export class ProductsFormComponent {
       return t.length > 0 ? t : null;
     };
     this.submitForm.emit({
-      name: raw.name.trim(),
-      short_name: nullable(raw.short_name),
-      description: nullable(raw.description),
-      sku: nullable(raw.sku),
-      barcode: nullable(raw.barcode),
-      category_id: raw.category_id.length > 0 ? raw.category_id : null,
-      price: Number(raw.price),
-      cost: Number(raw.cost),
-      stock: Math.trunc(Number(raw.stock)),
-      has_stock: raw.has_stock,
-      is_active: raw.is_active,
-      sale_unit: raw.sale_unit,
-      is_weighable: raw.is_weighable && WEIGHABLE_UNITS.includes(raw.sale_unit),
-      provider: nullable(raw.provider),
+      image: this.imageChange(),
+      input: {
+        name: raw.name.trim(),
+        short_name: nullable(raw.short_name),
+        description: nullable(raw.description),
+        sku: nullable(raw.sku),
+        barcode: nullable(raw.barcode),
+        category_id: raw.category_id.length > 0 ? raw.category_id : null,
+        price: Number(raw.price),
+        cost: Number(raw.cost),
+        stock: Math.trunc(Number(raw.stock)),
+        has_stock: raw.has_stock,
+        is_active: raw.is_active,
+        sale_unit: raw.sale_unit,
+        is_weighable: raw.is_weighable && WEIGHABLE_UNITS.includes(raw.sale_unit),
+        provider: nullable(raw.provider),
+      },
     });
   }
 }
+
+// Qué hacer con la imagen al guardar.
+export type ImageChange = 'keep' | 'remove' | ProcessedImage;

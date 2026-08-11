@@ -156,6 +156,12 @@
                   }
                 </div>
 
+                <!-- Imagen -->
+                @if (imageUrl(product); as url) {
+                  <img [src]="url" [alt]="product.name" loading="lazy" decoding="async"
+                       class="w-full aspect-square object-cover rounded-lg border border-border-subtle bg-muted" />
+                }
+
                 <!-- Name -->
                 <div class="flex-1 min-h-[2.4rem]">
                   <p class="text-sm font-semibold text-foreground leading-tight line-clamp-2">{{ product.short_name ?? product.name }}</p>

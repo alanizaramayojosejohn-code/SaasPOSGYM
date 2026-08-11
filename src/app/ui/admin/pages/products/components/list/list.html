@@ -131,9 +131,14 @@
                 class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
               <td class="px-5 py-3">
                 <button type="button" (click)="view.emit(product)" class="flex items-center gap-3 group text-left">
-                  <span class="w-9 h-9 rounded-lg bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
-                    {{ initials(product.name) }}
-                  </span>
+                  @if (imageUrl(product); as url) {
+                    <img [src]="url" [alt]="product.name" loading="lazy" decoding="async"
+                         class="w-9 h-9 rounded-lg object-cover border border-border-subtle bg-muted flex-shrink-0" />
+                  } @else {
+                    <span class="w-9 h-9 rounded-lg bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                      {{ initials(product.name) }}
+                    </span>
+                  }
                   <span>
                     <span class="flex items-center gap-1.5">
                       <span class="font-semibold text-foreground group-hover:underline">{{ product.name }}</span>

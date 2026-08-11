@@ -40,6 +40,9 @@ export interface Product {
   is_active: boolean;
   sale_unit: SaleUnit;
   is_weighable: boolean;
+  // Ruta dentro del bucket product-images, no la URL: el dominio del
+  // proyecto se resuelve en lectura.
+  image_path: string | null;
   provider: string | null;
   created_at: string;
   deleted_at: string | null;

@@ -105,6 +105,15 @@
     </div>
 
     <div class="md:col-span-2">
+      <app-image-picker
+        label="Imagen del producto"
+        [currentUrl]="currentImageUrl()"
+        [disabled]="submitting()"
+        (changed)="onImageChanged($event)"
+        (removed)="onImageRemoved()" />
+    </div>
+
+    <div class="md:col-span-2">
       <label class="flex items-center gap-3 cursor-pointer select-none">
         <div class="relative">
           <input type="checkbox" formControlName="is_active"

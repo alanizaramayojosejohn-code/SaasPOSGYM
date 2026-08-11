@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { Product, SaleUnit, saleUnitShort } from '../../../../../../models/product.model';
+import { ProductImageService } from '../../../../../../services/image/product-image.service';
 
 type ProductFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock' | 'no-category' | 'inactive';
 type ProductSort = 'name' | 'stock-asc' | 'price-desc' | 'created';
@@ -13,6 +14,8 @@ type ProductSort = 'name' | 'stock-asc' | 'price-desc' | 'created';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent {
+  private readonly images = inject(ProductImageService);
+
   readonly products = input.required<Product[]>();
   readonly loading = input<boolean>(false);
   readonly edit = output<Product>();
@@ -24,6 +27,10 @@ export class ProductsListComponent {
   readonly filter = signal<ProductFilter>('all');
   readonly sort = signal<ProductSort>('created');
   readonly sortMenuOpen = signal(false);
+
+  imageUrl(product: Product): string | null {
+    return this.images.publicUrl(product.image_path);
+  }
 
   unitShort(unit: SaleUnit): string {
     return saleUnitShort(unit);

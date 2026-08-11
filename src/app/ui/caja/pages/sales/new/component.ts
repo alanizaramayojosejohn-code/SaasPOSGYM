@@ -6,6 +6,7 @@ import { MembershipPlan } from '../../../../../models/membership-plan.model';
 import { Product, SaleUnit, saleUnitShort } from '../../../../../models/product.model';
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { ClientQueryService } from '../../../../../services/client/query.service';
+import { ProductImageService } from '../../../../../services/image/product-image.service';
 import { MembershipPlanQueryService } from '../../../../../services/membership-plan/query.service';
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { MembershipOrderInput, OrderService } from '../../../../../services/order/order.service';
@@ -37,6 +38,7 @@ export class CajaSalesNewComponent {
   private readonly orderService = inject(OrderService);
   private readonly productQuery = inject(ProductQueryService);
   private readonly clientQuery = inject(ClientQueryService);
+  private readonly images = inject(ProductImageService);
   private readonly planQuery = inject(MembershipPlanQueryService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -166,6 +168,10 @@ export class CajaSalesNewComponent {
 
   setProductPage(p: number): void {
     this.productPage.set(p);
+  }
+
+  imageUrl(product: Product): string | null {
+    return this.images.publicUrl(product.image_path);
   }
 
   unitShort(unit: SaleUnit): string {

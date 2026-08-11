@@ -3,11 +3,12 @@ import { Category } from '../../../../../models/category.model';
 import { Product, saleUnitShort } from '../../../../../models/product.model';
 import { CategoryQueryService } from '../../../../../services/category/query.service';
 import { CreateProductInput, ProductService } from '../../../../../services/product/product.service';
+import { ProductImageService } from '../../../../../services/image/product-image.service';
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
-import { ProductsFormComponent } from '../components/form/form';
+import { ImageChange, ProductsFormComponent } from '../components/form/form';
 import { ProductsListComponent } from '../components/list/list';
 
 @Component({
@@ -20,6 +21,7 @@ export class AdminProductsContainerComponent {
   private readonly productService = inject(ProductService);
   private readonly productQuery = inject(ProductQueryService);
   private readonly categoryQuery = inject(CategoryQueryService);
+  private readonly imageService = inject(ProductImageService);
 
   readonly products = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
@@ -31,6 +33,14 @@ export class AdminProductsContainerComponent {
     return s && s !== 'create' ? s : null;
   });
   readonly showForm = computed(() => this.formState() !== null);
+
+  readonly editingImageUrl = computed(() =>
+    this.imageService.publicUrl(this.editing()?.image_path ?? null),
+  );
+
+  imageUrl(product: Product): string | null {
+    return this.imageService.publicUrl(product.image_path);
+  }
 
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
@@ -108,24 +118,53 @@ export class AdminProductsContainerComponent {
     this.formError.set(null);
   }
 
-  async handleSubmit(input: CreateProductInput): Promise<void> {
+  // El producto se guarda primero y la imagen después: la ruta en el bucket
+  // incluye el id, que en un alta no existe hasta que la fila está creada.
+  // Si la subida falla, el producto ya quedó guardado y se avisa sin perderlo.
+  async handleSubmit(payload: { input: CreateProductInput; image: ImageChange }): Promise<void> {
     this.submitting.set(true);
     this.formError.set(null);
     const editing = this.editing();
     try {
-      if (editing) {
-        await this.productService.updateProduct(editing.id, input);
-      } else {
-        await this.productService.createProduct(input);
-      }
+      const saved = editing
+        ? await this.productService.updateProduct(editing.id, payload.input)
+        : await this.productService.createProduct(payload.input);
+
+      await this.applyImageChange(saved.id, editing?.image_path ?? null, payload.image);
+
       this.formState.set(null);
       await this.refresh();
     } catch (err: unknown) {
       this.formError.set(
         errorMessage(err, editing ? 'Error al guardar producto' : 'Error al crear producto'),
       );
+      // El producto pudo haberse guardado aunque fallara la imagen: se refresca
+      // para que el listado refleje el estado real.
+      await this.refresh();
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  private async applyImageChange(
+    productId: string,
+    previousPath: string | null,
+    change: ImageChange,
+  ): Promise<void> {
+    if (change === 'keep') return;
+
+    if (change === 'remove') {
+      await this.productService.setProductImage(productId, null);
+      await this.imageService.remove(previousPath);
+      return;
+    }
+
+    // Se sube la nueva, se apunta la fila y recién entonces se borra la vieja:
+    // si algo falla en el medio, el producto nunca queda sin imagen válida.
+    const { path } = await this.imageService.upload(productId, change.file);
+    await this.productService.setProductImage(productId, path);
+    if (previousPath && previousPath !== path) {
+      await this.imageService.remove(previousPath);
     }
   }
 
@@ -167,6 +206,8 @@ export class AdminProductsContainerComponent {
     this.deletingError.set(null);
     try {
       await this.productService.softDeleteProduct(product.id);
+      // El soft delete deja la fila, pero el objeto del bucket ya no se usa.
+      await this.imageService.remove(product.image_path);
       if (this.editing()?.id === product.id) this.formState.set(null);
       this.deleting.set(null);
       await this.refresh();

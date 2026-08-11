@@ -21,6 +21,7 @@
       (closed)="closeForm()">
       <app-admin-products-form
         [value]="editing()"
+        [currentImageUrl]="editingImageUrl()"
         [categories]="categories()"
         [submitting]="submitting()"
         [errorMessage]="formError()"
