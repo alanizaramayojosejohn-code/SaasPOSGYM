@@ -492,6 +492,71 @@ body.modal-open { overflow: hidden; }
 }
 
 /* =====================================================================
+   CELESTE DE MARCA (solo landing)
+
+   Fijo, independiente del preset de tema del negocio: la landing se ve antes
+   de que exista sesión, así que no puede heredar --c-primary (que en el
+   preset monochrome es negro puro). Sigue el mismo patrón que --c-* — swap
+   por data-mode en vez de la clase `dark:` de Tailwind, que este proyecto no
+   usa en ningún otro lado.
+   ===================================================================== */
+
+:root {
+  --c-brand: #0284c7;        /* sky-600 — AA sobre fondo claro */
+  --c-brand-strong: #0369a1; /* sky-700 — texto chico si hace falta más contraste */
+  --c-brand-soft: rgba(2, 132, 199, 0.10);
+  --c-brand-border: rgba(2, 132, 199, 0.28);
+  --c-brand-glow: rgba(2, 132, 199, 0.16);
+}
+
+:root[data-mode="dark"] {
+  --c-brand: #38bdf8;        /* sky-400 — brilla sobre fondo casi negro */
+  --c-brand-strong: #7dd3fc; /* sky-300 */
+  --c-brand-soft: rgba(56, 189, 248, 0.14);
+  --c-brand-border: rgba(56, 189, 248, 0.32);
+  --c-brand-glow: rgba(56, 189, 248, 0.22);
+}
+
+/* Botón principal: degradado fijo, no depende del tema. Funciona igual de
+   bien en claro y oscuro porque es una superficie saturada con texto blanco,
+   no un color que necesite ajustarse al fondo. */
+.btn-brand {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  color: #fff;
+  box-shadow: 0 8px 24px -8px rgba(14, 165, 233, 0.5);
+}
+.btn-brand:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 28px -6px rgba(14, 165, 233, 0.6);
+}
+
+/* Caja de icono a juego con el botón principal, para las cards de producto. */
+.icon-tile-brand {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.45);
+}
+
+/* Checkmarks y acentos de texto celeste sueltos. */
+.text-brand { color: var(--c-brand); }
+
+/* Card de plan destacado: borde y sombra celeste, más notorio que el
+   borde/sombra basados en --c-primary (negro en el preset monochrome, casi
+   invisible). */
+.card-featured {
+  border-color: var(--c-brand);
+  box-shadow: 0 20px 45px -18px var(--c-brand-glow);
+}
+
+/* Pregunta de FAQ abierta. */
+.faq-open { border-color: var(--c-brand-border); }
+
+/* Etiqueta pequeña sobre cada sección ("TODO EN UNO", "PRECIOS EN BOLIVIANOS"). */
+.kicker {
+  color: var(--c-brand);
+  letter-spacing: 0.12em;
+}
+
+/* =====================================================================
    LANDING
 
    Piezas que solo usa la página pública. Viven acá y no en el componente
@@ -630,11 +695,16 @@ body.modal-open { overflow: hidden; }
    mismo negro, así que un degradado entre ambos no se vería. Con la
    transparencia el brillo se lee en cualquier preset y en ambos modos. */
 .text-sheen {
+  /* El pico del barrido es --c-brand a pleno, no una versión transparente del
+     foreground: así el brillo que recorre el titular es celeste de verdad, no
+     solo un parpadeo de opacidad. --c-brand ya tiene su propio ajuste por
+     data-mode (sky-600 en claro, sky-400 en oscuro), así que el contraste
+     contra el fondo queda resuelto sin lógica extra acá. */
   background-image: linear-gradient(
     100deg,
     var(--c-foreground) 0%,
     var(--c-foreground) 35%,
-    color-mix(in srgb, var(--c-foreground) 62%, transparent) 50%,
+    var(--c-brand) 50%,
     var(--c-foreground) 65%,
     var(--c-foreground) 100%
   );
@@ -671,7 +741,10 @@ body.modal-open { overflow: hidden; }
   90%  { opacity: 1; }
   100% { transform: translateX(100%); opacity: 0; }
 }
-.scanline { animation: a-scanline 4.5s var(--ease-in-out-soft) infinite; }
+.scanline {
+  animation: a-scanline 4.5s var(--ease-in-out-soft) infinite;
+  background: linear-gradient(90deg, transparent, var(--c-brand), transparent);
+}
 
 /* --------------------------------------------------------- Acordeón */
 
