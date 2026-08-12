@@ -7,12 +7,19 @@ import { ServiceQueryService } from '../../../../../services/service/query.servi
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
+import { MembershipPlansDetailComponent } from '../components/detail/detail';
 import { MembershipPlansFormComponent } from '../components/form/form';
 import { MembershipPlansListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-membership-plans',
-  imports: [ModalShellComponent, MembershipPlansListComponent, MembershipPlansFormComponent, ConfirmDeleteModalComponent],
+  imports: [
+    ModalShellComponent,
+    MembershipPlansListComponent,
+    MembershipPlansFormComponent,
+    MembershipPlansDetailComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -31,6 +38,9 @@ export class AdminMembershipPlansContainerComponent {
     return s && s !== 'create' ? s : null;
   });
   readonly showForm = computed(() => this.formState() !== null);
+
+  // Modal de detalle (solo lectura), independiente del form.
+  readonly viewing = signal<MembershipPlanWithServices | null>(null);
 
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
@@ -98,6 +108,21 @@ export class AdminMembershipPlansContainerComponent {
   closeForm(): void {
     this.formState.set(null);
     this.formError.set(null);
+  }
+
+  openView(plan: MembershipPlanWithServices): void {
+    this.viewing.set(plan);
+  }
+
+  closeView(): void {
+    this.viewing.set(null);
+  }
+
+  // Pasa del detalle al form de edición para el mismo plan.
+  editFromView(): void {
+    const plan = this.viewing();
+    this.viewing.set(null);
+    if (plan) this.openEdit(plan);
   }
 
   async handleSubmit(input: CreateMembershipPlanInput): Promise<void> {

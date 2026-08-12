@@ -5,12 +5,19 @@ import { ClientQueryService } from '../../../../../services/client/query.service
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
+import { ClientsDetailComponent } from '../components/detail/detail';
 import { ClientsFormComponent } from '../components/form/form';
 import { ClientsListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-clients',
-  imports: [ModalShellComponent, ClientsListComponent, ClientsFormComponent, ConfirmDeleteModalComponent],
+  imports: [
+    ModalShellComponent,
+    ClientsListComponent,
+    ClientsFormComponent,
+    ClientsDetailComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -28,6 +35,9 @@ export class AdminClientsContainerComponent {
     return s && s !== 'create' ? s : null;
   });
   readonly showForm = computed(() => this.formState() !== null);
+
+  // Modal de detalle (solo lectura), independiente del form.
+  readonly viewing = signal<Client | null>(null);
 
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
@@ -77,6 +87,21 @@ export class AdminClientsContainerComponent {
   closeForm(): void {
     this.formState.set(null);
     this.formError.set(null);
+  }
+
+  openView(client: Client): void {
+    this.viewing.set(client);
+  }
+
+  closeView(): void {
+    this.viewing.set(null);
+  }
+
+  // Pasa del detalle al form de edición para el mismo socio.
+  editFromView(): void {
+    const client = this.viewing();
+    this.viewing.set(null);
+    if (client) this.openEdit(client);
   }
 
   async handleSubmit(input: CreateClientInput): Promise<void> {

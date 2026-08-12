@@ -29,10 +29,23 @@
     </app-modal-shell>
   }
 
+  <!-- Ventana de solo lectura con los datos del plan. -->
+  @if (viewing(); as v) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      size="md"
+      title="Detalle de plan"
+      (closed)="closeView()">
+      <app-admin-membership-plans-detail [value]="v" (edit)="editFromView()" (closed)="closeView()" />
+    </app-modal-shell>
+  }
+
   <app-admin-membership-plans-list
     [plans]="plans()"
     [loading]="loading()"
     (edit)="openEdit($event)"
+    (view)="openView($event)"
     (remove)="handleDelete($event)" />
 
   @if (deleting(); as p) {

@@ -1,0 +1,62 @@
+<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-6 shadow-sm">
+  <!-- Header -->
+  <div class="flex items-start gap-4">
+    @if (imageUrl(); as url) {
+      <img [src]="url" alt="" class="w-14 h-14 rounded-xl object-cover border border-border-subtle flex-shrink-0" />
+    } @else {
+      <span class="w-14 h-14 rounded-xl bg-foreground text-base flex items-center justify-center text-sm font-bold flex-shrink-0">
+        {{ initials() }}
+      </span>
+    }
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 flex-wrap">
+        <h3 class="font-bold text-lg text-foreground tracking-tight">{{ value().name }}</h3>
+        @if (value().is_active) {
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-success/15 text-success">activo</span>
+        } @else {
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">inactivo</span>
+        }
+      </div>
+      <p class="text-xs text-foreground-faint mt-0.5">{{ value().category?.name ?? 'Sin categoría' }}</p>
+    </div>
+  </div>
+
+  @if (value().description; as desc) {
+    <p class="text-sm text-foreground-muted leading-relaxed">{{ desc }}</p>
+  }
+
+  <!-- Identificación -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <app-detail-field label="Nombre corto" [empty]="!value().short_name">{{ value().short_name || '—' }}</app-detail-field>
+    <app-detail-field label="SKU" [mono]="true" [empty]="!value().sku">{{ value().sku || '—' }}</app-detail-field>
+    <app-detail-field label="Código de barras" [mono]="true" [empty]="!value().barcode">{{ value().barcode || '—' }}</app-detail-field>
+    <app-detail-field label="Categoría" [empty]="!value().category">{{ value().category?.name || '—' }}</app-detail-field>
+    <app-detail-field label="Proveedor" [empty]="!value().provider">{{ value().provider || '—' }}</app-detail-field>
+  </div>
+
+  <!-- Precio y stock -->
+  <div class="pt-4 border-t border-border-subtle">
+    <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-3">Precio y stock</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <app-detail-field label="Precio" [mono]="true">{{ value().price | currency: 'BOB':'Bs. ':'1.2-2' }}</app-detail-field>
+      <app-detail-field label="Costo" [mono]="true">{{ value().cost | currency: 'BOB':'Bs. ':'1.2-2' }}</app-detail-field>
+      <app-detail-field label="Unidad de venta">{{ saleUnitLabel() }}</app-detail-field>
+      <app-detail-field label="Se vende por peso">{{ value().is_weighable ? 'Sí' : 'No' }}</app-detail-field>
+      <app-detail-field label="Gestiona stock">{{ value().has_stock ? 'Sí' : 'No' }}</app-detail-field>
+      @if (value().has_stock) {
+        <app-detail-field label="Stock actual" [mono]="true">{{ value().stock }}</app-detail-field>
+      }
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+    <button type="button" (click)="closed.emit()"
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+      Cerrar
+    </button>
+    <button type="button" (click)="edit.emit()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
+      Editar producto
+    </button>
+  </div>
+</div>

@@ -30,6 +30,18 @@
     </app-modal-shell>
   }
 
+  <!-- Ventana de solo lectura con los datos del producto. -->
+  @if (viewing(); as v) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      size="md"
+      title="Detalle de producto"
+      (closed)="closeView()">
+      <app-admin-products-detail [value]="v" [imageUrl]="viewingImageUrl()" (edit)="editFromView()" (closed)="closeView()" />
+    </app-modal-shell>
+  }
+
   @if (actionError(); as msg) {
     <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
       {{ msg }}
@@ -40,6 +52,7 @@
     [products]="products()"
     [loading]="loading()"
     (edit)="openEdit($event)"
+    (view)="openView($event)"
     (remove)="handleDelete($event)"
     (toggleActive)="handleToggleActive($event)" />
 

@@ -56,7 +56,16 @@
       "Bash(mkdir \"C:\\\\Users\\\\Jose\\\\Desktop\\\\SaasGym\\\\landing\\\\assets\")",
       "PowerShell(supabase *)",
       "PowerShell(npx supabase --version 2>&1)",
-      "PowerShell(npx supabase functions deploy create-business-user --project-ref jwoqcvynwkfdnomwzrhf 2>&1)"
+      "PowerShell(npx supabase functions deploy create-business-user --project-ref jwoqcvynwkfdnomwzrhf 2>&1)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\Jose\\\\.claude\\\\projects\\\\C--Users-Jose-Desktop-SaasGym-SaasGym\\\\memory\\\\project_orders_refactor.md\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\Jose\\\\.claude\\\\projects\\\\C--Users-Jose-Desktop-SaasGym-SaasGym\\\\memory\\\\project_providers_plan.md\" -Force)",
+      "PowerShell(Remove-Item *)",
+      "Bash(disown)",
+      "mcp__claude_ai_Supabase__list_projects",
+      "Bash(kill 1924)",
+      "Bash(rm -rf .angular/cache)",
+      "Bash(break)",
+      "Bash(node -p \"require\\('./node_modules/@angular/core/package.json'\\).version\")"
     ]
   },
   "enableAllProjectMcpServers": true,

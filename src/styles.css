@@ -492,13 +492,13 @@ body.modal-open { overflow: hidden; }
 }
 
 /* =====================================================================
-   CELESTE DE MARCA (solo landing)
+   CELESTE DE MARCA (landing y pantallas públicas)
 
-   Fijo, independiente del preset de tema del negocio: la landing se ve antes
-   de que exista sesión, así que no puede heredar --c-primary (que en el
-   preset monochrome es negro puro). Sigue el mismo patrón que --c-* — swap
-   por data-mode en vez de la clase `dark:` de Tailwind, que este proyecto no
-   usa en ningún otro lado.
+   Fijo, independiente del preset de tema del negocio: tanto la landing como
+   el login se ven antes de que exista sesión, así que no pueden heredar
+   --c-primary (que en el preset monochrome es negro puro). Sigue el mismo
+   patrón que --c-* — swap por data-mode en vez de la clase `dark:` de
+   Tailwind, que este proyecto no usa en ningún otro lado.
    ===================================================================== */
 
 :root {
@@ -549,6 +549,17 @@ body.modal-open { overflow: hidden; }
 
 /* Pregunta de FAQ abierta. */
 .faq-open { border-color: var(--c-brand-border); }
+
+/* Foco de inputs en las pantallas públicas (login): celeste de marca en vez
+   de --c-primary, que en el preset monochrome es negro puro y no se
+   distingue del resto de la card. */
+.input-brand {
+  transition: border-color var(--motion-fast) ease, box-shadow var(--motion-fast) ease;
+}
+.input-brand:focus {
+  border-color: var(--c-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand) 30%, transparent);
+}
 
 /* Etiqueta pequeña sobre cada sección ("TODO EN UNO", "PRECIOS EN BOLIVIANOS"). */
 .kicker {

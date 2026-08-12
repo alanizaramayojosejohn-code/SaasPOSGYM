@@ -97,6 +97,19 @@ export class ProductsFormComponent {
         });
       }
     });
+
+    // "Se vende por peso" solo aplica a kg/g/L/ml. El bloqueo se hace sobre el
+    // control y no con [disabled] en la plantilla: mezclar el atributo con
+    // formControlName es lo que dispara el aviso de Angular, porque deja al DOM
+    // y al modelo del formulario decidiendo lo mismo por separado.
+    effect(() => {
+      const control = this.form.controls.is_weighable;
+      if (this.canBeWeighable()) {
+        if (control.disabled) control.enable({ emitEvent: false });
+      } else if (control.enabled) {
+        control.disable({ emitEvent: false });
+      }
+    });
   }
 
   onImageChanged(image: ProcessedImage | null): void {

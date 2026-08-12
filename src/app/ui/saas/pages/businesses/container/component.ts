@@ -5,12 +5,19 @@ import { BusinessQueryService } from '../../../../../services/business/query.ser
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
+import { BusinessesDetailComponent } from '../components/detail/detail';
 import { BusinessesFormComponent, BusinessFormValue } from '../components/form/form';
 import { BusinessesListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-saas-businesses',
-  imports: [ModalShellComponent, BusinessesListComponent, BusinessesFormComponent, ConfirmDeleteModalComponent],
+  imports: [
+    ModalShellComponent,
+    BusinessesListComponent,
+    BusinessesFormComponent,
+    BusinessesDetailComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -27,6 +34,9 @@ export class SaasBusinessesContainerComponent {
     return s && s !== 'create' ? s : null;
   });
   readonly showForm = computed(() => this.formState() !== null);
+
+  // Modal de detalle (solo lectura), independiente del form.
+  readonly viewing = signal<Business | null>(null);
 
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
@@ -79,6 +89,21 @@ export class SaasBusinessesContainerComponent {
   closeForm(): void {
     this.formState.set(null);
     this.formError.set(null);
+  }
+
+  openView(business: Business): void {
+    this.viewing.set(business);
+  }
+
+  closeView(): void {
+    this.viewing.set(null);
+  }
+
+  // Pasa del detalle al form de edición para el mismo negocio.
+  editFromView(): void {
+    const business = this.viewing();
+    this.viewing.set(null);
+    if (business) this.openEdit(business);
   }
 
   async handleSubmit(input: BusinessFormValue): Promise<void> {

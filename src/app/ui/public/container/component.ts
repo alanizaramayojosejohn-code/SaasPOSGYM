@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../../../services/theme/theme.service';
 
 @Component({
   selector: 'app-public-container',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -28,10 +28,23 @@
     </app-modal-shell>
   }
 
+  <!-- Ventana de solo lectura con los datos del negocio. -->
+  @if (viewing(); as v) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      size="md"
+      title="Detalle de negocio"
+      (closed)="closeView()">
+      <app-saas-businesses-detail [value]="v" (edit)="editFromView()" (closed)="closeView()" />
+    </app-modal-shell>
+  }
+
   <app-saas-businesses-list
     [businesses]="businesses()"
     [loading]="loading()"
     (edit)="openEdit($event)"
+    (view)="openView($event)"
     (remove)="handleDelete($event)" />
 
   @if (deleting(); as b) {

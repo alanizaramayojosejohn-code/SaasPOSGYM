@@ -1,0 +1,29 @@
+<div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-6 shadow-sm">
+  <!-- Header -->
+  <div class="flex items-start gap-4">
+    <span class="w-14 h-14 rounded-full bg-foreground text-base flex items-center justify-center text-sm font-bold flex-shrink-0">
+      {{ initials() }}
+    </span>
+    <div class="flex-1 min-w-0">
+      <h3 class="font-bold text-lg text-foreground tracking-tight">{{ value().name }}</h3>
+      <p class="text-xs text-foreground-faint mt-0.5">Alta {{ value().created_at | date: 'dd MMM yyyy' }}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <app-detail-field label="Nombre completo">{{ value().name }}</app-detail-field>
+    <app-detail-field label="CI" [mono]="true">{{ value().ci }}</app-detail-field>
+    <app-detail-field label="Rol">{{ roleLabel() }}</app-detail-field>
+  </div>
+
+  <div class="flex justify-end gap-3 pt-2 border-t border-border-subtle">
+    <button type="button" (click)="closed.emit()"
+            class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+      Cerrar
+    </button>
+    <button type="button" (click)="edit.emit()"
+            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
+      Editar colaborador
+    </button>
+  </div>
+</div>

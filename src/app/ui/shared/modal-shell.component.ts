@@ -1,4 +1,4 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -30,7 +30,21 @@ type ModalChrome = 'full' | 'bare';
 @Component({
   selector: 'app-modal-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet],
   template: `
+    <!--
+      El contenido proyectado se declara UNA sola vez acá y las dos ramas de
+      chrome lo instancian con ngTemplateOutlet.
+
+      No repetir <ng-content> por rama es obligatorio, no estético: dos
+      <ng-content> en el mismo template hacen que Angular declare dos slots de
+      proyección (ngContentSelectors = ['*', '*']), y cuando hay varios slots
+      comodín el contenido va TODO al último. La rama bare —la que usan todos
+      los formularios del CRUD— quedaba con el slot vacío, así que el modal se
+      abría como un backdrop borroso sin formulario adentro.
+    -->
+    <ng-template #projected><ng-content /></ng-template>
+
     @if (open()) {
       <div
         class="m-backdrop fixed inset-0 z-50 bg-black/45 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto"
@@ -46,7 +60,7 @@ type ModalChrome = 'full' | 'bare';
             [attr.aria-label]="title()"
             (click)="$event.stopPropagation()"
           >
-            <ng-content />
+            <ng-container [ngTemplateOutlet]="projected" />
           </div>
         } @else {
           <div
@@ -91,7 +105,7 @@ type ModalChrome = 'full' | 'bare';
 
             <!-- Cuerpo scrolleable -->
             <div class="px-6 py-5 overflow-y-auto flex-1 min-h-0">
-              <ng-content />
+              <ng-container [ngTemplateOutlet]="projected" />
             </div>
           </div>
         }

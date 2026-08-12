@@ -12,7 +12,7 @@
   type="button"
   (click)="loginWithGoogle()"
   [disabled]="loading()"
-  class="w-full flex items-center justify-center gap-3 border border-border-subtle bg-elevated text-foreground-muted font-medium py-2.5 rounded-lg transition hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
+  class="press w-full flex items-center justify-center gap-3 border border-border-subtle bg-elevated text-foreground-muted font-medium py-2.5 rounded-lg transition hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed"
 >
   <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
     <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
@@ -37,7 +37,7 @@
       type="email"
       formControlName="email"
       autocomplete="email"
-      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint"
+      class="input-brand w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none placeholder:text-foreground-faint"
     />
   </div>
 
@@ -48,7 +48,7 @@
       type="password"
       formControlName="password"
       autocomplete="current-password"
-      class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none transition focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint"
+      class="input-brand w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none placeholder:text-foreground-faint"
     />
   </div>
 
@@ -61,7 +61,8 @@
   <button
     type="submit"
     [disabled]="form.invalid || loading()"
-    class="press mt-2 bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-semibold py-2.5 rounded-lg transition shadow-lg shadow-primary/20"
+    [class.btn-brand]="!form.invalid && !loading()"
+    class="press mt-2 disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-semibold py-2.5 rounded-lg transition"
   >
     @if (loading()) {
       Entrando…

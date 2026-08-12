@@ -8,12 +8,19 @@ import { ProductQueryService } from '../../../../../services/product/query.servi
 import { errorMessage } from '../../../../../utilities/error-message';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
+import { ProductsDetailComponent } from '../components/detail/detail';
 import { ImageChange, ProductsFormComponent } from '../components/form/form';
 import { ProductsListComponent } from '../components/list/list';
 
 @Component({
   selector: 'app-admin-products',
-  imports: [ModalShellComponent, ProductsListComponent, ProductsFormComponent, ConfirmDeleteModalComponent],
+  imports: [
+    ModalShellComponent,
+    ProductsListComponent,
+    ProductsFormComponent,
+    ProductsDetailComponent,
+    ConfirmDeleteModalComponent,
+  ],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,6 +43,12 @@ export class AdminProductsContainerComponent {
 
   readonly editingImageUrl = computed(() =>
     this.imageService.publicUrl(this.editing()?.image_path ?? null),
+  );
+
+  // Modal de detalle (solo lectura), independiente del form.
+  readonly viewing = signal<Product | null>(null);
+  readonly viewingImageUrl = computed(() =>
+    this.imageService.publicUrl(this.viewing()?.image_path ?? null),
   );
 
   imageUrl(product: Product): string | null {
@@ -116,6 +129,21 @@ export class AdminProductsContainerComponent {
   closeForm(): void {
     this.formState.set(null);
     this.formError.set(null);
+  }
+
+  openView(product: Product): void {
+    this.viewing.set(product);
+  }
+
+  closeView(): void {
+    this.viewing.set(null);
+  }
+
+  // Pasa del detalle al form de edición para el mismo producto.
+  editFromView(): void {
+    const product = this.viewing();
+    this.viewing.set(null);
+    if (product) this.openEdit(product);
   }
 
   // El producto se guarda primero y la imagen después: la ruta en el bucket
