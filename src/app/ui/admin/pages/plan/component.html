@@ -71,7 +71,7 @@
               <div class="chart-fill h-full rounded-full transition-all"
                    [class.bg-danger]="(usagePercent($any(res)) ?? 0) >= 100"
                    [class.bg-warning]="(usagePercent($any(res)) ?? 0) >= 80 && (usagePercent($any(res)) ?? 0) < 100"
-                   [class.bg-foreground]="(usagePercent($any(res)) ?? 0) < 80"
+                   [class.bg-accent]="(usagePercent($any(res)) ?? 0) < 80"
                    [style.width.%]="usagePercent($any(res))"></div>
             </div>
             @if ((usagePercent($any(res)) ?? 0) >= 100) {

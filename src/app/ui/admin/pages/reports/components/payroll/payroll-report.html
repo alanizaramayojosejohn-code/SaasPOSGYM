@@ -45,7 +45,7 @@
           <div class="flex-1 h-full flex flex-col items-center gap-2 group"
                [title]="(m.employees_count) + ' empleados — Bs ' + m.total_net">
             <div class="w-full flex-1 min-h-0 flex items-end">
-              <div class="chart-bar w-full rounded-t-md bg-primary/80 hover:bg-primary relative"
+              <div class="chart-bar w-full rounded-t-md bg-accent/80 hover:bg-accent relative"
                    [style.height.%]="barHeight(m.total_net)">
                 <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-semibold text-foreground-muted opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
                   {{ m.total_net | currency: 'BOB':'symbol-narrow':'1.0-0' }}

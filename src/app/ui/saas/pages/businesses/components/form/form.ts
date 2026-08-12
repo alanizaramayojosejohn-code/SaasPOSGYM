@@ -1,13 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Business, BusinessType } from '../../../../../../models/business.model';
-import { BusinessTheme, DEFAULT_THEME, THEME_PRESET_LIST, ThemePreset, ThemePresetKey } from '../../../../../../services/theme/theme.presets';
+import { BusinessColors, DEFAULT_COLORS, QUICK_PALETTES } from '../../../../../../services/theme/theme.presets';
 
 const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+const HEX_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
 // Shape unificado que emite el form. Los campos de admin solo se llenan en create.
-// theme = solo el preset (paleta del negocio). El mode (light/dark/system) es
-// preferencia del USUARIO en su navegador, no se asigna desde aca.
+// theme = los 2 colores del negocio. El fondo es siempre monocromo (no
+// seleccionable) y el mode (light/dark/system) es preferencia del USUARIO
+// en su navegador, no se asigna desde aca.
 export interface BusinessFormValue {
   businessName: string;
   businessType: BusinessType;
@@ -15,7 +17,7 @@ export interface BusinessFormValue {
   adminName: string;
   adminCi: string;
   services: string[];
-  theme: BusinessTheme;
+  theme: BusinessColors;
 }
 
 @Component({
@@ -35,8 +37,7 @@ export class BusinessesFormComponent {
   readonly cancel = output<void>();
 
   readonly isEdit = computed(() => this.value() !== null);
-
-  readonly presets: readonly ThemePreset[] = THEME_PRESET_LIST;
+  readonly quickPalettes = QUICK_PALETTES;
 
   readonly form = this.fb.nonNullable.group({
     businessName: ['', [Validators.required, Validators.minLength(2)]],
@@ -45,21 +46,16 @@ export class BusinessesFormComponent {
     adminName: ['', [Validators.required, Validators.minLength(2)]],
     adminCi: ['', [Validators.required]],
     services: [''],
-    themePreset: ['monochrome' as ThemePresetKey, [Validators.required]],
+    color1: [DEFAULT_COLORS.color1, [Validators.required, Validators.pattern(HEX_PATTERN)]],
+    color2: [DEFAULT_COLORS.color2, [Validators.required, Validators.pattern(HEX_PATTERN)]],
   });
 
   private readonly typeValue = signal<BusinessType>(this.form.controls.businessType.value);
   readonly isGym = computed(() => this.typeValue() === 'gym');
 
-  private readonly presetValue = signal<ThemePresetKey>(this.form.controls.themePreset.value);
-  readonly selectedPreset = computed(() => this.presetValue());
-
   constructor() {
     this.form.controls.businessType.valueChanges.subscribe((v) => {
       if (v) this.typeValue.set(v);
-    });
-    this.form.controls.themePreset.valueChanges.subscribe((v) => {
-      if (v) this.presetValue.set(v);
     });
 
     effect(() => {
@@ -69,15 +65,15 @@ export class BusinessesFormComponent {
         this.form.controls.adminName.disable({ emitEvent: false });
         this.form.controls.adminCi.disable({ emitEvent: false });
         this.form.controls.services.disable({ emitEvent: false });
-        const theme = v.theme ?? DEFAULT_THEME;
+        const colors = v.theme ?? DEFAULT_COLORS;
         this.form.reset({
           businessName: v.name,
           businessType: v.type,
           adminUserId: '', adminName: '', adminCi: '', services: '',
-          themePreset: theme.preset,
+          color1: colors.color1,
+          color2: colors.color2,
         });
         this.typeValue.set(v.type);
-        this.presetValue.set(theme.preset);
       } else {
         this.form.controls.adminUserId.enable({ emitEvent: false });
         this.form.controls.adminName.enable({ emitEvent: false });
@@ -86,17 +82,20 @@ export class BusinessesFormComponent {
         this.form.reset({
           businessName: '', businessType: 'gym',
           adminUserId: '', adminName: '', adminCi: '', services: '',
-          themePreset: DEFAULT_THEME.preset,
+          color1: DEFAULT_COLORS.color1,
+          color2: DEFAULT_COLORS.color2,
         });
         this.typeValue.set('gym');
-        this.presetValue.set(DEFAULT_THEME.preset);
       }
     });
   }
 
-  selectPreset(key: ThemePresetKey): void {
-    this.form.controls.themePreset.setValue(key);
-    this.form.controls.themePreset.markAsDirty();
+  // Atajo: llena color1/color2 de un click. El super_admin puede seguir
+  // ajustándolos a mano después — no es una selección exclusiva.
+  selectQuickPalette(p: { color1: string; color2: string }): void {
+    this.form.patchValue({ color1: p.color1, color2: p.color2 });
+    this.form.controls.color1.markAsDirty();
+    this.form.controls.color2.markAsDirty();
   }
 
   onSubmit(): void {
@@ -112,7 +111,7 @@ export class BusinessesFormComponent {
       adminName: raw.adminName.trim(),
       adminCi: raw.adminCi.trim(),
       services,
-      theme: { preset: raw.themePreset },
+      theme: { color1: raw.color1, color2: raw.color2 },
     });
   }
 }

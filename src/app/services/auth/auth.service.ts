@@ -4,11 +4,11 @@ import { BusinessType } from '../../models/business.model';
 import { Profile, UserRole } from '../../models/profile.model';
 import { PlanService } from '../plan/plan.service';
 import { SupabaseService } from '../supabase/supabase.service';
-import { BusinessTheme, DEFAULT_THEME } from '../theme/theme.presets';
+import { BusinessColors, DEFAULT_COLORS } from '../theme/theme.presets';
 import { ThemeService } from '../theme/theme.service';
 
 interface ProfileWithBusiness extends Profile {
-  businesses: { type: BusinessType; theme: BusinessTheme | null; name: string } | null;
+  businesses: { type: BusinessType; theme: BusinessColors | null; name: string } | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,9 +22,10 @@ export class AuthService {
   readonly profile = signal<Profile | null>(null);
   readonly businessType = signal<BusinessType | null>(null);
   readonly businessName = signal<string | null>(null);
-  // Tema actual del negocio. Lo expone aqui (en lugar de meterlo en theme.service)
-  // porque el theme se deriva del profile y se actualiza con el mismo loadProfile().
-  readonly businessTheme = signal<BusinessTheme | null>(null);
+  // Colores actuales del negocio. Lo expone aqui (en lugar de meterlo en
+  // theme.service) porque se derivan del profile y se actualizan con el
+  // mismo loadProfile().
+  readonly businessColors = signal<BusinessColors | null>(null);
   // Set cuando una sesión válida no tiene profile asignado.
   // Lo lee el login para mostrar "Tu cuenta no está autorizada".
   readonly unauthorizedEmail = signal<string | null>(null);
@@ -47,7 +48,7 @@ export class AuthService {
       else {
         this.profile.set(null);
         this.businessType.set(null);
-        this.businessTheme.set(null);
+        this.businessColors.set(null);
         this.theme.reset();
       }
     });
@@ -84,7 +85,7 @@ export class AuthService {
     this.profile.set(null);
     this.businessType.set(null);
     this.businessName.set(null);
-    this.businessTheme.set(null);
+    this.businessColors.set(null);
     this.unauthorizedEmail.set(null);
     this.theme.reset();
   }
@@ -116,7 +117,7 @@ export class AuthService {
       this.profile.set(null);
       this.businessType.set(null);
       this.businessName.set(null);
-      this.businessTheme.set(null);
+      this.businessColors.set(null);
       this.plans.reset();
       this.theme.reset();
       return;
@@ -133,7 +134,7 @@ export class AuthService {
       this.profile.set(null);
       this.businessType.set(null);
       this.businessName.set(null);
-      this.businessTheme.set(null);
+      this.businessColors.set(null);
       this.plans.reset();
       this.theme.reset();
       return;
@@ -144,19 +145,17 @@ export class AuthService {
     this.businessType.set(businesses?.type ?? null);
     this.businessName.set(businesses?.name ?? null);
 
-    // Aplica el preset del negocio. El mode (light/dark/system) lo gestiona
-    // el theme.service por su cuenta desde localStorage — es preferencia
-    // del usuario, no del negocio.
-    // super_admin no tiene business asignado → cae a default monochrome.
+    // El mode (light/dark/system) lo gestiona el theme.service por su cuenta
+    // desde localStorage — es preferencia del usuario, no del negocio.
+    // super_admin no tiene business asignado → cae a los colores default.
     // El plan gobierna qué módulos ve el usuario, así que se carga junto con
     // el profile y no bajo demanda: llegar a una pantalla y que recién ahí se
     // descubra que el plan no la incluye da un parpadeo feo.
     void this.plans.load();
 
-    const businessTheme = businesses?.theme
-      ? { preset: businesses.theme.preset }
-      : DEFAULT_THEME;
-    this.businessTheme.set(businessTheme);
-    this.theme.applyPreset(businessTheme);
+    const colors: BusinessColors =
+      businesses?.theme?.color1 && businesses?.theme?.color2 ? businesses.theme : DEFAULT_COLORS;
+    this.businessColors.set(colors);
+    this.theme.applyColors(colors);
   }
 }

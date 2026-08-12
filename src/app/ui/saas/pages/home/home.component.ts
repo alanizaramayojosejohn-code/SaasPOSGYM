@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { BusinessQueryService } from '../../../../services/business/query.service';
 import { Business } from '../../../../models/business.model';
-import { getPreset } from '../../../../services/theme/theme.presets';
+import { DEFAULT_COLORS } from '../../../../services/theme/theme.presets';
 
 @Component({
   selector: 'app-saas-home',
@@ -41,22 +41,6 @@ export class SaasHomeComponent {
   // Top 5 negocios mas recientes (listBusinesses ya viene ordenado desc).
   readonly latestBusinesses = computed(() => this.businesses().slice(0, 5));
 
-  // Ranking de presets: cuantos negocios usan cada paleta. Util para el
-  // super_admin que ve si la mayoria sigue con el monocromo default.
-  readonly presetUsage = computed<{ key: string; label: string; color: string; count: number }[]>(() => {
-    const counts = new Map<string, number>();
-    for (const b of this.businesses()) {
-      const key = b.theme?.preset ?? 'monochrome';
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    return Array.from(counts.entries())
-      .map(([key, count]) => {
-        const p = getPreset(key);
-        return { key, label: p.label, color: p.light.primary, count };
-      })
-      .sort((a, b) => b.count - a.count);
-  });
-
   constructor() {
     void this.refresh();
   }
@@ -72,11 +56,11 @@ export class SaasHomeComponent {
     }
   }
 
-  primaryColor(business: Business): string {
-    return getPreset(business.theme?.preset).light.primary;
+  color1(business: Business): string {
+    return business.theme?.color1 ?? DEFAULT_COLORS.color1;
   }
 
-  presetLabel(business: Business): string {
-    return getPreset(business.theme?.preset).label;
+  color2(business: Business): string {
+    return business.theme?.color2 ?? DEFAULT_COLORS.color2;
   }
 }

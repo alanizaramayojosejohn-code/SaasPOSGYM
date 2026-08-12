@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Business } from '../../../../../../models/business.model';
-import { getPreset } from '../../../../../../services/theme/theme.presets';
+import { DEFAULT_COLORS } from '../../../../../../services/theme/theme.presets';
 import { DetailFieldComponent } from '../../../../../shared/detail-field.component';
 
 @Component({
@@ -24,5 +24,5 @@ export class BusinessesDetailComponent {
 
   readonly typeLabel = computed(() => (this.value().type === 'gym' ? 'Gimnasio' : 'POS'));
 
-  readonly preset = computed(() => getPreset(this.value().theme?.preset));
+  readonly colors = computed(() => this.value().theme ?? DEFAULT_COLORS);
 }

@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { AuthService } from '../../../../../../services/auth/auth.service';
 import { OrderWithDetails, PAYMENT_METHOD_LABEL } from '../../../../../../models/order.model';
+import { MethodBadgeComponent } from '../../../../../shared/method-badge.component';
 
 @Component({
   selector: 'app-order-invoice',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [CurrencyPipe, DatePipe, MethodBadgeComponent],
   templateUrl: './invoice.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

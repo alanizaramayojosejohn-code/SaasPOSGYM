@@ -6,6 +6,8 @@ import { ReportQueryService } from '../../../../services/report/query.service';
 import { OrderQueryService } from '../../../../services/order/query.service';
 import { DailyIncome } from '../../../../models/daily-income.model';
 import { OrderWithDetails, orderPrimaryLabel, orderPrimaryType } from '../../../../models/order.model';
+import { ActiveMembership } from '../../../../models/active-membership.model';
+import { LowStockProduct } from '../../../../models/low-stock-product.model';
 
 @Component({
   selector: 'app-caja-home',
@@ -21,9 +23,19 @@ export class CajaHomeComponent {
   readonly loading = signal(true);
   readonly daily = signal<DailyIncome[]>([]);
   readonly recentOrders = signal<OrderWithDetails[]>([]);
+  readonly activeMemberships = signal<ActiveMembership[]>([]);
+  readonly lowStock = signal<LowStockProduct[]>([]);
   readonly now = signal(new Date());
 
   readonly isGym = computed(() => this.auth.businessType() === 'gym');
+
+  readonly expiringSoon = computed(() =>
+    this.activeMemberships()
+      .filter((m) => m.days_left <= 7)
+      .sort((a, b) => a.days_left - b.days_left)
+      .slice(0, 5),
+  );
+  readonly criticalStock = computed(() => this.lowStock().slice(0, 5));
 
   readonly primaryLabel = orderPrimaryLabel;
   readonly primaryType = orderPrimaryType;
@@ -81,12 +93,15 @@ export class CajaHomeComponent {
   async refresh(): Promise<void> {
     this.loading.set(true);
     try {
-      const [daily, orders] = await Promise.all([
-        this.reportQuery.listDailyIncome(7),
-        this.orderQuery.listOrders(20),
-      ]);
-      this.daily.set(daily);
-      this.recentOrders.set(orders);
+      const tasks: Promise<void>[] = [
+        this.reportQuery.listDailyIncome(7).then((v) => this.daily.set(v)),
+        this.orderQuery.listOrders(20).then((v) => this.recentOrders.set(v)),
+        this.reportQuery.listLowStockProducts().then((v) => this.lowStock.set(v)),
+      ];
+      if (this.isGym()) {
+        tasks.push(this.reportQuery.listActiveMemberships().then((v) => this.activeMemberships.set(v)));
+      }
+      await Promise.all(tasks);
     } catch (err) {
       console.error('Error cargando dashboard caja', err);
     } finally {

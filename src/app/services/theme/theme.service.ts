@@ -1,37 +1,56 @@
 import { Injectable, signal } from '@angular/core';
 import {
-  BusinessTheme,
+  BusinessColors,
+  DEFAULT_COLORS,
   DEFAULT_MODE,
-  DEFAULT_THEME,
-  getPreset,
   THEME_MODE_STORAGE_KEY,
-  THEME_PRESET_LIST,
   ThemeMode,
-  ThemePreset,
-  ThemeTokens,
 } from './theme.presets';
+
+// Luminancia relativa WCAG — elige el texto (blanco/negro) que mejor
+// contrasta sobre un color de negocio arbitrario elegido por el super_admin.
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace('#', '');
+  const full = h.length === 3 ? h.split('').map((c) => c + c).join('') : h;
+  const n = parseInt(full.slice(0, 6), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function relativeLuminance(hex: string): number {
+  const [r, g, b] = hexToRgb(hex).map((c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastFg(bgHex: string): string {
+  const bgLum = relativeLuminance(bgHex);
+  const whiteContrast = (1 + 0.05) / (bgLum + 0.05);
+  const blackContrast = (bgLum + 0.05) / 0.05;
+  return whiteContrast >= blackContrast ? '#FFFFFF' : '#0A0A0A';
+}
 
 // Aplica el tema al documento via data-attributes en <html>.
 // Dos canales independientes:
-//  · preset: viene del business asignado por el super_admin → auth.service
-//    lo carga al login y llama applyPreset().
+//  · colors: los 2 colores del negocio asignado por el super_admin →
+//    auth.service los carga al login y llama applyColors().
 //  · mode (light/dark/system): preferencia del USUARIO en este navegador,
 //    se persiste en localStorage. setMode() la cambia en runtime.
 //
-// Las variables CSS dependen de la combinacion preset+mode resueltos.
-// Para 'system', escuchamos prefers-color-scheme y re-aplicamos sin reload.
+// El fondo (base/surface/elevated/foreground/border/...) NO se escribe desde
+// acá: es CSS puro en styles.css (:root / :root[data-mode="dark"]), siempre
+// monocromo. Solo --c-accent/-fg y --c-accent-2/-fg dependen de JS.
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  // Tema (preset) actualmente aplicado. UI lo lee para resaltar el preset
-  // activo en pickers (form de business).
-  readonly currentPreset = signal<BusinessTheme>(DEFAULT_THEME);
+  // Colores del negocio actualmente aplicados. UI los lee para precargar el
+  // picker en el form de business.
+  readonly currentColors = signal<BusinessColors>(DEFAULT_COLORS);
 
   // Modo elegido por el usuario (puede ser 'system'). UI lo lee para el toggle.
   readonly currentMode = signal<ThemeMode>(DEFAULT_MODE);
 
   // Modo efectivamente aplicado (resuelto si currentMode = 'system').
-  // Util para componentes que necesiten saber el modo real (logo claro vs
-  // oscuro, etc.).
   readonly resolvedMode = signal<'light' | 'dark'>('light');
 
   private mediaQuery: MediaQueryList | null = null;
@@ -46,13 +65,14 @@ export class ThemeService {
         this.currentMode.set(stored);
       }
     }
+    this.applyModeResolution(this.currentMode());
   }
 
-  // Llamado por auth.service.loadProfile() cuando viene preset del business,
-  // y por reset() cuando no hay sesion. No toca el mode (separado).
-  applyPreset(theme: BusinessTheme): void {
-    this.currentPreset.set(theme);
-    this.applyToDom();
+  // Llamado por auth.service.loadProfile() cuando vienen los colores del
+  // business, y por reset() cuando no hay sesion. No toca el mode (separado).
+  applyColors(colors: BusinessColors): void {
+    this.currentColors.set(colors);
+    this.writeColorVars();
   }
 
   // Toggle del usuario. Persiste en localStorage para que la proxima carga
@@ -63,63 +83,41 @@ export class ThemeService {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(THEME_MODE_STORAGE_KEY, mode);
     }
-    this.applyToDom();
+    this.applyModeResolution(mode);
   }
 
-  // Resetea el preset al default (monochrome). NO toca el mode — la
-  // preferencia del usuario sobrevive logout/login.
+  // Resetea los colores al default. NO toca el mode — la preferencia del
+  // usuario sobrevive logout/login.
   reset(): void {
-    this.applyPreset(DEFAULT_THEME);
+    this.applyColors(DEFAULT_COLORS);
   }
 
-  private applyToDom(): void {
-    const root = document.documentElement;
-    const preset = getPreset(this.currentPreset().preset);
-    root.dataset['preset'] = preset.key;
-    this.applyModeResolution(this.currentMode(), preset);
-  }
-
-  private applyModeResolution(mode: ThemeMode, preset: ThemePreset): void {
+  private applyModeResolution(mode: ThemeMode): void {
     this.detachMediaListener();
 
     if (mode === 'system') {
       // Mientras este en 'system', escuchamos cambios del SO.
       this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      this.mediaListener = (e) => this.setResolvedMode(e.matches ? 'dark' : 'light', preset);
+      this.mediaListener = (e) => this.setResolvedMode(e.matches ? 'dark' : 'light');
       this.mediaQuery.addEventListener('change', this.mediaListener);
-      this.setResolvedMode(this.mediaQuery.matches ? 'dark' : 'light', preset);
+      this.setResolvedMode(this.mediaQuery.matches ? 'dark' : 'light');
     } else {
-      this.setResolvedMode(mode, preset);
+      this.setResolvedMode(mode);
     }
   }
 
-  private setResolvedMode(mode: 'light' | 'dark', preset: ThemePreset): void {
-    const root = document.documentElement;
-    root.dataset['mode'] = mode;
+  private setResolvedMode(mode: 'light' | 'dark'): void {
+    document.documentElement.dataset['mode'] = mode;
     this.resolvedMode.set(mode);
-    const tokens = mode === 'dark' ? preset.dark : preset.light;
-    this.writeTokensToRoot(root, tokens);
   }
 
-  private writeTokensToRoot(root: HTMLElement, tokens: ThemeTokens): void {
-    root.style.setProperty('--c-base', tokens.base);
-    root.style.setProperty('--c-surface', tokens.surface);
-    root.style.setProperty('--c-elevated', tokens.elevated);
-    root.style.setProperty('--c-input', tokens.input);
-    root.style.setProperty('--c-muted', tokens.muted);
-    root.style.setProperty('--c-foreground', tokens.foreground);
-    root.style.setProperty('--c-foreground-muted', tokens.foregroundMuted);
-    root.style.setProperty('--c-foreground-subtle', tokens.foregroundSubtle);
-    root.style.setProperty('--c-foreground-faint', tokens.foregroundFaint);
-    root.style.setProperty('--c-border', tokens.border);
-    root.style.setProperty('--c-border-subtle', tokens.borderSubtle);
-    root.style.setProperty('--c-primary', tokens.primary);
-    root.style.setProperty('--c-primary-fg', tokens.primaryFg);
-    root.style.setProperty('--c-accent', tokens.accent);
-    root.style.setProperty('--c-accent-fg', tokens.accentFg);
-    root.style.setProperty('--c-success', tokens.success);
-    root.style.setProperty('--c-danger', tokens.danger);
-    root.style.setProperty('--c-warning', tokens.warning);
+  private writeColorVars(): void {
+    const root = document.documentElement;
+    const { color1, color2 } = this.currentColors();
+    root.style.setProperty('--c-accent', color1);
+    root.style.setProperty('--c-accent-fg', contrastFg(color1));
+    root.style.setProperty('--c-accent-2', color2);
+    root.style.setProperty('--c-accent-2-fg', contrastFg(color2));
   }
 
   private detachMediaListener(): void {
@@ -128,9 +126,5 @@ export class ThemeService {
     }
     this.mediaQuery = null;
     this.mediaListener = null;
-  }
-
-  getPresets(): readonly ThemePreset[] {
-    return THEME_PRESET_LIST;
   }
 }

@@ -135,7 +135,7 @@
                     <img [src]="url" [alt]="product.name" loading="lazy" decoding="async"
                          class="w-9 h-9 rounded-lg object-cover border border-border-subtle bg-muted flex-shrink-0" />
                   } @else {
-                    <span class="w-9 h-9 rounded-lg bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                    <span class="w-9 h-9 rounded-lg bg-elevated text-foreground border-2 border-accent flex items-center justify-center text-[11px] font-bold flex-shrink-0">
                       {{ initials(product.name) }}
                     </span>
                   }

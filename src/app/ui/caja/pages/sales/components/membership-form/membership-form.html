@@ -2,12 +2,12 @@
       class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 space-y-5 shadow-sm">
   <div>
     <h3 class="font-semibold text-foreground">Vender membresía</h3>
-    <p class="text-sm text-foreground-subtle">Asigna un plan a un socio existente. La fecha de fin se calcula automáticamente.</p>
+    <p class="text-sm text-foreground-subtle">Asigna un plan a un cliente existente. La fecha de fin se calcula automáticamente.</p>
   </div>
 
   @if (clients().length === 0) {
     <div class="text-sm text-warning bg-warning/10 border border-warning/20 rounded-lg px-3 py-2">
-      No hay socios registrados. Crea primero un cliente en Socios.
+      No hay clientes registrados. Usa "+ Cliente" para crear uno.
     </div>
   }
 
@@ -20,13 +20,19 @@
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div class="md:col-span-2">
       <label for="client_id" class="block text-sm font-medium text-foreground-muted mb-1">Cliente</label>
-      <select id="client_id" formControlName="client_id"
-              class="w-full px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
-        <option value="" disabled>Selecciona un socio…</option>
-        @for (client of clients(); track client.id) {
-          <option [value]="client.id">{{ client.ci }} · {{ client.name }}</option>
-        }
-      </select>
+      <div class="flex gap-2">
+        <select id="client_id" formControlName="client_id"
+                class="flex-1 min-w-0 px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+          <option value="" disabled>Selecciona un cliente…</option>
+          @for (client of clients(); track client.id) {
+            <option [value]="client.id">{{ client.ci }} · {{ client.name }}</option>
+          }
+        </select>
+        <button type="button" (click)="requestCreateClient.emit()" title="Nuevo cliente"
+                class="press px-3 py-2 text-sm font-semibold text-foreground-muted border border-border-subtle rounded-lg hover:bg-muted transition flex-shrink-0">
+          + Cliente
+        </button>
+      </div>
     </div>
 
     <div>
@@ -36,7 +42,7 @@
         <option value="" disabled>Selecciona un plan…</option>
         @for (plan of plans(); track plan.id) {
           <option [value]="plan.id">
-            {{ plan.name }} — {{ plan.price }} · {{ plan.duration_days }}d
+            {{ plan.name }} — {{ plan.price | currency: 'BOB':'symbol-narrow':'1.2-2' }} · {{ plan.duration_days }}d
             @if (plan.sessions_number) {
               · {{ plan.sessions_number }} ses.
             }
@@ -55,9 +61,76 @@
 
   @if (selectedPlan(); as p) {
     <div class="flex justify-end text-sm text-foreground-muted">
-      <span>Total: <strong class="font-mono text-foreground">{{ p.price | number: '1.2-2' }}</strong></span>
+      <span>Total: <strong class="font-mono text-foreground">{{ p.price | currency: 'BOB':'symbol-narrow':'1.2-2' }}</strong></span>
     </div>
   }
+
+  <!-- Pago -->
+  <div class="pt-4 border-t border-border-subtle space-y-3">
+    <div>
+      <label class="block text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-1.5">Método de pago</label>
+      <div class="flex gap-1 bg-input rounded-lg p-0.5 border border-border-subtle">
+        <button type="button" (click)="setPaymentMethod('cash')"
+                [class.bg-primary]="paymentMethod() === 'cash'"
+                [class.text-primary-fg]="paymentMethod() === 'cash'"
+                [class.shadow-sm]="paymentMethod() === 'cash'"
+                [class.text-foreground-muted]="paymentMethod() !== 'cash'"
+                class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">
+          Efectivo
+        </button>
+        <button type="button" (click)="setPaymentMethod('card')"
+                [class.bg-primary]="paymentMethod() === 'card'"
+                [class.text-primary-fg]="paymentMethod() === 'card'"
+                [class.shadow-sm]="paymentMethod() === 'card'"
+                [class.text-foreground-muted]="paymentMethod() !== 'card'"
+                class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">
+          Tarjeta
+        </button>
+        <button type="button" (click)="setPaymentMethod('qr')"
+                [class.bg-primary]="paymentMethod() === 'qr'"
+                [class.text-primary-fg]="paymentMethod() === 'qr'"
+                [class.shadow-sm]="paymentMethod() === 'qr'"
+                [class.text-foreground-muted]="paymentMethod() !== 'qr'"
+                class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">
+          QR
+        </button>
+      </div>
+    </div>
+
+    <!-- Recibido / cambio (solo efectivo) -->
+    @if (paymentMethod() === 'cash') {
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-1">Recibido</label>
+          <input type="number" min="0" step="0.01"
+                 [value]="cashReceived() || ''"
+                 (input)="setCashReceived(+$any($event.target).value)"
+                 placeholder="0.00"
+                 class="w-full px-2 py-1.5 bg-input text-foreground text-sm font-mono border border-border-subtle rounded-md outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-1">Cambio</label>
+          <div class="px-2 py-1.5 bg-muted text-sm font-mono rounded-md border border-border-subtle"
+               [class.text-foreground]="cashChange() >= 0"
+               [class.text-danger]="cashChange() < 0">
+            {{ cashChange() | number: '1.2-2' }}
+          </div>
+        </div>
+      </div>
+      @if (cashChange() < 0) {
+        <p class="text-xs text-danger">El monto recibido no cubre el total del plan.</p>
+      }
+    }
+
+    <div>
+      <label for="membership-notes" class="block text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-1">
+        Nota <span class="normal-case font-normal text-foreground-faint">(opcional)</span>
+      </label>
+      <textarea id="membership-notes" formControlName="notes" rows="2"
+                placeholder="Observaciones de la venta…"
+                class="w-full px-3 py-2 bg-input text-foreground text-sm border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-foreground-faint resize-none"></textarea>
+    </div>
+  </div>
 
   @if (errorMessage(); as msg) {
     <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">
@@ -70,8 +143,8 @@
             class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
       Cancelar
     </button>
-    <button type="submit" [disabled]="form.invalid || submitting()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+    <button type="submit" [disabled]="!canSubmit()"
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
         Asignando…
       } @else {

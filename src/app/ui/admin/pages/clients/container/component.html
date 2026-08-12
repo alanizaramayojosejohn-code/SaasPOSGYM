@@ -1,12 +1,12 @@
 <div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-2xl font-bold text-foreground tracking-tight">Socios</h2>
-      <p class="text-foreground-muted text-sm">Socios registrados en tu negocio.</p>
+      <h2 class="text-2xl font-bold text-foreground tracking-tight">Clientes</h2>
+      <p class="text-foreground-muted text-sm">Clientes registrados en tu negocio.</p>
     </div>
     <button (click)="openCreate()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
-      Nuevo socio
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+      Nuevo cliente
     </button>
   </div>
 
@@ -16,7 +16,7 @@
     <app-modal-shell
       [open]="true"
       chrome="bare"
-      [title]="editing() ? 'Editar socio' : 'Nuevo socio'"
+      [title]="editing() ? 'Editar cliente' : 'Nuevo cliente'"
       [busy]="submitting()"
       (closed)="closeForm()">
       <app-admin-clients-form
@@ -28,13 +28,13 @@
     </app-modal-shell>
   }
 
-  <!-- Ventana de solo lectura con los datos del socio. -->
+  <!-- Ventana de solo lectura con los datos del cliente. -->
   @if (viewing(); as v) {
     <app-modal-shell
       [open]="true"
       chrome="bare"
       size="md"
-      title="Detalle de socio"
+      title="Detalle de cliente"
       (closed)="closeView()">
       <app-admin-clients-detail [value]="v" (edit)="editFromView()" (closed)="closeView()" />
     </app-modal-shell>
@@ -57,9 +57,9 @@
   @if (deleting(); as c) {
     <app-confirm-delete
       [open]="true"
-      title="¿Eliminar este socio?"
+      title="¿Eliminar este cliente?"
       [description]="deletingError() ?? 'Esta acción no se puede deshacer. Si tiene membresías asignadas, la operación fallará.'"
-      confirmLabel="Eliminar socio"
+      confirmLabel="Eliminar cliente"
       [entityLabel]="c.name"
       [entitySublabel]="'CI ' + c.ci"
       [entityInitials]="deletingInitials()"

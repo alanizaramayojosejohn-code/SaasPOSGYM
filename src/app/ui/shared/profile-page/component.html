@@ -99,7 +99,7 @@
         <div class="flex justify-end pt-1">
           <button type="submit"
                   [disabled]="pwForm.invalid || pwSubmitting()"
-                  class="press px-5 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+                  class="press px-5 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
             @if (pwSubmitting()) { Guardando… } @else { Cambiar contraseña }
           </button>
         </div>

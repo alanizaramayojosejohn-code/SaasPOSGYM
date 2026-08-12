@@ -1,15 +1,223 @@
-<div class="a-rise max-w-7xl mx-auto px-6 py-10 space-y-6">
+<div class="a-rise max-w-4xl mx-auto px-6 py-10 space-y-6">
   <div>
     <h2 class="text-2xl font-bold text-foreground tracking-tight">Asistencia</h2>
-    <p class="text-foreground-muted text-sm">Registra el ingreso del socio. Si su plan tiene sesiones, se descuenta una.</p>
+    <p class="text-foreground-muted text-sm">Escribe el CI del cliente: vas a ver si es nuevo, su membresía activa y su última membresía, todo en un solo lugar.</p>
   </div>
 
-  <app-caja-attendance-form
-    [clients]="clients()"
-    [submitting]="submitting()"
-    [errorMessage]="formError()"
-    [successMessage]="successMessage()"
-    (registerForClient)="handleRegister($event)" />
+  <!-- ============================== Buscador de CI (protagonista) ============================== -->
+  <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 shadow-sm">
+    <label for="ci-search" class="block text-xs font-bold uppercase tracking-wider text-foreground-faint mb-2">CI del cliente</label>
+    <div class="flex gap-3">
+      <input id="ci-search" type="text" inputmode="numeric" autocomplete="off" autofocus
+             placeholder="Escanea o escribe el CI…"
+             [value]="ciInput()"
+             (input)="setCi($any($event.target).value)"
+             (keydown.enter)="search()"
+             class="flex-1 min-w-0 px-4 py-3 bg-input text-foreground text-2xl font-bold font-mono tracking-wide border-2 border-border-subtle rounded-xl outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary placeholder:text-foreground-faint placeholder:text-base placeholder:font-normal" />
+      <button type="button" (click)="search()" [disabled]="!ciInput().trim()"
+              class="press px-6 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-xl transition shadow-md shadow-primary/20 disabled:shadow-none">
+        Buscar
+      </button>
+    </div>
+  </div>
 
-  <app-caja-attendance-list [attendance]="attendance()" [loading]="loading()" />
+  @if (successMessage(); as msg) {
+    <div class="text-sm text-success bg-success/10 border border-success/20 rounded-lg px-3 py-2 flex items-center justify-between gap-3">
+      <span>{{ msg }}</span>
+      <button type="button" (click)="successMessage.set(null)" class="text-success/70 hover:text-success flex-shrink-0">✕</button>
+    </div>
+  }
+
+  <!-- ============================== Cliente nuevo ============================== -->
+  @if (lookup() === 'not_found') {
+    <div class="bg-surface backdrop-blur-xl border border-warning/30 rounded-2xl p-6 shadow-sm space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-warning/15 text-warning flex items-center justify-center flex-shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-foreground">CI {{ searchedCi() }} no está registrado</p>
+          <p class="text-sm text-foreground-subtle">Es un cliente nuevo. Regístralo para poder venderle una membresía.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3">
+        <button type="button" (click)="resetLookup()"
+                class="px-4 py-2 text-sm font-medium text-foreground-muted hover:bg-muted rounded-lg transition">
+          Cancelar
+        </button>
+        <button type="button" (click)="openClientModal()"
+                class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg rounded-lg transition shadow-md shadow-primary/20">
+          Registrar nuevo cliente
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ============================== Cliente encontrado ============================== -->
+  @if (foundClient(); as client) {
+    <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl p-6 shadow-sm space-y-5">
+      <!-- Header del cliente -->
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="w-12 h-12 rounded-full bg-elevated text-foreground border-2 border-accent flex items-center justify-center text-sm font-bold flex-shrink-0">
+            {{ initials(client.name) }}
+          </span>
+          <div>
+            <p class="font-bold text-lg text-foreground tracking-tight">{{ client.name }}</p>
+            <p class="text-xs text-foreground-faint font-mono">CI {{ client.ci }}</p>
+          </div>
+        </div>
+        <button type="button" (click)="resetLookup()"
+                class="text-xs font-semibold text-foreground-muted hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-muted transition flex-shrink-0">
+          Buscar otro
+        </button>
+      </div>
+
+      @if (membershipLoading()) {
+        <div class="py-6 text-center text-sm text-foreground-subtle">Consultando membresías…</div>
+      } @else {
+
+        @if (activeMembership(); as m) {
+          <!-- ---- Membresía activa ---- -->
+          <div class="rounded-xl border border-success/25 bg-success/5 p-4 space-y-3">
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-success/15 text-success">
+                <span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+                Membresía activa
+              </span>
+              <span class="text-xs font-mono"
+                    [class.text-danger]="m.days_left <= 3"
+                    [class.text-warning]="m.days_left > 3 && m.days_left <= 7"
+                    [class.text-foreground-muted]="m.days_left > 7">
+                {{ m.days_left }} día{{ m.days_left === 1 ? '' : 's' }} restante{{ m.days_left === 1 ? '' : 's' }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between gap-3 flex-wrap text-sm">
+              <span class="font-semibold text-foreground">{{ m.plan_name }}</span>
+              <span class="text-foreground-subtle">
+                Vence {{ m.end_date | date: 'dd/MM/yyyy' }}
+                @if (m.sessions_left !== null) {
+                  · {{ m.sessions_left }} sesión{{ m.sessions_left === 1 ? '' : 'es' }} restante{{ m.sessions_left === 1 ? '' : 's' }}
+                }
+              </span>
+            </div>
+          </div>
+
+          @if (markingError(); as msg) {
+            <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+          }
+
+          <button type="button" (click)="markAttendance()" [disabled]="markingSubmitting()"
+                  class="press w-full py-3.5 bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-bold text-base rounded-xl transition shadow-lg shadow-primary/20 disabled:shadow-none">
+            @if (markingSubmitting()) { Registrando… } @else { Marcar asistencia }
+          </button>
+
+        } @else {
+          <!-- ---- Sin membresía activa ---- -->
+          <div class="rounded-xl border border-warning/25 bg-warning/5 p-4 space-y-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-warning/15 text-warning">
+              <span class="w-1.5 h-1.5 rounded-full bg-warning"></span>
+              Sin membresía activa
+            </span>
+
+            @if (lastMembership(); as last) {
+              <p class="text-sm text-foreground-subtle">
+                Última membresía: <span class="font-medium text-foreground">{{ last.plan_name }}</span>
+                · venció {{ last.end_date | date: 'dd/MM/yyyy' }}
+                @if (last.cancelled_at) { <span class="text-danger">(cancelada)</span> }
+              </p>
+            } @else {
+              <p class="text-sm text-foreground-subtle">Sin membresías previas registradas.</p>
+            }
+          </div>
+
+          <!-- Registrar membresía -->
+          <div class="space-y-3 pt-1">
+            <p class="text-xs font-bold uppercase tracking-wider text-foreground-faint">Registrar membresía</p>
+
+            @if (plans().length === 0) {
+              <p class="text-sm text-foreground-subtle">No hay planes de membresía creados aún.</p>
+            } @else {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label for="plan_id" class="block text-xs font-medium text-foreground-muted mb-1">Plan</label>
+                  <select id="plan_id" [value]="selectedPlanId()" (change)="selectPlan($any($event.target).value)"
+                          class="w-full px-3 py-2 bg-input text-foreground text-sm border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                    <option value="" disabled>Selecciona un plan…</option>
+                    @for (plan of plans(); track plan.id) {
+                      <option [value]="plan.id">
+                        {{ plan.name }} — {{ plan.price }} · {{ plan.duration_days }}d
+                        @if (plan.sessions_number) { · {{ plan.sessions_number }} ses. }
+                      </option>
+                    }
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-medium text-foreground-muted mb-1">Método de pago</label>
+                  <div class="flex gap-1 bg-input rounded-lg p-0.5 border border-border-subtle">
+                    <button type="button" (click)="setMembershipPaymentMethod('cash')"
+                            [class.bg-primary]="membershipPaymentMethod() === 'cash'"
+                            [class.text-primary-fg]="membershipPaymentMethod() === 'cash'"
+                            [class.text-foreground-muted]="membershipPaymentMethod() !== 'cash'"
+                            class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">Efectivo</button>
+                    <button type="button" (click)="setMembershipPaymentMethod('card')"
+                            [class.bg-primary]="membershipPaymentMethod() === 'card'"
+                            [class.text-primary-fg]="membershipPaymentMethod() === 'card'"
+                            [class.text-foreground-muted]="membershipPaymentMethod() !== 'card'"
+                            class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">Tarjeta</button>
+                    <button type="button" (click)="setMembershipPaymentMethod('qr')"
+                            [class.bg-primary]="membershipPaymentMethod() === 'qr'"
+                            [class.text-primary-fg]="membershipPaymentMethod() === 'qr'"
+                            [class.text-foreground-muted]="membershipPaymentMethod() !== 'qr'"
+                            class="flex-1 py-1.5 text-xs font-semibold rounded-md transition">QR</button>
+                  </div>
+                </div>
+              </div>
+
+              @if (selectedPlan(); as p) {
+                <div class="flex justify-end text-sm text-foreground-muted">
+                  <span>Total: <strong class="font-mono text-foreground">{{ p.price | number: '1.2-2' }}</strong></span>
+                </div>
+              }
+
+              @if (membershipError(); as msg) {
+                <div class="text-sm text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-2">{{ msg }}</div>
+              }
+
+              <button type="button" (click)="registerMembership()" [disabled]="!selectedPlanId() || membershipSubmitting()"
+                      class="press w-full py-2.5 bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-semibold text-sm rounded-xl transition shadow-md shadow-primary/20 disabled:shadow-none">
+                @if (membershipSubmitting()) { Registrando… } @else { Registrar membresía }
+              </button>
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- ============================== Alta rápida de cliente ============================== -->
+  @if (clientModalOpen()) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      title="Nuevo cliente"
+      [busy]="clientSubmitting()"
+      (closed)="closeClientModal()">
+      <app-admin-clients-form
+        [initialCi]="searchedCi()"
+        [submitting]="clientSubmitting()"
+        [errorMessage]="clientError()"
+        (submitForm)="handleCreateClient($event)"
+        (cancel)="closeClientModal()" />
+    </app-modal-shell>
+  }
+
+  <!-- ============================== Historial reciente ============================== -->
+  <div>
+    <p class="text-xs font-bold uppercase tracking-wider text-foreground-faint mb-2">Asistencias recientes</p>
+    <app-caja-attendance-list [attendance]="attendance()" [loading]="loading()" />
+  </div>
 </div>

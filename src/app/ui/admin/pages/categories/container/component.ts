@@ -3,6 +3,7 @@ import { Category } from '../../../../../models/category.model';
 import { CategoryService, CreateCategoryInput } from '../../../../../services/category/category.service';
 import { CategoryQueryService } from '../../../../../services/category/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
+import { initials } from '../../../../../utilities/initials';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { CategoriesFormComponent } from '../components/form/form';
@@ -37,11 +38,7 @@ export class AdminCategoriesContainerComponent {
 
   readonly deletingInitials = computed(() => {
     const c = this.deleting();
-    if (!c) return null;
-    const parts = c.name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return null;
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
+    return c ? initials(c.name) : null;
   });
 
   constructor() {

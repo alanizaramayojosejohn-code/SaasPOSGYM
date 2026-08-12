@@ -1,0 +1,36 @@
+[    1472ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[    1750ms] [WARNING] NG0913: An image with src http://localhost:4200/img/svima_white.webp has intrinsic file dimensions much larger than its rendered size. This can negatively impact application loading performance. For more information about addressing or disabling this warning, see https://v21.angular.dev/errors/NG0913. Find more at https://v21.angular.dev/errors/NG0913 @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:26275
+[  552223ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[  599550ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1072756ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1084134ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1443024ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1540230ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1552458ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 1916415ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 1952259ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 2327602ms] [WARNING] @supabase/gotrue-js: Lock "lock:sb-jwoqcvynwkfdnomwzrhf-auth-token" was not released within 5000ms. This may indicate an orphaned lock from a component unmount (e.g., React Strict Mode). Forcefully acquiring the lock to recover. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=b40449c9:14016
+[ 2328318ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 2541768ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 7186233ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 7186282ms] [WARNING] @supabase/gotrue-js: Lock "lock:sb-jwoqcvynwkfdnomwzrhf-auth-token" was not released within 5000ms. This may indicate an orphaned lock from a component unmount (e.g., React Strict Mode). Forcefully acquiring the lock to recover. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/@supabase_supabase-js.js?v=b40449c9:14016
+[ 7186310ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 7186688ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/chunk-2B65HDAB.js:0
+[ 7186688ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/chunk-5LDNUIAI.js:0
+[ 7186690ms] [ERROR] ERROR TypeError: Failed to fetch dynamically imported module: http://localhost:4200/chunk-2B65HDAB.js @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:5826
+[ 8462346ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[ 8462782ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[ 8463813ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[ 8466060ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[ 8470086ms] [ERROR] Failed to load resource: net::ERR_INTERNET_DISCONNECTED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[ 8470087ms] [ERROR] Error cargando el catálogo de planes {message: TypeError: Failed to fetch, details: TypeError: Failed to fetch
+    at http://localhost… (http://localhost:4200/chunk-OHRLQQOL.js:104:29), hint: , code: } @ http://localhost:4200/chunk-OHRLQQOL.js:105
+[ 9378619ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[ 9624523ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864
+[10670080ms] [ERROR] Failed to load resource: net::ERR_NETWORK_IO_SUSPENDED @ http://localhost:4200/@ng/component?c=src%2Fapp%2Fapp.ts%40App&t=1786571911447:0
+[10670081ms] [ERROR] ERROR TypeError: Failed to fetch dynamically imported module: http://localhost:4200/@ng/component?c=src%2Fapp%2Fapp.ts%40App&t=1786571911447 @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:5826
+[10670681ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[10674469ms] [LOG] Angular is running in development mode. @ http://localhost:4200/@fs/C:/Users/Jose/Desktop/SaasGym/SaasGym/.angular/cache/21.2.8/SaasGym/vite/deps/chunk-PGNECXFE.js?v=b40449c9:17071
+[10682711ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[10685259ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://jwoqcvynwkfdnomwzrhf.supabase.co/rest/v1/plans?select=*&is_active=eq.true&order=sort_order.asc:0
+[11135310ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:4200/@vite/client:864

@@ -44,7 +44,7 @@
           <div class="flex-1 h-full flex flex-col items-center gap-2 group"
                [title]="m.clients_count + ' altas — ' + m.with_nit_count + ' con NIT'">
             <div class="w-full flex-1 min-h-0 flex items-end">
-              <div class="chart-bar w-full rounded-t-md bg-primary/80 hover:bg-primary relative"
+              <div class="chart-bar w-full rounded-t-md bg-accent/80 hover:bg-accent relative"
                    [style.height.%]="barHeight(m.clients_count)">
                 <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-mono font-semibold text-foreground-muted opacity-0 group-hover:opacity-100 whitespace-nowrap transition-opacity duration-200">
                   {{ m.clients_count }}

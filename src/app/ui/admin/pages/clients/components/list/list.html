@@ -2,7 +2,7 @@
   <!-- Topbar: title + subtitle + flex + search + CTA -->
   <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl px-5 py-4 flex items-center gap-4 flex-wrap">
     <div>
-      <h3 class="text-base font-semibold text-foreground tracking-tight">Socios</h3>
+      <h3 class="text-base font-semibold text-foreground tracking-tight">Clientes</h3>
       <p class="text-[11px] text-foreground-muted mt-0.5">
         {{ counts().all }} registrados · {{ counts().recent }} alta reciente · {{ counts().withNit }} con NIT · {{ counts().inactive }} inactivos
       </p>
@@ -97,8 +97,8 @@
     } @else if (filteredSorted().length === 0) {
       <div class="px-6 py-16 text-center">
         @if (clients().length === 0) {
-          <p class="text-sm text-foreground-muted">Aún no hay socios registrados.</p>
-          <p class="text-xs text-foreground-faint mt-1">Crea el primero con el botón "Nuevo socio".</p>
+          <p class="text-sm text-foreground-muted">Aún no hay clientes registrados.</p>
+          <p class="text-xs text-foreground-faint mt-1">Crea el primero con el botón "Nuevo cliente".</p>
         } @else {
           <p class="text-sm text-foreground-muted">Sin resultados para los filtros actuales.</p>
         }
@@ -107,7 +107,7 @@
       <table class="w-full text-sm">
         <thead class="bg-muted/40 border-b border-border-subtle">
           <tr>
-            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Socio</th>
+            <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Cliente</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">CI</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">NIT / Razón social</th>
             <th class="text-left px-5 py-3 font-semibold text-[10px] tracking-wider uppercase text-foreground-muted">Contacto</th>
@@ -121,7 +121,7 @@
                 class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
               <td class="px-5 py-3">
                 <button type="button" (click)="view.emit(client)" class="flex items-center gap-3 group text-left">
-                  <span class="w-9 h-9 rounded-full bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                  <span class="w-9 h-9 rounded-full bg-elevated text-foreground border-2 border-accent flex items-center justify-center text-[11px] font-bold flex-shrink-0">
                     {{ initials(client.name) }}
                   </span>
                   <span>
@@ -203,7 +203,7 @@
       <!-- Footer counter -->
       <div class="px-5 py-3 flex items-center justify-between gap-3 border-t border-border-subtle bg-elevated/30">
         <span class="text-[11px] text-foreground-muted font-medium">
-          Mostrando {{ filteredSorted().length }} de {{ counts().all }} socios
+          Mostrando {{ filteredSorted().length }} de {{ counts().all }} clientes
         </span>
       </div>
     }

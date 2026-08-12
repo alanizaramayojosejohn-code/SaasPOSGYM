@@ -2,14 +2,19 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { PlanService } from '../../../../services/plan/plan.service';
 import { ReportQueryService } from '../../../../services/report/query.service';
 import { ClientQueryService } from '../../../../services/client/query.service';
 import { AttendanceQueryService } from '../../../../services/attendance/query.service';
+import { PurchasesService } from '../../../../services/purchases/purchases.service';
 import { ActiveMembership } from '../../../../models/active-membership.model';
 import { DailyIncome } from '../../../../models/daily-income.model';
 import { LowStockProduct } from '../../../../models/low-stock-product.model';
 import { MonthlyIncome } from '../../../../models/monthly-income.model';
 import { Client } from '../../../../models/client.model';
+import { PaymentMethod, PAYMENT_METHOD_LABEL } from '../../../../models/order.model';
+import { initials } from '../../../../utilities/initials';
+import { PlanStatusCardComponent } from '../../../shared/plan-status-card.component';
 
 interface DailyAggregate {
   day: string;
@@ -46,7 +51,7 @@ interface RecentMember {
 
 @Component({
   selector: 'app-admin-home',
-  imports: [CurrencyPipe, DatePipe, DecimalPipe, RouterLink],
+  imports: [CurrencyPipe, DatePipe, DecimalPipe, RouterLink, PlanStatusCardComponent],
   templateUrl: './home.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -54,7 +59,9 @@ export class AdminHomeComponent {
   private readonly reportQuery = inject(ReportQueryService);
   private readonly clientQuery = inject(ClientQueryService);
   private readonly attendanceQuery = inject(AttendanceQueryService);
+  private readonly purchasesService = inject(PurchasesService);
   protected readonly auth = inject(AuthService);
+  protected readonly plans = inject(PlanService);
 
   readonly loading = signal(true);
   readonly daily = signal<DailyIncome[]>([]);
@@ -64,6 +71,10 @@ export class AdminHomeComponent {
   readonly recentClients = signal<Client[]>([]);
   readonly revenueByCategory = signal<RevenueCategory[]>([]);
   readonly lastVisitMap = signal<Map<string, string>>(new Map());
+  readonly attendanceByDay = signal<{ day: string; count: number }[]>([]);
+  readonly paymentMethodBreakdown = signal<{ method: PaymentMethod; total: number; count: number }[]>([]);
+  readonly acquisitionsMonthTotal = signal(0);
+  readonly pendingPurchaseOrdersCount = signal(0);
   readonly now = signal(new Date());
   readonly isGym = computed(() => this.auth.businessType() === 'gym');
 
@@ -117,10 +128,47 @@ export class AdminHomeComponent {
   readonly expiringMemberships = computed(() => this.active().slice(0, 5));
   readonly criticalStock = computed(() => this.lowStock().slice(0, 5));
 
+  // ── Asistencias por día (GYM) ────────────────────────────────────────────
+
+  readonly maxAttendance = computed(() =>
+    this.attendanceByDay().reduce((mx, r) => Math.max(mx, r.count), 0),
+  );
+
+  attendanceBarHeight(count: number): number {
+    const max = this.maxAttendance();
+    if (max === 0) return 4;
+    return Math.max(4, (count / max) * 100);
+  }
+
+  // ── Métodos de pago del mes (GYM) ────────────────────────────────────────
+
+  readonly paymentMethodLabel = PAYMENT_METHOD_LABEL;
+  readonly paymentMethodTotal = computed(() =>
+    this.paymentMethodBreakdown().reduce((s, m) => s + m.total, 0),
+  );
+
+  paymentMethodPct(total: number): number {
+    const sum = this.paymentMethodTotal();
+    if (sum === 0) return 0;
+    return (total / sum) * 100;
+  }
+
+  // Mismo esquema fijo de color que app-method-badge (efectivo=verde,
+  // tarjeta/transferencia=celeste de marca, QR/cheque=plata) — no depende
+  // del negocio.
+  paymentMethodBarClass(method: PaymentMethod): string {
+    if (method === 'cash') return 'bg-success';
+    if (method === 'qr') return 'bg-silver';
+    return 'bg-brand';
+  }
+
   // ── Donut (GYM) ───────────────────────────────────────────────────────────
 
   readonly DONUT_R = 75;
   readonly DONUT_C = 2 * Math.PI * this.DONUT_R;
+  // Un solo tono (accent del negocio) con opacidad decreciente por segmento —
+  // "un color de acento dominante, con moderación": nunca reparte 8 colores
+  // distintos, solo varía la intensidad del mismo tono.
   readonly DONUT_OPACITIES = [1, 0.76, 0.56, 0.42, 0.3, 0.22, 0.15, 0.1];
 
   readonly donutTotal = computed(() =>
@@ -208,6 +256,18 @@ export class AdminHomeComponent {
             this.lastVisitMap.set(map);
           }),
           this.reportQuery.listRevenueByCategoryThisMonth().then((v) => this.revenueByCategory.set(v)),
+          this.attendanceQuery.countByDay(7).then((v) => this.attendanceByDay.set(v)),
+          this.reportQuery.listRevenueByPaymentMethodThisMonth().then((v) => this.paymentMethodBreakdown.set(v)),
+        );
+      } else if (this.plans.hasFeature('purchases')) {
+        const ym = new Date().toISOString().slice(0, 7);
+        tasks.push(
+          this.purchasesService.listAcquisitions(50).then((v) => {
+            this.acquisitionsMonthTotal.set(
+              v.filter((a) => a.acquired_at.startsWith(ym)).reduce((s, a) => s + Number(a.total_cost), 0),
+            );
+          }),
+          this.purchasesService.listPurchaseOrders('pending').then((v) => this.pendingPurchaseOrdersCount.set(v.length)),
         );
       }
       await Promise.all(tasks);
@@ -232,12 +292,7 @@ export class AdminHomeComponent {
     return 'text-foreground-muted';
   }
 
-  initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '··';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  readonly initials = initials;
 
   segmentOpacity(i: number): number {
     return this.DONUT_OPACITIES[Math.min(i, this.DONUT_OPACITIES.length - 1)];

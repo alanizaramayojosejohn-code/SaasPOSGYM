@@ -2,10 +2,10 @@
   <div class="flex items-center justify-between">
     <div>
       <h2 class="text-2xl font-bold text-foreground tracking-tight">Planes de membresía</h2>
-      <p class="text-foreground-muted text-sm">Catálogo de planes que puedes asignar a los socios.</p>
+      <p class="text-foreground-muted text-sm">Catálogo de planes que puedes asignar a los clientes.</p>
     </div>
     <button (click)="openCreate()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg rounded-lg transition shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30">
       Nuevo plan
     </button>
   </div>
@@ -52,7 +52,7 @@
     <app-confirm-delete
       [open]="true"
       title="¿Eliminar este plan?"
-      [description]="deletingError() ?? 'No se puede deshacer. Si hay socios activos con este plan, la operación fallará.'"
+      [description]="deletingError() ?? 'No se puede deshacer. Si hay clientes activos con este plan, la operación fallará.'"
       confirmLabel="Eliminar plan"
       [entityLabel]="p.name"
       [entitySublabel]="deletingSublabel()"

@@ -3,6 +3,7 @@ import { ActiveMembership } from '../../models/active-membership.model';
 import { DailyIncome } from '../../models/daily-income.model';
 import { LowStockProduct } from '../../models/low-stock-product.model';
 import { MonthlyIncome } from '../../models/monthly-income.model';
+import { PaymentMethod } from '../../models/order.model';
 import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable({ providedIn: 'root' })
@@ -85,6 +86,31 @@ export class ReportQueryService {
     }
     return Array.from(totals.entries())
       .map(([category, total]) => ({ category, total, type: types.get(category)! }))
+      .sort((a, b) => b.total - a.total);
+  }
+
+  async listRevenueByPaymentMethodThisMonth(): Promise<{ method: PaymentMethod; total: number; count: number }[]> {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
+
+    const { data, error } = await this.client
+      .from('orders')
+      .select('payment_method, total_amount')
+      .is('cancelled_at', null)
+      .gte('created_at', firstDay)
+      .lt('created_at', nextMonth);
+    if (error) throw error;
+
+    const totals = new Map<PaymentMethod, { total: number; count: number }>();
+    for (const row of (data ?? []) as { payment_method: PaymentMethod; total_amount: number }[]) {
+      const cur = totals.get(row.payment_method) ?? { total: 0, count: 0 };
+      cur.total += Number(row.total_amount);
+      cur.count += 1;
+      totals.set(row.payment_method, cur);
+    }
+    return Array.from(totals.entries())
+      .map(([method, v]) => ({ method, ...v }))
       .sort((a, b) => b.total - a.total);
   }
 }

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { BusinessType } from '../../models/business.model';
 import { SupabaseService } from '../supabase/supabase.service';
-import { BusinessTheme } from '../theme/theme.presets';
+import { BusinessColors } from '../theme/theme.presets';
 
 export interface CreateBusinessWithAdminInput {
   businessName: string;
@@ -10,13 +10,13 @@ export interface CreateBusinessWithAdminInput {
   adminName: string;
   adminCi: string;
   services: string[];
-  theme?: BusinessTheme;
+  theme?: BusinessColors;
 }
 
 export interface UpdateBusinessInput {
   name: string;
   type: BusinessType;
-  theme?: BusinessTheme;
+  theme?: BusinessColors;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -60,7 +60,7 @@ export class BusinessService {
   // Actualizacion aislada del tema. La usamos tanto post-creacion (cuando
   // el super_admin pico paleta en el form de alta) como desde el toggle
   // de apariencia mas adelante. RLS ya restringe businesses al super_admin.
-  async updateTheme(id: string, theme: BusinessTheme): Promise<void> {
+  async updateTheme(id: string, theme: BusinessColors): Promise<void> {
     const { error } = await this.client
       .from('businesses')
       .update({ theme })

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MethodBadgeComponent } from '../../../../../shared/method-badge.component';
 import {
   DEDUCTION_TYPES,
   DeductionType,
@@ -25,7 +26,7 @@ import {
 // realmente se enganchan.
 @Component({
   selector: 'app-admin-employees-payroll',
-  imports: [CurrencyPipe, DatePipe, ReactiveFormsModule],
+  imports: [CurrencyPipe, DatePipe, ReactiveFormsModule, MethodBadgeComponent],
   templateUrl: './payroll.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

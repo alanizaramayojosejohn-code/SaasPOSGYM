@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { PaymentMethod } from '../../models/order.model';
 import { SupabaseService } from '../supabase/supabase.service';
 
 export interface RegisterProductItem {
@@ -17,8 +18,9 @@ export type RegisterOrderItem = RegisterProductItem | RegisterMembershipItem;
 
 export interface RegisterOrderInput {
   client_id: string | null;
-  payment_method: 'cash' | 'card' | 'qr';
+  payment_method: PaymentMethod;
   items: RegisterOrderItem[];
+  notes?: string | null;
 }
 
 // Kept for the membership form component output type.
@@ -26,6 +28,8 @@ export interface MembershipOrderInput {
   client_id: string;
   plan_id: string;
   start_date: string | null;
+  payment_method: PaymentMethod;
+  notes: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -39,6 +43,7 @@ export class OrderService {
       p_client_id: input.client_id,
       p_payment_method: input.payment_method,
       p_items: input.items,
+      p_notes: input.notes ?? null,
     });
     if (error) throw error;
     return data as string;

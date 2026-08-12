@@ -2,7 +2,7 @@
   <!-- Topbar -->
   <div class="bg-surface backdrop-blur-xl border border-border-subtle rounded-2xl px-5 py-4 flex items-center gap-4 flex-wrap">
     <div>
-      <h3 class="text-base font-semibold text-foreground tracking-tight">Personal</h3>
+      <h3 class="text-base font-semibold text-foreground tracking-tight">Usuarios</h3>
       <p class="text-[11px] text-foreground-muted mt-0.5">
         {{ counts().all }} colaboradores · {{ counts().admin }} admins · {{ counts().caja }} cajas
       </p>
@@ -104,7 +104,7 @@
             <tr [class.bg-muted]="even" class="row-hover hover:bg-muted/40 border-b border-border-subtle/50 last:border-b-0">
               <td class="px-5 py-3">
                 <button type="button" (click)="view.emit(user)" class="flex items-center gap-3 group text-left">
-                  <span class="w-9 h-9 rounded-full bg-foreground text-base flex items-center justify-center text-[11px] font-bold flex-shrink-0">
+                  <span class="w-9 h-9 rounded-full bg-elevated text-foreground border-2 border-accent flex items-center justify-center text-[11px] font-bold flex-shrink-0">
                     {{ initials(user.name) }}
                   </span>
                   <span>

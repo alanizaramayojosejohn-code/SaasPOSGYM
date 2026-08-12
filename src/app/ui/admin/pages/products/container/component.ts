@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Category } from '../../../../../models/category.model';
 import { Product, saleUnitShort } from '../../../../../models/product.model';
+import { CategoryService, CreateCategoryInput } from '../../../../../services/category/category.service';
 import { CategoryQueryService } from '../../../../../services/category/query.service';
 import { CreateProductInput, ProductService } from '../../../../../services/product/product.service';
 import { ProductImageService } from '../../../../../services/image/product-image.service';
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { errorMessage } from '../../../../../utilities/error-message';
+import { CategoriesFormComponent } from '../../categories/components/form/form';
 import { ConfirmDeleteModalComponent } from '../../../../shared/confirm-delete-modal.component';
 import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { ProductsDetailComponent } from '../components/detail/detail';
@@ -20,6 +22,7 @@ import { ProductsListComponent } from '../components/list/list';
     ProductsFormComponent,
     ProductsDetailComponent,
     ConfirmDeleteModalComponent,
+    CategoriesFormComponent,
   ],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,8 +30,17 @@ import { ProductsListComponent } from '../components/list/list';
 export class AdminProductsContainerComponent {
   private readonly productService = inject(ProductService);
   private readonly productQuery = inject(ProductQueryService);
+  private readonly categoryService = inject(CategoryService);
   private readonly categoryQuery = inject(CategoryQueryService);
   private readonly imageService = inject(ProductImageService);
+
+  // Modal de alta rápida de categoría, disparado desde el form de producto.
+  readonly categoryModalOpen = signal(false);
+  readonly categorySubmitting = signal(false);
+  readonly categoryError = signal<string | null>(null);
+  // Id de la última categoría creada desde el modal: se pasa al form para
+  // que la autoseleccione.
+  readonly newCategoryId = signal<string | null>(null);
 
   readonly products = signal<Product[]>([]);
   readonly categories = signal<Category[]>([]);
@@ -113,6 +125,32 @@ export class AdminProductsContainerComponent {
       this.categories.set(await this.categoryQuery.listCategories());
     } catch (err: unknown) {
       console.error('Error listando categorías', err);
+    }
+  }
+
+  openCategoryModal(): void {
+    this.categoryModalOpen.set(true);
+    this.categoryError.set(null);
+  }
+
+  closeCategoryModal(): void {
+    if (this.categorySubmitting()) return;
+    this.categoryModalOpen.set(false);
+    this.categoryError.set(null);
+  }
+
+  async handleCreateCategory(input: CreateCategoryInput): Promise<void> {
+    this.categorySubmitting.set(true);
+    this.categoryError.set(null);
+    try {
+      const category = await this.categoryService.createCategory(input);
+      this.categories.update((list) => [...list, category]);
+      this.newCategoryId.set(category.id);
+      this.categoryModalOpen.set(false);
+    } catch (err: unknown) {
+      this.categoryError.set(errorMessage(err, 'Error al crear categoría'));
+    } finally {
+      this.categorySubmitting.set(false);
     }
   }
 

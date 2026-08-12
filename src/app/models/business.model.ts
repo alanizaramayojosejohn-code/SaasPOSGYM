@@ -1,4 +1,4 @@
-import { BusinessTheme } from '../services/theme/theme.presets';
+import { BusinessColors } from '../services/theme/theme.presets';
 
 export type BusinessType = 'pos' | 'gym';
 
@@ -6,6 +6,6 @@ export interface Business {
   id: string;
   name: string;
   type: BusinessType;
-  theme: BusinessTheme;
+  theme: BusinessColors;
   created_at: string;
 }

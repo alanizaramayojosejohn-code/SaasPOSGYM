@@ -53,8 +53,10 @@
       [plans]="plans()"
       [submitting]="submitting()"
       [errorMessage]="formError()"
+      [newClientId]="newClientId()"
       (submitForm)="handleSaleMembership($event)"
-      (cancel)="setMode('products')" />
+      (cancel)="setMode('products')"
+      (requestCreateClient)="openClientModal()" />
   }
 
   <!-- ======================== Modo: POS productos ======================== -->
@@ -237,15 +239,21 @@
         <!-- Customer selector -->
         <div class="px-5 pb-3 border-b border-border-subtle">
           <label for="cart-client" class="block text-[10px] font-bold uppercase tracking-wider text-foreground-faint mb-1.5">Cliente</label>
-          <select id="cart-client"
-                  [value]="cartCustomerId()"
-                  (change)="selectCustomer($any($event.target).value)"
-                  class="w-full px-3 py-2 bg-input text-foreground text-sm border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
-            <option value="">— Venta sin cliente —</option>
-            @for (c of activeClients(); track c.id) {
-              <option [value]="c.id">{{ c.ci }} · {{ c.name }}@if (c.nit) { · NIT {{ c.nit }} }</option>
-            }
-          </select>
+          <div class="flex gap-2">
+            <select id="cart-client"
+                    [value]="cartCustomerId()"
+                    (change)="selectCustomer($any($event.target).value)"
+                    class="flex-1 min-w-0 px-3 py-2 bg-input text-foreground text-sm border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+              <option value="">— Venta sin cliente —</option>
+              @for (c of activeClients(); track c.id) {
+                <option [value]="c.id">{{ c.ci }} · {{ c.name }}@if (c.nit) { · NIT {{ c.nit }} }</option>
+              }
+            </select>
+            <button type="button" (click)="openClientModal()" title="Nuevo cliente"
+                    class="press px-3 py-2 text-sm font-semibold text-foreground-muted border border-border-subtle rounded-lg hover:bg-muted transition flex-shrink-0">
+              + Cliente
+            </button>
+          </div>
         </div>
 
         <!-- Items list (scrollable) -->
@@ -371,7 +379,7 @@
 
             <!-- Cobrar -->
             <button type="button" (click)="charge()" [disabled]="!canCharge()"
-                    class="press w-full py-3 bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-bold rounded-xl transition shadow-lg shadow-primary/20 disabled:shadow-none flex items-center justify-center gap-2">
+                    class="press w-full py-3 bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed font-bold rounded-xl transition shadow-lg shadow-primary/20 disabled:shadow-none flex items-center justify-center gap-2">
               @if (submitting()) {
                 Cobrando…
               } @else {
@@ -383,6 +391,22 @@
         }
       </div>
     </div>
+  }
+
+  <!-- Alta rápida de cliente desde la venta. -->
+  @if (clientModalOpen()) {
+    <app-modal-shell
+      [open]="true"
+      chrome="bare"
+      title="Nuevo cliente"
+      [busy]="clientSubmitting()"
+      (closed)="closeClientModal()">
+      <app-admin-clients-form
+        [submitting]="clientSubmitting()"
+        [errorMessage]="clientError()"
+        (submitForm)="handleCreateClient($event)"
+        (cancel)="closeClientModal()" />
+    </app-modal-shell>
   }
 
 </div>

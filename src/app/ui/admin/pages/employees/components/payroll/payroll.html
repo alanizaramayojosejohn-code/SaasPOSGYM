@@ -199,7 +199,7 @@
               Cerrar
             </button>
             <button type="submit" [disabled]="!canSubmitPayment()"
-                    class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+                    class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
               @if (submitting()) { Registrando… } @else { Registrar pago }
             </button>
           </div>
@@ -234,7 +234,7 @@
               <input type="text" formControlName="description" placeholder="Detalle (opcional)"
                      class="flex-1 min-w-0 px-3 py-2 bg-input text-foreground border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm placeholder:text-foreground-faint" />
               <button type="submit" [disabled]="deductionForm.invalid || submitting()"
-                      class="press px-3 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition flex-shrink-0">
+                      class="press px-3 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition flex-shrink-0">
                 +
               </button>
             </div>
@@ -330,13 +330,18 @@
                         {{ p.period_start | date: 'dd/MM/yy' }} → {{ p.period_end | date: 'dd/MM/yy' }}
                         @if (p.status === 'cancelled') {
                           <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-danger/10 text-danger">anulado</span>
+                        } @else {
+                          <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-success/10 text-success">pagado</span>
                         }
                       </td>
                       <td class="px-4 py-2.5 text-right font-mono text-xs text-foreground-muted">{{ p.gross_amount + p.bonus_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
                       <td class="px-4 py-2.5 text-right font-mono text-xs text-foreground-subtle">{{ p.deductions_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
                       <td class="px-4 py-2.5 text-right font-mono text-xs font-bold text-foreground">{{ p.net_amount | currency: 'BOB':'symbol-narrow':'1.2-2' }}</td>
                       <td class="px-4 py-2.5 text-xs text-foreground-muted">
-                        {{ p.paid_on | date: 'dd/MM/yy' }} · {{ methodLabel(p.payment_method) }}
+                        <div class="flex items-center gap-1.5">
+                          <span class="text-foreground-subtle">{{ p.paid_on | date: 'dd/MM/yy' }}</span>
+                          <app-method-badge [kind]="p.payment_method" [label]="methodLabel(p.payment_method)" [compact]="true" />
+                        </div>
                       </td>
                       <td class="px-4 py-2.5 text-right">
                         @if (p.status === 'paid') {

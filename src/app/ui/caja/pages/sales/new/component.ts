@@ -5,12 +5,15 @@ import { Client } from '../../../../../models/client.model';
 import { MembershipPlan } from '../../../../../models/membership-plan.model';
 import { Product, SaleUnit, saleUnitShort } from '../../../../../models/product.model';
 import { AuthService } from '../../../../../services/auth/auth.service';
+import { ClientService, CreateClientInput } from '../../../../../services/client/client.service';
 import { ClientQueryService } from '../../../../../services/client/query.service';
 import { ProductImageService } from '../../../../../services/image/product-image.service';
 import { MembershipPlanQueryService } from '../../../../../services/membership-plan/query.service';
 import { ProductQueryService } from '../../../../../services/product/query.service';
 import { MembershipOrderInput, OrderService } from '../../../../../services/order/order.service';
 import { errorMessage } from '../../../../../utilities/error-message';
+import { ClientsFormComponent } from '../../../../admin/pages/clients/components/form/form';
+import { ModalShellComponent } from '../../../../shared/modal-shell.component';
 import { SalesMembershipFormComponent } from '../components/membership-form/membership-form';
 
 const PRODUCT_PAGE_SIZE = 20;
@@ -30,13 +33,14 @@ type Mode = 'products' | 'membership';
 
 @Component({
   selector: 'app-caja-sales-new',
-  imports: [CurrencyPipe, DecimalPipe, SalesMembershipFormComponent],
+  imports: [CurrencyPipe, DecimalPipe, SalesMembershipFormComponent, ModalShellComponent, ClientsFormComponent],
   templateUrl: './component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CajaSalesNewComponent {
   private readonly orderService = inject(OrderService);
   private readonly productQuery = inject(ProductQueryService);
+  private readonly clientService = inject(ClientService);
   private readonly clientQuery = inject(ClientQueryService);
   private readonly images = inject(ProductImageService);
   private readonly planQuery = inject(MembershipPlanQueryService);
@@ -66,6 +70,13 @@ export class CajaSalesNewComponent {
   readonly submitting = signal(false);
   readonly formError = signal<string | null>(null);
   readonly isGym = computed(() => this.auth.businessType() === 'gym');
+
+  // Alta rápida de cliente desde la venta (carrito de productos o membresía).
+  readonly clientModalOpen = signal(false);
+  readonly clientSubmitting = signal(false);
+  readonly clientError = signal<string | null>(null);
+  // Id del último cliente creado: se pasa al form de membresía para que lo autoseleccione.
+  readonly newClientId = signal<string | null>(null);
 
   readonly availableProducts = computed(() =>
     this.products().filter((p) => p.is_active && (!p.has_stock || p.stock > 0))
@@ -282,6 +293,35 @@ export class CajaSalesNewComponent {
     this.cartCustomerId.set(id);
   }
 
+  openClientModal(): void {
+    this.clientModalOpen.set(true);
+    this.clientError.set(null);
+  }
+
+  closeClientModal(): void {
+    if (this.clientSubmitting()) return;
+    this.clientModalOpen.set(false);
+    this.clientError.set(null);
+  }
+
+  // El cliente nuevo queda seleccionado tanto en el carrito de productos
+  // (cartCustomerId) como, vía newClientId, en el form de membresía.
+  async handleCreateClient(input: CreateClientInput): Promise<void> {
+    this.clientSubmitting.set(true);
+    this.clientError.set(null);
+    try {
+      const client = await this.clientService.createClient(input);
+      this.clients.update((list) => [client, ...list]);
+      this.cartCustomerId.set(client.id);
+      this.newClientId.set(client.id);
+      this.clientModalOpen.set(false);
+    } catch (err: unknown) {
+      this.clientError.set(errorMessage(err, 'Error al crear cliente'));
+    } finally {
+      this.clientSubmitting.set(false);
+    }
+  }
+
   setPaymentMethod(m: PaymentMethod): void {
     this.paymentMethod.set(m);
     if (m !== 'cash') this.cashReceived.set(0);
@@ -320,7 +360,8 @@ export class CajaSalesNewComponent {
     try {
       await this.orderService.registerOrder({
         client_id: input.client_id,
-        payment_method: this.paymentMethod(),
+        payment_method: input.payment_method,
+        notes: input.notes,
         items: [{ type: 'membership', plan_id: input.plan_id, start_date: input.start_date }],
       });
       this.goBack();

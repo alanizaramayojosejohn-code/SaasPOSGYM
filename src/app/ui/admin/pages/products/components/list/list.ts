@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { Product, SaleUnit, saleUnitShort } from '../../../../../../models/product.model';
+import { initials } from '../../../../../../utilities/initials';
 import { ProductImageService } from '../../../../../../services/image/product-image.service';
 
 type ProductFilter = 'all' | 'in-stock' | 'low-stock' | 'out-of-stock' | 'no-category' | 'inactive';
@@ -36,12 +37,7 @@ export class ProductsListComponent {
     return saleUnitShort(unit);
   }
 
-  initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '··';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  readonly initials = initials;
 
   // Bajo stock = (1, 5). Sin stock = 0. Solo aplica a productos con has_stock = true.
   readonly counts = computed(() => {

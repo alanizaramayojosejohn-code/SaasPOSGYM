@@ -14,6 +14,9 @@ export class ClientsFormComponent {
   private readonly fb = inject(FormBuilder);
 
   readonly value = input<Client | null>(null);
+  // CI para precargar en modo creación (alta rápida desde ventas/asistencia).
+  // Se ignora si `value` trae un cliente (modo edición).
+  readonly initialCi = input<string>('');
   readonly submitting = input<boolean>(false);
   readonly errorMessage = input<string | null>(null);
   readonly submitForm = output<CreateClientInput>();
@@ -60,7 +63,7 @@ export class ClientsFormComponent {
       } else {
         this.isActive.set(true);
         this.form.reset({
-          ci: '', name: '', nit: '', business_name: '', phone: '',
+          ci: this.initialCi(), name: '', nit: '', business_name: '', phone: '',
           email: '', address: '', birth_date: '', notes: '', is_active: true,
         });
       }

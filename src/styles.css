@@ -1,25 +1,22 @@
 @import "tailwindcss";
 
 /* =====================================================================
-   Tema dinamico por negocio.
+   Tema.
 
    Arquitectura:
-   - Las variables --c-* viven aca con valores por defecto (monochrome light).
-   - El ThemeService las sobrescribe en runtime via element.style.setProperty()
-     segun el tema del negocio actual (data-preset / data-mode en <html>).
-   - El bloque @theme las re-expone como tokens semanticos de Tailwind v4,
-     asi clases como bg-base, text-foreground, border-border-subtle funcionan
-     y reaccionan al cambio de tema sin reload.
-
-   Para agregar un nuevo token:
-   1. Agregar a ThemeTokens en theme.presets.ts
-   2. Sumarlo a writeTokensToRoot() en theme.service.ts
-   3. Declarar default aca y reexportar en @theme
+   - El fondo (--c-base/-surface/-elevated/-foreground/-border/...) es
+     SIEMPRE monocromo — CSS puro, sin JS: los valores light viven en :root,
+     los dark en :root[data-mode="dark"]. No hay presets de fondo por negocio.
+   - --c-accent/-fg y --c-accent-2/-fg SÍ son dinámicos: ThemeService los
+     sobreescribe en runtime via element.style.setProperty() con los 2
+     colores que el super_admin eligió para el negocio (businesses.theme).
+     Los valores de acá son solo el fallback antes de que cargue el negocio.
+   - El bloque @theme re-expone todo como tokens semanticos de Tailwind v4,
+     asi clases como bg-base, text-foreground, bg-accent funcionan y
+     reaccionan al cambio de tema sin reload.
    ===================================================================== */
 
 :root {
-  /* Defaults: monochrome light. Coinciden con THEME_PRESETS.monochrome.light
-     en theme.presets.ts. Si los tocas aca, sincronizalos alla. */
   --c-base: #FAFAFA;
   --c-surface: rgba(255, 255, 255, 0.8);
   --c-elevated: rgba(255, 255, 255, 0.92);
@@ -36,16 +33,50 @@
 
   --c-primary: #0A0A0A;
   --c-primary-fg: #FFFFFF;
-  --c-accent: #FFFFFF;
-  --c-accent-fg: #0A0A0A;
 
   --c-success: #059669;
   --c-danger: #DC2626;
   --c-warning: #D97706;
 
+  /* Fallback antes de que ThemeService aplique los colores del negocio. */
+  --c-accent: #0284c7;
+  --c-accent-fg: #FFFFFF;
+  --c-accent-2: #7c3aed;
+  --c-accent-2-fg: #FFFFFF;
+
+  /* Identidad de método de pago QR / cheque — plata, fija, no depende del
+     negocio (igual que --c-brand). Distinta de foreground-muted a propósito:
+     debe leerse como "un color propio", no como texto sin color. */
+  --c-silver: #64748B;
+
   /* Sombra glass — independiente del tema, ajusta blur por mode si hace falta. */
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+}
+
+:root[data-mode="dark"] {
+  --c-base: #050505;
+  --c-surface: rgba(255, 255, 255, 0.04);
+  --c-elevated: rgba(255, 255, 255, 0.06);
+  --c-input: rgba(255, 255, 255, 0.04);
+  --c-muted: rgba(255, 255, 255, 0.06);
+
+  --c-foreground: #FFFFFF;
+  --c-foreground-muted: rgba(255, 255, 255, 0.7);
+  --c-foreground-subtle: rgba(255, 255, 255, 0.5);
+  --c-foreground-faint: rgba(255, 255, 255, 0.4);
+
+  --c-border: rgba(255, 255, 255, 0.14);
+  --c-border-subtle: rgba(255, 255, 255, 0.08);
+
+  --c-primary: #FFFFFF;
+  --c-primary-fg: #0A0A0A;
+
+  --c-success: #10B981;
+  --c-danger: #EF4444;
+  --c-warning: #F59E0B;
+
+  --c-silver: #94A3B8;
 }
 
 /* =====================================================================
@@ -73,10 +104,19 @@
   --color-primary-fg: var(--c-primary-fg);
   --color-accent: var(--c-accent);
   --color-accent-fg: var(--c-accent-fg);
+  --color-accent-2: var(--c-accent-2);
+  --color-accent-2-fg: var(--c-accent-2-fg);
 
   --color-success: var(--c-success);
   --color-danger: var(--c-danger);
   --color-warning: var(--c-warning);
+
+  /* --c-brand/-strong ya existen más abajo (celeste fijo de marca, no
+     depende del negocio) — se reexponen acá para tener utilities
+     bg-brand/text-brand/border-brand con soporte de opacidad (bg-brand/10). */
+  --color-brand: var(--c-brand);
+  --color-brand-strong: var(--c-brand-strong);
+  --color-silver: var(--c-silver);
 }
 
 /* =====================================================================
@@ -534,6 +574,15 @@ body.modal-open { overflow: hidden; }
 .icon-tile-brand {
   background: linear-gradient(135deg, #0ea5e9, #2563eb);
   box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.45);
+}
+
+/* Marca del negocio (logo "S" en sidebars/topbars): degradado de los 2
+   colores que el super_admin eligió para el negocio (--c-accent → -2). Es
+   el único lugar donde aparece color2 — un detalle chico, no una superficie
+   grande — por eso vive como clase puntual y no como utility de fondo. */
+.brand-mark {
+  background: linear-gradient(135deg, var(--c-accent), var(--c-accent-2));
+  color: var(--c-accent-fg);
 }
 
 /* Checkmarks y acentos de texto celeste sueltos. */

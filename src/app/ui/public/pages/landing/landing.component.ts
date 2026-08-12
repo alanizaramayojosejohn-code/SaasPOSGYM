@@ -104,7 +104,7 @@ export class LandingComponent {
     },
     {
       title: 'Membresías y asistencia',
-      body: 'Planes por días o por sesiones, vencimientos al día y control de ingreso del socio. Sabes quién está por vencer antes de que se vaya.',
+      body: 'Planes por días o por sesiones, vencimientos al día y control de ingreso del cliente. Sabes quién está por vencer antes de que se vaya.',
       feature: 'memberships',
       icon: 'M2 5h20v14H2zM2 10h20',
     },

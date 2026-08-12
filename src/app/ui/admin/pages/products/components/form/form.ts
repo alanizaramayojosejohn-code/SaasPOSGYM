@@ -20,10 +20,14 @@ export class ProductsFormComponent {
   readonly categories = input<Category[]>([]);
   readonly submitting = input<boolean>(false);
   readonly errorMessage = input<string | null>(null);
+  // Id de una categoría recién creada desde el modal del contenedor: al cambiar,
+  // se autoselecciona en el form sin esperar a que el usuario la busque.
+  readonly newCategoryId = input<string | null>(null);
   // El payload del producto y la imagen viajan juntos: el contenedor necesita
   // el id del producto (que solo existe tras crearlo) para armar la ruta.
   readonly submitForm = output<{ input: CreateProductInput; image: ImageChange }>();
   readonly cancel = output<void>();
+  readonly requestCreateCategory = output<void>();
 
   // URL de la imagen ya guardada, para la vista previa en modo edición.
   readonly currentImageUrl = input<string | null>(null);
@@ -96,6 +100,13 @@ export class ProductsFormComponent {
           is_active: true, sale_unit: 'unit', is_weighable: false, provider: '',
         });
       }
+    });
+
+    // Autoselecciona la categoría recién creada en el modal. Se ignora el valor
+    // inicial (null) para no pisar la carga normal del form.
+    effect(() => {
+      const id = this.newCategoryId();
+      if (id) this.form.controls.category_id.setValue(id);
     });
 
     // "Se vende por peso" solo aplica a kg/g/L/ml. El bloqueo se hace sobre el

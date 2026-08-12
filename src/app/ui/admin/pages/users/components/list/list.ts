@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Profile } from '../../../../../../models/profile.model';
+import { initials } from '../../../../../../utilities/initials';
 
 type UserFilter = 'all' | 'admin' | 'caja';
 type UserSort = 'name' | 'ci' | 'created';
@@ -24,12 +25,7 @@ export class UsersListComponent {
   readonly sort = signal<UserSort>('created');
   readonly sortMenuOpen = signal(false);
 
-  initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '··';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  readonly initials = initials;
 
   readonly counts = computed(() => {
     const list = this.users();

@@ -13,7 +13,7 @@
           <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-muted text-foreground-muted border border-border-subtle">inactivo</span>
         }
       </div>
-      <p class="text-xs text-foreground-faint mt-0.5">Socio desde {{ value().created_at | date: 'dd MMM yyyy' }}</p>
+      <p class="text-xs text-foreground-faint mt-0.5">Cliente desde {{ value().created_at | date: 'dd MMM yyyy' }}</p>
     </div>
   </div>
 
@@ -58,8 +58,8 @@
       Cerrar
     </button>
     <button type="button" (click)="edit.emit()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
-      Editar socio
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg rounded-lg transition shadow-md shadow-primary/20">
+      Editar cliente
     </button>
   </div>
 </div>

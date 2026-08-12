@@ -21,12 +21,12 @@
   </div>
 
   <div class="pt-4 border-t border-border-subtle">
-    <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-3">Paleta del negocio</p>
+    <p class="text-[11px] font-bold uppercase tracking-widest text-foreground-faint mb-3">Colores del negocio</p>
     <div class="flex items-center gap-3 p-3 rounded-xl bg-input border border-border-subtle">
-      <span class="w-8 h-8 rounded-full shadow-sm flex-shrink-0" [style.background]="preset().light.primary"></span>
-      <div class="min-w-0">
-        <p class="text-sm font-semibold text-foreground truncate">{{ preset().label }}</p>
-        <p class="text-xs text-foreground-subtle truncate">{{ preset().description }}</p>
+      <span class="w-8 h-8 rounded-full shadow-sm flex-shrink-0" [style.background]="colors().color1"></span>
+      <span class="w-8 h-8 rounded-full shadow-sm flex-shrink-0 -ml-5" [style.background]="colors().color2"></span>
+      <div class="min-w-0 font-mono text-xs text-foreground-subtle">
+        {{ colors().color1 }} · {{ colors().color2 }}
       </div>
     </div>
   </div>
@@ -37,7 +37,7 @@
       Cerrar
     </button>
     <button type="button" (click)="edit.emit()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg rounded-lg transition shadow-md shadow-primary/20">
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg rounded-lg transition shadow-md shadow-primary/20">
       Editar negocio
     </button>
   </div>

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Client } from '../../../../../../models/client.model';
+import { initials } from '../../../../../../utilities/initials';
 
 // Tabs del listado: filtran sobre el array completo en memoria.
 type ClientFilter = 'all' | 'recent' | 'with-nit' | 'no-nit' | 'inactive';
@@ -27,12 +28,7 @@ export class ClientsListComponent {
   readonly sortMenuOpen = signal(false);
 
   // Iniciales del avatar: 2 chars del nombre.
-  initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '··';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  readonly initials = initials;
 
   // Recientes = creados en últimos 30 días.
   private readonly thirtyDaysAgo = (() => {

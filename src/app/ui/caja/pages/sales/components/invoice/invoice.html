@@ -55,9 +55,7 @@
 
       <div class="mt-3 pt-3 border-t border-border-subtle flex items-center gap-2">
         <p class="text-[10px] font-bold uppercase tracking-wider text-foreground-faint">Pago</p>
-        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-elevated border border-border-subtle text-foreground-muted">
-          {{ paymentLabel() }}
-        </span>
+        <app-method-badge [kind]="order().payment_method" [label]="paymentLabel()" />
         @if (order().cancelled_at) {
           <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-danger/10 text-danger border border-danger/20 ml-auto">
             CANCELADA

@@ -96,7 +96,7 @@
       }
     </select>
     <p class="text-xs text-foreground-faint mt-1">
-      Enlaza al empleado con su usuario de Personal. Déjalo vacío si solo cobra sueldo y no entra al sistema.
+      Enlaza al empleado con su usuario en Usuarios. Déjalo vacío si solo cobra sueldo y no entra al sistema.
     </p>
   </div>
 
@@ -142,7 +142,7 @@
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || datesInvalid() || submitting()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
         @if (isEdit()) { Guardando… } @else { Creando… }
       } @else {

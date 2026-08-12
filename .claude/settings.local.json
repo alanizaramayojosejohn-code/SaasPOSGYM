@@ -65,7 +65,8 @@
       "Bash(kill 1924)",
       "Bash(rm -rf .angular/cache)",
       "Bash(break)",
-      "Bash(node -p \"require\\('./node_modules/@angular/core/package.json'\\).version\")"
+      "Bash(node -p \"require\\('./node_modules/@angular/core/package.json'\\).version\")",
+      "Bash(netstat -ano)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -3,7 +3,7 @@
   <!-- Mobile topbar -->
   <header class="lg:hidden sticky top-0 z-30 flex items-center gap-3 px-4 h-14 bg-surface backdrop-blur-xl border-b border-border-subtle flex-shrink-0">
     <app-burger-button [open]="sidebar.mobileOpen()" (toggled)="sidebar.toggleMobile()" />
-    <div class="w-7 h-7 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-xs flex-shrink-0">S</div>
+    <div class="w-7 h-7 rounded-lg brand-mark flex items-center justify-center font-bold text-xs flex-shrink-0">S</div>
     <span class="font-bold text-foreground tracking-tight">SaasGym</span>
     <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-1.5 py-0.5 rounded bg-muted border border-border-subtle">{{ audienceLabel }}</span>
   </header>
@@ -20,7 +20,7 @@
 
     <!-- Brand -->
     <div class="px-5 py-5 flex items-center gap-2.5 rail-item">
-      <div class="w-9 h-9 rounded-lg bg-primary text-primary-fg flex items-center justify-center font-bold text-sm flex-shrink-0 press hover-lift">S</div>
+      <div class="w-9 h-9 rounded-lg brand-mark flex items-center justify-center font-bold text-sm flex-shrink-0 press hover-lift">S</div>
       <span class="font-bold text-foreground tracking-tight rail-label rail-hide">SaasGym</span>
       <span class="text-[10px] font-bold text-foreground-muted uppercase tracking-widest px-1.5 py-0.5 rounded bg-muted border border-border-subtle rail-label rail-hide">{{ audienceLabel }}</span>
     </div>
@@ -29,7 +29,7 @@
     <nav class="px-3 flex-1 overflow-y-auto overflow-x-hidden pb-4">
       <p class="px-3 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground-faint rail-hide">Operación</p>
 
-      <a routerLink="/caja/home" title="Inicio" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+      <a routerLink="/caja/home" title="Inicio" routerLinkActive="bg-accent text-accent-fg shadow-sm"
          [routerLinkActiveOptions]="{ exact: true }"
          (click)="sidebar.closeMobile()"
          class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
@@ -39,7 +39,7 @@
         <span class="rail-label">Inicio</span>
       </a>
 
-      <a routerLink="/caja/sales" title="Ventas" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+      <a routerLink="/caja/sales" title="Ventas" routerLinkActive="bg-accent text-accent-fg shadow-sm"
          (click)="sidebar.closeMobile()"
          class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
@@ -48,7 +48,7 @@
         <span class="rail-label">Ventas</span>
       </a>
 
-      <a routerLink="/caja/clients" title="Clientes" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+      <a routerLink="/caja/clients" title="Clientes" routerLinkActive="bg-accent text-accent-fg shadow-sm"
          (click)="sidebar.closeMobile()"
          class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
@@ -59,7 +59,7 @@
 
       @if (isGym()) {
         @if (plans.hasFeature('memberships')) {
-  <a routerLink="/caja/attendance" title="Asistencia" routerLinkActive="bg-primary text-primary-fg shadow-sm"
+  <a routerLink="/caja/attendance" title="Asistencia" routerLinkActive="bg-accent text-accent-fg shadow-sm"
              (click)="sidebar.closeMobile()"
              class="nav-link rail-item press flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-foreground-muted hover:text-foreground hover:bg-muted rounded-lg transition mb-0.5">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">

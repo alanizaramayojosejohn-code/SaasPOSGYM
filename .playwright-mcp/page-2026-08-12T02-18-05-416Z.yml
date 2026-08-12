@@ -1,0 +1,20 @@
+- generic [ref=e4]:
+  - link "SaasGym" [ref=e5] [cursor=pointer]:
+    - /url: /
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - img "SaasGym" [ref=e9]
+      - paragraph [ref=e10]: Gestión de negocios POS y GYM
+    - generic [ref=e12]:
+      - heading "Iniciar sesión" [level=2] [ref=e13]
+      - paragraph [ref=e14]: Ingresa con tu cuenta para continuar.
+      - button "Continuar con Google" [disabled] [ref=e15]
+      - generic [ref=e21]: o continúa con email
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: Email
+          - textbox "Email" [ref=e28]: cajatest@gmail.com
+        - generic [ref=e29]:
+          - generic [ref=e30]: Contraseña
+          - textbox "Contraseña" [ref=e31]: Caja1234.
+        - button "Entrando…" [disabled] [ref=e33]

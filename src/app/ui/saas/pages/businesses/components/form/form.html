@@ -63,72 +63,59 @@
     </div>
   }
 
-  <!-- ======================== Apariencia ========================
-       Solo paleta. El modo claro/oscuro es preferencia global de cada
-       usuario en su navegador (toggle en el header de la app), no se
-       asigna por negocio.
+  <!-- ======================== Colores del negocio ========================
+       El fondo es siempre monocromo (negro/blanco segun modo — el modo es
+       preferencia global de cada usuario, no se asigna por negocio). Los
+       unicos 2 colores que se eligen acá afectan botones, iconos de
+       nombres en listados, gráficas y links.
   -->
   <div class="space-y-4 pt-5 border-t border-border-subtle">
     <div>
-      <h4 class="font-semibold text-foreground text-sm">Paleta del negocio</h4>
+      <h4 class="font-semibold text-foreground text-sm">Colores del negocio</h4>
       <p class="text-xs text-foreground-subtle mt-0.5">
-        Es la paleta que verán los usuarios del negocio (admin y caja) al entrar.
-        Cada usuario elige por separado si la quiere ver clara u oscura.
+        2 colores principales. Se usan en botones, iconos de listados, gráficas y links.
+        El fondo queda fijo (negro u blanco según el modo de cada usuario).
       </p>
     </div>
 
-    <!-- Grid de presets. 6 cards, 3 cols en desktop / 2 en tablet / 1 en mobile.
-         Cada card es un button (form picker semantico). El @if del check usa
-         selectedPreset() para reaccionar al cambio. -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      @for (preset of presets; track preset.key) {
-        <button type="button"
-                (click)="selectPreset(preset.key)"
-                [class.border-primary]="selectedPreset() === preset.key"
-                [class.ring-2]="selectedPreset() === preset.key"
-                [class.ring-primary/30]="selectedPreset() === preset.key"
-                [class.border-border-subtle]="selectedPreset() !== preset.key"
-                class="text-left rounded-2xl border p-3 transition hover:border-foreground-muted bg-elevated">
-          <!-- Mini preview del preset usando sus hex reales -->
-          <div class="rounded-xl p-3 mb-3 border"
-               [style.background]="preset.light.base"
-               [style.borderColor]="preset.light.borderSubtle">
-            <div class="flex items-center gap-2 mb-2">
-              <div class="w-6 h-6 rounded-full shadow-sm"
-                   [style.background]="preset.light.primary"></div>
-              <div class="w-6 h-6 rounded-full shadow-sm"
-                   [style.background]="preset.light.accent"
-                   [style.border]="'1px solid ' + preset.light.borderSubtle"></div>
-              <div class="flex-1 h-1.5 rounded-full"
-                   [style.background]="preset.light.foreground"
-                   style="opacity: 0.15"></div>
-            </div>
-            <div class="space-y-1">
-              <div class="h-1.5 rounded-full w-3/4"
-                   [style.background]="preset.light.foreground"
-                   style="opacity: 0.5"></div>
-              <div class="h-1.5 rounded-full w-1/2"
-                   [style.background]="preset.light.foreground"
-                   style="opacity: 0.25"></div>
-            </div>
-          </div>
-
-          <!-- Label + selected indicator -->
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0 flex-1">
-              <p class="font-semibold text-foreground text-sm truncate">{{ preset.label }}</p>
-              <p class="text-xs text-foreground-subtle mt-0.5 leading-tight">{{ preset.description }}</p>
-            </div>
-            @if (selectedPreset() === preset.key) {
-              <div class="w-5 h-5 rounded-full bg-primary text-primary-fg flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                ✓
-              </div>
-            }
-          </div>
-        </button>
-      }
+    <!-- Paletas rápidas: atajo que llena los 2 pickers de abajo. No es
+         exclusivo — se puede ajustar el color a mano después. -->
+    <div>
+      <p class="text-xs font-medium text-foreground-muted mb-1.5">Paletas rápidas</p>
+      <div class="flex flex-wrap gap-2">
+        @for (p of quickPalettes; track p.name) {
+          <button type="button" (click)="selectQuickPalette(p)"
+                  class="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full border border-border-subtle bg-elevated hover:border-foreground-muted transition text-left">
+            <span class="flex items-center -space-x-1">
+              <span class="w-4 h-4 rounded-full border-2 border-elevated" [style.background]="p.color1"></span>
+              <span class="w-4 h-4 rounded-full border-2 border-elevated" [style.background]="p.color2"></span>
+            </span>
+            <span class="text-[11px] font-medium text-foreground-muted">{{ p.name }}</span>
+          </button>
+        }
+      </div>
     </div>
 
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-foreground-muted mb-1">Color 1</label>
+        <div class="flex items-center gap-2">
+          <input type="color" [formControl]="form.controls.color1"
+                 class="w-10 h-10 rounded-lg border border-border-subtle cursor-pointer bg-transparent flex-shrink-0" />
+          <input type="text" [formControl]="form.controls.color1"
+                 class="w-full px-2.5 py-2 bg-input text-foreground font-mono text-xs border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-foreground-muted mb-1">Color 2</label>
+        <div class="flex items-center gap-2">
+          <input type="color" [formControl]="form.controls.color2"
+                 class="w-10 h-10 rounded-lg border border-border-subtle cursor-pointer bg-transparent flex-shrink-0" />
+          <input type="text" [formControl]="form.controls.color2"
+                 class="w-full px-2.5 py-2 bg-input text-foreground font-mono text-xs border border-border-subtle rounded-lg outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" />
+        </div>
+      </div>
+    </div>
   </div>
 
   @if (errorMessage(); as msg) {
@@ -143,7 +130,7 @@
       Cancelar
     </button>
     <button type="submit" [disabled]="form.invalid || submitting()"
-            class="press px-4 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
+            class="press px-4 py-2 text-sm font-semibold bg-accent hover:bg-accent/90 text-accent-fg disabled:bg-muted disabled:text-foreground-faint disabled:cursor-not-allowed rounded-lg transition shadow-md shadow-primary/20 disabled:shadow-none">
       @if (submitting()) {
         @if (isEdit()) { Guardando… } @else { Creando… }
       } @else {

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Business } from '../../../../../../models/business.model';
-import { getPreset } from '../../../../../../services/theme/theme.presets';
+import { initials } from '../../../../../../utilities/initials';
 
 type BusinessFilter = 'all' | 'gym' | 'pos';
-type BusinessSort = 'name' | 'created' | 'preset';
+type BusinessSort = 'name' | 'created';
 
 @Component({
   selector: 'app-saas-businesses-list',
@@ -25,20 +25,7 @@ export class BusinessesListComponent {
   readonly sort = signal<BusinessSort>('created');
   readonly sortMenuOpen = signal(false);
 
-  initials(name: string): string {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return '··';
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-
-  primaryColor(business: Business): string {
-    return getPreset(business.theme?.preset).light.primary;
-  }
-
-  presetLabel(business: Business): string {
-    return getPreset(business.theme?.preset).label;
-  }
+  readonly initials = initials;
 
   readonly counts = computed(() => {
     const list = this.businesses();
@@ -61,7 +48,6 @@ export class BusinessesListComponent {
     if (q) list = list.filter((b) => b.name.toLowerCase().includes(q));
 
     if (s === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
-    else if (s === 'preset') list.sort((a, b) => this.presetLabel(a).localeCompare(this.presetLabel(b)));
     else list.sort((a, b) => b.created_at.localeCompare(a.created_at));
 
     return list;
@@ -70,7 +56,6 @@ export class BusinessesListComponent {
   readonly sortLabel = computed(() => {
     switch (this.sort()) {
       case 'name': return 'Nombre A→Z';
-      case 'preset': return 'Paleta A→Z';
       default: return 'Recientes primero';
     }
   });
